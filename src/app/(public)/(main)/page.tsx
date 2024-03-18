@@ -1,9 +1,4 @@
 import dynamic from "next/dynamic";
-import Image from "next/image";
-import Wallet from "@/app/components/dashboard/svg/wallet.svg"
-import Profit from "@/app/components/dashboard/svg/profit.svg"
-import Pembelian from "@/app/components/dashboard/svg/pembelian.svg"
-import Penjualan from "@/app/components/dashboard/svg/penjualan.svg"
 
 const CardDash = dynamic(() => import("@/app/components/dashboard/carddash"))
 const FilterDrop = dynamic(() => import("@/app/components/dashboard/filter"))
@@ -15,22 +10,22 @@ export default function Home() {
       <FilterDrop />
       <div className="my-10 grid lg:grid-cols-2 gap-5 lg:mx-20">
         <CardDash
-          image={Wallet}
+          image="https://res.cloudinary.com/dblroye9s/image/upload/v1710153975/jspstock/wallet_hdizhi.svg"
           title="Pendapatan"
           value="10.000.00"
         />
         <CardDash
-          image={Profit}
+          image="https://res.cloudinary.com/dblroye9s/image/upload/v1710153976/jspstock/profit_pqculp.svg"
           title="Profit"
           value="10.000.000.00"
         />
         <CardDash
-          image={Penjualan}
+          image="https://res.cloudinary.com/dblroye9s/image/upload/v1710153975/jspstock/penjualan_aw4nyc.svg"
           title="Pengembalian Penjualan"
           value="10.000.000.00"
         />
         <CardDash
-          image={Pembelian}
+          image="https://res.cloudinary.com/dblroye9s/image/upload/v1710153975/jspstock/pembelian_pe1ei0.svg"
           title="Pengembalian Pembelian"
           value="10.000.000.00"
         />

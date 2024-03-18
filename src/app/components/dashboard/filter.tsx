@@ -7,7 +7,7 @@ const FilterDrop =()=>{
         <summary className="flex items-center lg:mx-20 mx-5 mt-5 space-x-2">
           <div className="w-8 rounded p-2 bg-blue-900">
             <Image
-              src={Filter}
+              src="https://res.cloudinary.com/dblroye9s/image/upload/v1710153975/jspstock/filter_ucrqsy.svg"
               width={100}
               height={100}
               alt="Filter"

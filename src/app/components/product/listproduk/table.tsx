@@ -24,11 +24,11 @@ const Tablelist = () => {
                 <tbody>
                     {/* row 1 */}
                     <tr>
-                        <th>
+                        <td>
                             <label>
                                 <input type="checkbox" className="checkbox" />
                             </label>
-                        </th>
+                        </td>
                         <td>
                             <div className="avatar">
                                 <div className="w-20 rounded">

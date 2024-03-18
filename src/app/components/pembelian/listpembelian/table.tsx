@@ -10,14 +10,14 @@ const Tablelist = () => {
                                 <input type="checkbox" className="checkbox" />
                             </label>
                         </th>
-                        <th>Foto</th>
-                        <th>Nama</th>
-                        <th>Kode</th>
-                        <th>Kategori</th>
-                        <th>Quantity</th>
-                        <th>Harga</th>
-                        <th>Biaya</th>
-                        <th>Nilai Pasti(Harga/Biaya)</th>
+                        <th>Tanggal</th>
+                        <th>Referensi</th>
+                        <th>Supplier</th>
+                        <th>Status Pembelian</th>
+                        <th>Total</th>
+                        <th>Dibayar</th>
+                        <th>Jatuh Tempo</th>
+                        <th>Status Pembayaran</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -30,21 +30,25 @@ const Tablelist = () => {
                             </label>
                         </th>
                         <td>
-                            <div className="avatar">
-                                <div className="w-20 rounded">
-                                    <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="Avatar Tailwind CSS Component" />
-                                </div>
-                            </div>
+                            10-04-2023
                         </td>
                         <td>
-                            Baju Bobo
+                            pr-28134812-827263
                         </td>
-                        <td>BB100</td>
-                        <td>Baju</td>
-                        <td>11</td>
+                        <td>Julian</td>
+                        <td>
+                            <div className="bg-green-400 text-center text-xs w-20 p-1 rounded-lg font-semibold text-white">
+                                Diterima
+                            </div>
+                        </td>
                         <td>Rp.10000</td>
-                        <td>Rp.15000</td>
-                        <td>Rp.10000/Rp.15000</td>
+                        <td>0.00</td>
+                        <td>Rp.10000</td>
+                        <td>
+                            <div className="bg-red-400 text-center text-xs w-24 p-1 rounded-lg font-semibold text-white">
+                                Jatuh Tempo
+                            </div>
+                        </td>
                         <td>
                             <details className="dropdown dropdown-top dropdown-end">
                                 <summary className="m-1 bg-blue-900 text-white btn">Action</summary>
@@ -56,6 +60,19 @@ const Tablelist = () => {
                         </td>
                     </tr>
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th></th>
+                        <th>Total</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th>Rp.100000</th>
+                        <th>0.00</th>
+                        <th>Rp.100000</th>
+                        <th></th>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     )

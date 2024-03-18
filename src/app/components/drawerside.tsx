@@ -1,4 +1,5 @@
 "use client"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 
 const DrawerSide = () => {
@@ -13,13 +14,28 @@ const DrawerSide = () => {
                         htmlFor="my-drawer"
                         aria-label="close sidebar"
                         onClick={() => router.push("/")}
-                        className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                        className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950 p-3">
+                        <Image
+                            src="https://res.cloudinary.com/dblroye9s/image/upload/v1710781627/jspstock/sidebar/dashboard_uva3er.svg"
+                            alt="logo"
+                            height={100}
+                            className="w-4"
+                            width={100}
+                        />
                         Dashboard
                     </label>
                 </li>
                 <li>
                     <details className="dropdown">
-                        <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Produk</summary>
+                        <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950 p-3">
+                            <Image
+                                src="https://res.cloudinary.com/dblroye9s/image/upload/v1710781629/jspstock/sidebar/pembelian_gw8il9.svg"
+                                alt="logo"
+                                height={100}
+                                className="w-4"
+                                width={100}
+                            />
+                            Produk</summary>
                         <ul className="p-2 menu dropdown-content z-[1] bg-blue-950 w-52">
                             <li>
                                 <label
@@ -54,7 +70,15 @@ const DrawerSide = () => {
                 </li>
                 <li>
                     <details className="dropdown">
-                        <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Pembelian</summary>
+                        <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950 p-3">
+                            <Image
+                                src="https://res.cloudinary.com/dblroye9s/image/upload/v1710782625/pembelian_uk3kyv.svg"
+                                alt="logo"
+                                height={100}
+                                className="w-4"
+                                width={100}
+                            />
+                            Pembelian</summary>
                         <ul className="p-2 menu dropdown-content z-[1] bg-blue-950 w-52">
                             <li>
                                 <label
@@ -80,59 +104,209 @@ const DrawerSide = () => {
                 </li>
                 <li>
                     <details className="dropdown">
-                        <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Penjualan</summary>
+                        <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950 p-3">
+                            <Image
+                                src="https://res.cloudinary.com/dblroye9s/image/upload/v1710781631/jspstock/sidebar/penjualan_srtdrp.svg"
+                                alt="logo"
+                                height={100}
+                                className="w-4"
+                                width={100}
+                            />
+                            Penjualan</summary>
                         <ul className="p-2 menu dropdown-content z-[1] bg-blue-950 w-52">
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">List Penjualan</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Penjualan</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Tambah Penjualan</a></li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/penjualan/listpenjualan")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    List Penjualan
+                                </label></li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/penjualan/tambahpenjualan")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Tambah Penjualan
+                                </label>
+                            </li>
                             <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Reset</a></li>
                         </ul>
                     </details>
                 </li>
                 <li>
                     <details className="dropdown">
-                        <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Pengeluaran</summary>
+                        <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950 p-3">
+                            <Image
+                                src="https://res.cloudinary.com/dblroye9s/image/upload/v1710781629/jspstock/sidebar/pengeluaran_l9oyl9.svg"
+                                alt="logo"
+                                height={100}
+                                className="w-4"
+                                width={100}
+                            />
+                            Pengeluaran</summary>
                         <ul className="p-2 menu dropdown-content z-[1] bg-blue-950 w-52">
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Kategori</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">List Pengeluaran</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Tambah Pengeluaran</a></li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/pengeluaran/kategoripengeluaran")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Kategori Pengeluaran
+                                </label>
+                            </li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/pengeluaran/listpengeluaran")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    List Pengeluaran
+                                </label>
+                            </li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/pengeluaran/listpengeluaran/tambah")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Tambah Pengeluaran
+                                </label>
+                            </li>
                             <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Reset</a></li>
                         </ul>
                     </details>
                 </li>
                 <li>
                     <details className="dropdown">
-                        <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Pengembalian</summary>
+                        <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950 p-3">
+                            <Image
+                                src="https://res.cloudinary.com/dblroye9s/image/upload/v1710153975/jspstock/penjualan_aw4nyc.svg"
+                                alt="logo"
+                                height={100}
+                                className="w-4"
+                                width={100}
+                            />
+                            Pengembalian</summary>
                         <ul className="p-2 menu dropdown-content z-[1] bg-blue-950 w-52">
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Penjualan</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Pembelian</a></li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/pengembalian/penjualan")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Penjualan
+                                </label>
+                            </li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/pengembalian/pembelian")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Pembelian
+                                </label>
+                            </li>
                         </ul>
                     </details>
                 </li>
                 <li>
                     <details className="dropdown">
-                        <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Pemaketan</summary>
+                        <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950 p-3">
+                            <Image
+                                src="https://res.cloudinary.com/dblroye9s/image/upload/v1710781627/jspstock/sidebar/pemaketan_rxexdk.svg"
+                                alt="logo"
+                                height={100}
+                                className="w-4"
+                                width={100}
+                            />
+                            Pemaketan</summary>
                         <ul className="p-2 menu dropdown-content z-[1] bg-blue-950 w-52">
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">List Pemaketan</a></li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/pemaketan/listpemaketan")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    List Pemaketan
+                                </label>
+                            </li>
                             <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Reset</a></li>
                         </ul>
                     </details>
                 </li>
                 <li>
                     <details className="dropdown">
-                        <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Akutansi</summary>
+                        <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950 p-3">
+                            <Image
+                                src="https://res.cloudinary.com/dblroye9s/image/upload/v1710781627/jspstock/sidebar/akutan_qiach6.svg"
+                                alt="logo"
+                                height={100}
+                                className="w-4"
+                                width={100}
+                            />
+                            Akutansi</summary>
                         <ul className="p-2 menu dropdown-content z-[1] bg-blue-950 w-52">
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">List Rekening</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Tambah Rekening</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Tranfer Uang</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Neraca Keuangan</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Rekening Nasabah</a></li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/akutansi/listrekening")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    List Rekening
+                                </label>
+                            </li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/akutansi/listrekening/tambah")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Tambah Rekening
+                                </label>
+                            </li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/akutansi/transferuang")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Transfer Uang
+                                </label>
+                            </li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/akutansi/neraca")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Neraca Keuangan
+                                </label>
+                            </li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/akutansi/rekeningnasabah")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Rekening Nasabah
+                                </label>
+                            </li>
                         </ul>
                     </details>
                 </li>
                 <li>
                     <details className="dropdown">
-                        <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Reports</summary>
+                        <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950 p-3">
+                            <Image
+                                src="https://res.cloudinary.com/dblroye9s/image/upload/v1710781633/jspstock/sidebar/reports_tfy1tk.svg"
+                                alt="logo"
+                                height={100}
+                                className="w-4"
+                                width={100}
+                            />
+                            Reports</summary>
                         <ul className="p-2 menu dropdown-content z-[1] bg-blue-950 w-52">
                             <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Report Ringkasan</a></li>
                             <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Report Produk</a></li>
@@ -147,20 +321,97 @@ const DrawerSide = () => {
                 </li>
                 <li>
                     <details className="dropdown">
-                        <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Pengguna</summary>
+                        <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950 p-3">
+                            <Image
+                                src="https://res.cloudinary.com/dblroye9s/image/upload/v1710781630/jspstock/sidebar/pengguna_zhan3b.svg"
+                                alt="logo"
+                                height={100}
+                                className="w-4"
+                                width={100}
+                            />
+                            Pengguna</summary>
                         <ul className="p-2 menu dropdown-content z-[1] bg-blue-950 w-52">
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">List Pengguna</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Tambah Pengguna</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">List Costumer</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Tambah Costumer</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">List Supplier</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Tambah Supplier</a></li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/pengguna/role")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Role
+                                </label>
+                            </li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/pengguna/grupcostomer")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Grup Costomer
+                                </label>
+                            </li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/pengguna")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    List Pengguna
+                                </label>
+                            </li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/pengguna/costomer")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    List Costomer
+                                </label>
+                            </li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/pengguna/supplier")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    List Supplier
+                                </label>
+                            </li>
                         </ul>
                     </details>
                 </li>
-                <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Toko</a></li>
-                <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Pengaturan</a></li>
-                <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Logout</a></li>
+                <li>
+                    <label
+                        htmlFor="my-drawer"
+                        aria-label="close sidebar"
+                        onClick={() => router.push("/toko")}
+                        className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950 p-3">
+                        <Image
+                            src="https://res.cloudinary.com/dblroye9s/image/upload/v1710781636/jspstock/sidebar/toko_a1xwi9.svg"
+                            alt="logo"
+                            height={100}
+                            className="w-4"
+                            width={100}
+                        />
+                        Toko
+                    </label>
+                </li>
+                <li>
+                    <label
+                        htmlFor="my-drawer"
+                        aria-label="close sidebar"
+                        onClick={() => router.push("/pengaturan/profil")}
+                        className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950 p-3">
+                        <Image
+                            src="https://res.cloudinary.com/dblroye9s/image/upload/v1710781635/jspstock/sidebar/settings_kmuf2y.svg"
+                            alt="logo"
+                            height={100}
+                            className="w-4"
+                            width={100}
+                        />
+                        Pengaturan
+                    </label>
+                </li>
+                <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950 p-3">Logout</a></li>
             </ul>
 
         </div>

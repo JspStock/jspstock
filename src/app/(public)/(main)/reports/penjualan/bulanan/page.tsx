@@ -1,17 +1,13 @@
 import dynamic from "next/dynamic"
 
-const TableList = dynamic(() => import("@/app/components/reports/reproduk/table"))
-const Pagination = dynamic(() => import("@/app/components/reports/reproduk/pagination"))
-const Perpage = dynamic(() => import("@/app/components/reports/reproduk/perpage"))
-const Datepicker = dynamic(() => import("@/app/components/reports/reproduk/datepicker"))
-const Tokopicker = dynamic(() => import("@/app/components/reports/reproduk/tokopicker"))
-const TabsList = dynamic(() => import("@/app/components/reports/reproduk/tablist"))
+const TableList = dynamic(() => import("@/app/components/reports/penjualan/bulanan/table"))
+const Pagination = dynamic(() => import("@/app/components/reports/penjualan/bulanan/pagination"))
+const Tokopicker = dynamic(() => import("@/app/components/reports/penjualan/bulanan/tokopicker"))
 
-export default function Reproduk() {
+export default function Penjualanbulanan() {
     return (
         <>
             <div className="lg:flex mb-5 w-full items-center justify-center p-5 bg-white rounded-lg space-x-2">
-                <Datepicker />
                 <Tokopicker />
                 <button className="btn bg-blue-900 mt-9 text-white">Submit</button>
             </div>
@@ -22,10 +18,11 @@ export default function Reproduk() {
                 </div>
             </div>
             <input type="text" placeholder="Pencarian" className="input mt-5 bg-white text-gray-900 input-bordered w-full max-w-xs" />
-            <Perpage />
-            <TabsList />
-            <TableList />
             <Pagination />
+            <div className="lg:flex w-full items-center mt-5 justify-center p-5 bg-white rounded-lg space-x-2">
+                <h1 className="text-xl font-semibold">Tahun 2024</h1>
+            </div>
+            <TableList />
         </>
     )
 }

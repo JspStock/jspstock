@@ -1,5 +1,31 @@
-export default function RepPembayaran (){
-    return(
-        <h1></h1>
+import dynamic from "next/dynamic"
+
+const TableList = dynamic(() => import("@/app/components/reports/repembayaran/table"))
+const Pagination = dynamic(() => import("@/app/components/reports/repembayaran/pagination"))
+const Perpage = dynamic(() => import("@/app/components/reports/repembayaran/perpage"))
+const Datepicker = dynamic(() => import("@/app/components/reports/repembayaran/datepicker"))
+const Tokopicker = dynamic(() => import("@/app/components/reports/repembayaran/tokopicker"))
+const TabsList = dynamic(() => import("@/app/components/reports/repembayaran/tablist"))
+
+export default function Repembayaran() {
+    return (
+        <>
+            <div className="lg:flex mb-5 w-full items-center justify-center p-5 bg-white rounded-lg space-x-2">
+                <Datepicker />
+                <Tokopicker />
+                <button className="btn bg-blue-900 mt-9 text-white">Submit</button>
+            </div>
+            <div className="flex max-lg:grid max-lg:space-y-2 lg:space-x-2">
+                <div className="max-lg:flex max-lg:space-x-2 lg:space-x-2">
+                    <button className="text-white w-20 border-0 bg-gray-400 btn">Print</button>
+                    <button className="text-white w-20 border-0 bg-red-400 btn">Hapus</button>
+                </div>
+            </div>
+            <input type="text" placeholder="Pencarian" className="input mt-5 bg-white text-gray-900 input-bordered w-full max-w-xs" />
+            <Perpage />
+            <TabsList />
+            <TableList />
+            <Pagination />
+        </>
     )
 }

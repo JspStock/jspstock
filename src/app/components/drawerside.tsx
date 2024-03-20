@@ -29,7 +29,7 @@ const DrawerSide = () => {
                     <details className="dropdown">
                         <summary className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950 p-3">
                             <Image
-                                src="https://res.cloudinary.com/dblroye9s/image/upload/v1710781629/jspstock/sidebar/pembelian_gw8il9.svg"
+                                src="https://res.cloudinary.com/dblroye9s/image/upload/v1710781632/jspstock/sidebar/produk_pztagq.svg"
                                 alt="logo"
                                 height={100}
                                 className="w-4"
@@ -308,14 +308,78 @@ const DrawerSide = () => {
                             />
                             Reports</summary>
                         <ul className="p-2 menu dropdown-content z-[1] bg-blue-950 w-52">
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Report Ringkasan</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Report Produk</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Report Penjualan</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Report Pembayaran</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Penjualan Harian</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Penjualan Bulanan</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Pembelian Harian</a></li>
-                            <li><a className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">Pembelian Bulanan</a></li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/reports/repringkasan")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Report Ringkasan
+                                </label>
+                            </li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/reports/repproduk")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Report Produk
+                                </label>
+                            </li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/reports")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Reports Penjualan
+                                </label>
+                            </li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/reports/reppembayaran")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Report Pembayaran
+                                </label>
+                            </li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/reports/penjualan/harian")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Penjualan Harian
+                                </label>
+                            </li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/reports/penjualan/bulanan")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Penjualan Bulanan
+                                </label>
+                            </li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/reports/pembelian/harian")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Pembelian Harian
+                                </label>
+                            </li>
+                            <li>
+                                <label
+                                    htmlFor="my-drawer"
+                                    aria-label="close sidebar"
+                                    onClick={() => router.push("/reports/pembelian/bulanan")}
+                                    className="hover:bg-white hover:text-blue-950 active:bg-white active:text-blue-950">
+                                    Pembelian Bulanan
+                                </label>
+                            </li>
                         </ul>
                     </details>
                 </li>

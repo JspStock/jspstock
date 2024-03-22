@@ -29,7 +29,7 @@ const Sidenav = () => {
                 </ul>
             </details>
         ) : (
-            <Link href={`${sublink ?? ''}${e.link}`} className={`hover:bg-gray-400 focus:bg-gray-400 focus:text-white p-3 ${path.startsWith(`${sublink ?? ''}${e.link}`) ? 'bg-gray-400' : ''}`}>
+            <Link href={`${sublink ?? ''}${e.link}`} className={`hover:bg-gray-400 focus:bg-gray-400 focus:text-white p-3 ${path == `${sublink ?? ''}${e.link}` ? 'bg-gray-400' : ''}`}>
                 {
                     e.icon ? <Image
                         src={e.icon}

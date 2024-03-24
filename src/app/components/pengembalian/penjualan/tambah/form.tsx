@@ -1,4 +1,7 @@
+import dynamic from "next/dynamic"
 
+const Comboboxproduk = dynamic (()=> import("@/app/components/pengembalian/penjualan/tambah/cbproduk"))
+const Comboboxcostomer = dynamic (()=> import("@/app/components/pengembalian/penjualan/tambah/cbcostomer"))
 
 const Form = () => {
     return (
@@ -8,31 +11,13 @@ const Form = () => {
                     <div className="label">
                         <span className="label-text">Costomer*(Wajib)</span>
                     </div>
-                    <select id="countries" className="bg-gray-50 border input input-bordered w-full max-w-xs">
-                        <option selected className="text-gray-200">Pilih Costomer</option>
-                        <option value="">United States</option>
-                        <option value="">Canada</option>
-                        <option value="">France</option>
-                        <option value="">Germany</option>
-                    </select>
-                </label>
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
-                        <span className="label-text">Toko*(Wajib)</span>
-                    </div>
-                    <select id="countries" className="bg-gray-50 border input input-bordered w-full max-w-xs">
-                        <option selected className="text-gray-200">Pilih Toko</option>
-                        <option value="">United States</option>
-                        <option value="">Canada</option>
-                        <option value="">France</option>
-                        <option value="">Germany</option>
-                    </select>
+                    <Comboboxcostomer />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
                         <span className="label-text">Pilih Produk*(Wajib)</span>
                     </div>
-                    <input type="text" placeholder="Pilih Produk dan Select" className="input input-bordered w-full max-w-xs" />
+                    <Comboboxproduk />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">

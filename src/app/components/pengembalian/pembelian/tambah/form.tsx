@@ -1,4 +1,7 @@
+import dynamic from "next/dynamic"
 
+const Comboboxsupplier = dynamic (()=> import("@/app/components/pengembalian/pembelian/tambah/cbsupplier"))
+const Comboboxpembelian = dynamic (()=> import("@/app/components/pengembalian/pembelian/tambah/cbpembelian"))
 
 const Form = () => {
     return (
@@ -8,31 +11,13 @@ const Form = () => {
                     <div className="label">
                         <span className="label-text">Supplier*(Wajib)</span>
                     </div>
-                    <select id="countries" className="bg-gray-50 border input input-bordered w-full max-w-xs">
-                        <option selected className="text-gray-200">Pilih Supplier</option>
-                        <option value="">United States</option>
-                        <option value="">Canada</option>
-                        <option value="">France</option>
-                        <option value="">Germany</option>
-                    </select>
-                </label>
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
-                        <span className="label-text">Toko*(Wajib)</span>
-                    </div>
-                    <select id="countries" className="bg-gray-50 border input input-bordered w-full max-w-xs">
-                        <option selected className="text-gray-200">Pilih Toko</option>
-                        <option value="">United States</option>
-                        <option value="">Canada</option>
-                        <option value="">France</option>
-                        <option value="">Germany</option>
-                    </select>
+                    <Comboboxsupplier />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
                         <span className="label-text">Pilih Pembelian*(Wajib)</span>
                     </div>
-                    <input type="text" placeholder="Pilih Pembelian dan Select" className="input input-bordered w-full max-w-xs" />
+                    <Comboboxpembelian />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">

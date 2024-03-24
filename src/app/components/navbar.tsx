@@ -17,6 +17,17 @@ const Navbar = () => {
                 />
             </div>
             <div className="flex-none">
+                <Link href="/beralihtoko" className="btn btn-ghost btn-circle">
+                <Image
+                    alt="beralih toko"
+                    src="https://res.cloudinary.com/dblroye9s/image/upload/v1711270728/jspstock/beralihtoko_r9rzzc.svg"
+                    height={100}
+                    width={100}
+                    className="w-5 h-5"
+                />
+                </Link>
+            </div>
+            <div className="flex-none">
                 <div className="dropdown dropdown-end">
                     <div className="btn btn-ghost btn-circle">
                         <Link href="/pemaketan/listpemaketan/input" className="indicator">

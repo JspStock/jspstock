@@ -1,6 +1,6 @@
 const TableTotal =()=>{
     return(
-        <div className="lg:flex text-gray-900 w-full justify-center items-center lg:gap-10 grid max-lg:space-y-5">
+        <div className="lg:flex text-gray-900 w-full mt-10 justify-center items-center lg:gap-10 grid max-lg:space-y-5">
             <div className="flex space-x-2">
                 <h1>Items : </h1>
                 <h1 className="font-bold">1</h1>

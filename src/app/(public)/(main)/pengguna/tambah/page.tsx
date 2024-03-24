@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic"
 
-const Form = dynamic(()=> import("@/app/components/pemaketan/listpemaketan/input/form"))
+const Form = dynamic(()=> import("@/app/components/pengguna/tambah/form"))
 
 const TambahPengguna = () => {
     return (

@@ -2,36 +2,27 @@ import dynamic from "next/dynamic"
 
 const Tabletambahpembelian = dynamic(() => import("@/app/components/pembelian/tambahpembelian/tabletambahpembelian"))
 const TableTotal = dynamic(() => import("@/app/components/pembelian/tambahpembelian/tabletotal"))
+const ComboboxSupplier = dynamic(() => import("@/app/components/pembelian/tambahpembelian/cbsupplier"))
+const Comboboxproduk = dynamic(() => import("@/app/components/pembelian/tambahpembelian/cbproduk"))
 
 const Form = () => {
     return (
-        <form className="mt-10">
+        <form className="mt-10 relative">
+            <label className="form-control w-full max-w-xs">
+                <div className="label">
+                    <span className="label-text">Pilih Produk*(Wajib)</span>
+                </div>
+                <Comboboxproduk />
+            </label>
+            <Tabletambahpembelian />
             <h1 className="py-2 text-gray-900">Dokumen*</h1>
             <input type="file" className="file-input file-input-bordered w-full max-w-xs" />
             <div className="grid lg:grid-cols-2 gap-5 mt-5">
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
-                        <span className="label-text">Toko*(Wajib)</span>
-                    </div>
-                    <select id="countries" className="bg-gray-50 border input input-bordered w-full max-w-xs">
-                        <option selected className="text-gray-200">Pilih Toko</option>
-                        <option value="">United States</option>
-                        <option value="">Canada</option>
-                        <option value="">France</option>
-                        <option value="">Germany</option>
-                    </select>
-                </label>
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
                         <span className="label-text">Supplier*(Wajib)</span>
                     </div>
-                    <select id="countries" className="bg-gray-50 border input input-bordered w-full max-w-xs">
-                        <option selected className="text-gray-200">Pilih Suplier</option>
-                        <option value="">United States</option>
-                        <option value="">Canada</option>
-                        <option value="">France</option>
-                        <option value="">Germany</option>
-                    </select>
+                    <ComboboxSupplier />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
@@ -44,12 +35,6 @@ const Form = () => {
                         <option value="">Tertunda</option>
                         <option value="">Diorder</option>
                     </select>
-                </label>
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
-                        <span className="label-text">Pilih Produk*(Wajib)</span>
-                    </div>
-                    <input type="text" placeholder="Pilih Produk dan Select" className="input input-bordered w-full max-w-xs" />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
@@ -70,7 +55,6 @@ const Form = () => {
                     <textarea className="textarea textarea-bordered" placeholder="Catatan"></textarea>
                 </label>
             </div>
-            <Tabletambahpembelian />
             <TableTotal />
             <button className="btn bg-blue-900 my-5 text-white">Simpan</button>
         </form>

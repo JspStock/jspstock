@@ -1,8 +1,9 @@
+import Link from "next/link"
+
 const Tablelist = () => {
     return (
         <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900">
             <table className="table">
-                {/* head */}
                 <thead className=" text-gray-900">
                     <tr>
                         <th>
@@ -16,13 +17,11 @@ const Tablelist = () => {
                         <th>Status Pembelian</th>
                         <th>Total</th>
                         <th>Dibayar</th>
-                        <th>Jatuh Tempo</th>
                         <th>Status Pembayaran</th>
-                        <th>Action</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {/* row 1 */}
                     <tr>
                         <th>
                             <label>
@@ -43,20 +42,20 @@ const Tablelist = () => {
                         </td>
                         <td>Rp.10000</td>
                         <td>0.00</td>
-                        <td>Rp.10000</td>
                         <td>
                             <div className="bg-red-400 text-center text-xs w-24 p-1 rounded-lg font-semibold text-white">
                                 Jatuh Tempo
                             </div>
                         </td>
                         <td>
-                            <details className="dropdown dropdown-top dropdown-end">
-                                <summary className="m-1 bg-blue-900 text-white btn">Action</summary>
-                                <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
-                                    <li><a>Edit</a></li>
+                            <div className="dropdown dropdown-left">
+                                <div tabIndex={0} role="button" className="btn btn-ghost">Lainnya</div>
+                                <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                                    <li><a>Ubah</a></li>
+                                    <li><Link href={"listpembelian/2323/pembayaran"}>Tambah Pembayaran</Link></li>
                                     <li><a>Hapus</a></li>
                                 </ul>
-                            </details>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -69,7 +68,6 @@ const Tablelist = () => {
                         <th></th>
                         <th>Rp.100000</th>
                         <th>0.00</th>
-                        <th>Rp.100000</th>
                         <th></th>
                     </tr>
                 </tfoot>

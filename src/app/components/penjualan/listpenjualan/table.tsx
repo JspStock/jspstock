@@ -2,7 +2,6 @@ const Tablelist = () => {
     return (
         <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900">
             <table className="table">
-                {/* head */}
                 <thead className=" text-gray-900">
                     <tr>
                         <th>
@@ -17,12 +16,10 @@ const Tablelist = () => {
                         <th>Status Pembayaran</th>
                         <th>Total</th>
                         <th>Dibayar</th>
-                        <th>Jatuh Tempo</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {/* row 1 */}
                     <tr>
                         <td>
                             <label>
@@ -48,7 +45,6 @@ const Tablelist = () => {
                         </td>
                         <td>Rp.10000</td>
                         <td>Rp.10000</td>
-                        <td>0.00</td>
                         <td>
                             <details className="dropdown dropdown-top dropdown-end">
                                 <summary className="m-1 bg-blue-900 text-white btn">Action</summary>
@@ -70,7 +66,6 @@ const Tablelist = () => {
                         <th></th>
                         <th>Rp.100000</th>
                         <th>Rp.100000</th>
-                        <th>0.00</th>
                         <th></th>
                     </tr>
                 </tfoot>

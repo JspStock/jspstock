@@ -4,21 +4,16 @@ const TableTambahpembelian = () => {
             <h1 className="py-2 text-gray-900">Order Table</h1>
 
             <table className="table">
-                {/* head */}
                 <thead className=" text-gray-900">
                     <tr>
                         <th>Nama</th>
                         <th>Kode</th>
                         <th>Quantity</th>
-                        <th>Biaya Satuan Bersih</th>
-                        <th>Diskon</th>
-                        <th>Pajak</th>
                         <th>Sub Total</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {/* row 1 */}
                     <tr>
                         <td>
                             Baju bobo
@@ -27,11 +22,10 @@ const TableTambahpembelian = () => {
                             BB12
                         </td>
                         <td>
-                            <input type="text" placeholder="Input Quantity" className="input font-normal input-bordered w-full max-w-lg" />
+                            <select className="select select-bordered">
+                                <option value="1" selected>1 Pcs</option>
+                            </select>
                         </td>
-                        <td>Rp.12000</td>
-                        <td>0.00</td>
-                        <td>0.00</td>
                         <td>Rp.12000</td>
                         <td>
                             <button className="btn bg-red-400 text-white">Hapus</button>
@@ -43,9 +37,6 @@ const TableTambahpembelian = () => {
                         <th>Total</th>
                         <th></th>
                         <th>2</th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
                         <th>Rp.12000</th>
                         <th></th>
                     </tr>

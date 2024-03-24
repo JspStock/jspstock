@@ -10,15 +10,11 @@ const TableTambahpembelian = () => {
                         <th>Nama</th>
                         <th>Kode</th>
                         <th>Quantity</th>
-                        <th>Harga Satuan Bersih</th>
-                        <th>Diskon</th>
-                        <th>Pajak</th>
                         <th>Sub Total</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {/* row 1 */}
                     <tr>
                         <td>
                             Baju bobo
@@ -28,12 +24,11 @@ const TableTambahpembelian = () => {
                         </td>
                         <td>
                         <td>
-                            <input type="text" placeholder="Input Quantity" className="input font-normal input-bordered w-full max-w-lg" />
+                            <select className="select select-bordered">
+                                <option value="1">1 Pcs</option>
+                            </select>
                         </td>
                         </td>
-                        <td>Rp.12000</td>
-                        <td>0.00</td>
-                        <td>0.00</td>
                         <td>Rp.12000</td>
                         <td>
                             <button className="btn bg-red-400 text-white">Hapus</button>
@@ -45,9 +40,6 @@ const TableTambahpembelian = () => {
                         <th>Total</th>
                         <th></th>
                         <th>2</th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
                         <th>Rp.12000</th>
                         <th></th>
                     </tr>

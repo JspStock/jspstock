@@ -25,7 +25,7 @@ const Sidenav = () => {
                     <span>{e.text}</span>
                 </summary>
                 <ul>
-                    {renderMenu(e.subMenu, e.link)}
+                    {renderMenu(e.subMenu, `${sublink ?? ''}${e.link}`)}
                 </ul>
             </details>
         ) : (

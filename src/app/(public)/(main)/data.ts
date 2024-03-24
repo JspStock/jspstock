@@ -181,32 +181,32 @@ export const linkNav: Array<LinkNav> = [
                     }
                 ]
             },
+        ]
+    },
+    {
+        icon: 'https://res.cloudinary.com/dblroye9s/image/upload/v1710781630/jspstock/sidebar/pengguna_zhan3b.svg',
+        text: 'Pengguna',
+        link: '/pengguna',
+        subMenu: [
             {
-                icon: 'https://res.cloudinary.com/dblroye9s/image/upload/v1710781630/jspstock/sidebar/pengguna_zhan3b.svg',
-                text: 'Pengguna',
-                link: '/pengguna',
-                subMenu: [
-                    {
-                        text: 'Role',
-                        link: '/role'
-                    },
-                    {
-                        text: 'Grup Kustomer',
-                        link: '/grupcostomer'
-                    },
-                    {
-                        text: 'Daftar Pengguna',
-                        link: ''
-                    },
-                    {
-                        text: 'Daftar Kustomer',
-                        link: '/costumer'
-                    },
-                    {
-                        text: 'Supplier',
-                        link: '/supplier'
-                    }
-                ]
+                text: 'Role',
+                link: '/role'
+            },
+            {
+                text: 'Grup Kustomer',
+                link: '/grupcostomer'
+            },
+            {
+                text: 'Daftar Pengguna',
+                link: ''
+            },
+            {
+                text: 'Daftar Kustomer',
+                link: '/costumer'
+            },
+            {
+                text: 'Supplier',
+                link: '/supplier'
             }
         ]
     },

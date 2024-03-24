@@ -17,7 +17,7 @@ export default function AllLayout({
     return (
         <div className="drawer lg:drawer-open">
             <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-            <div className="drawer-content justify-center">
+            <div className="drawer-content justify-center relative">
                 <NextTopLoader color="#1e3a8a" />
                 <Navbar />
                 <div className="w-full flex flex-col justify-center px-5 md:px-10 mt-10 max-lg:mt-24">

@@ -202,7 +202,7 @@ export const linkNav: Array<LinkNav> = [
             },
             {
                 text: 'Daftar Kustomer',
-                link: '/costumer'
+                link: '/costomer'
             },
             {
                 text: 'Supplier',

@@ -9,7 +9,7 @@ const Form = () => {
             <div className="grid lg:grid-cols-2 gap-5 mt-5">
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
-                        <span className="label-text">Supplier*(Wajib)</span>
+                        <span className="label-text">Supplier</span>
                     </div>
                     <Comboboxsupplier />
                 </label>

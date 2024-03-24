@@ -12,7 +12,6 @@ export default function Reproduk() {
         <>
             <div className="lg:flex mb-5 w-full items-center justify-center p-5 bg-white rounded-lg space-x-2">
                 <Datepicker />
-                <Tokopicker />
                 <button className="btn bg-blue-900 mt-9 text-white">Submit</button>
             </div>
             <div className="flex max-lg:grid max-lg:space-y-2 lg:space-x-2">

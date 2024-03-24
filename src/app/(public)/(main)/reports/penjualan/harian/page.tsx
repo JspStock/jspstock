@@ -3,14 +3,12 @@ import dynamic from "next/dynamic"
 const TableList = dynamic(() => import("@/app/components/reports/penjualan/harian/table"))
 const Pagination = dynamic(() => import("@/app/components/reports/penjualan/harian/pagination"))
 const Datepicker = dynamic(() => import("@/app/components/reports/penjualan/harian/datepicker"))
-const Tokopicker = dynamic(() => import("@/app/components/reports/penjualan/harian/tokopicker"))
 
 export default function Penjualanharian() {
     return (
         <>
             <div className="lg:flex mb-5 w-full items-center justify-center p-5 bg-white rounded-lg space-x-2">
                 <Datepicker />
-                <Tokopicker />
                 <button className="btn bg-blue-900 mt-9 text-white">Submit</button>
             </div>
             <div className="flex max-lg:grid max-lg:space-y-2 lg:space-x-2">

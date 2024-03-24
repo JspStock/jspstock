@@ -4,15 +4,10 @@ import Link from "next/link"
 const TableList = dynamic(() => import("@/app/components/pengembalian/penjualan/table"))
 const Pagination = dynamic(() => import("@/app/components/pengembalian/penjualan/pagination"))
 const Perpage = dynamic(() => import("@/app/components/pengembalian/penjualan/perpage"))
-const Tokopicker = dynamic(() => import("@/app/components/pengembalian/penjualan/tokopicker"))
 
 export default function Ppenjualan() {
     return (
         <>
-            <div className="lg:flex mb-5 w-full items-center justify-center p-5 bg-white rounded-lg space-x-2">
-                <Tokopicker />
-                <button className="btn bg-blue-900 mt-9 text-white">Submit</button>
-            </div>
             <div className="flex max-lg:grid max-lg:space-y-2 lg:space-x-2">
                 <Link href="/pengembalian/penjualan/tambah" className="text-white w-62 border-0 bg-green-500 btn">+ Tambah Pengembalian Penjualan</Link>
                 <div className="max-lg:flex max-lg:space-x-2 lg:space-x-2">

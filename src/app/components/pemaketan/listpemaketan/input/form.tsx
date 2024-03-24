@@ -24,19 +24,19 @@ const Form = () => {
             <div className="grid lg:grid-cols-2 gap-5 mt-5">
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
-                        <span className="label-text">Nomor Referensi*(Wajib)</span>
+                        <span className="label-text">Nomor Referensi</span>
                     </div>
                     <input type="text" placeholder="Nomor Referensi" className="input input-bordered w-full max-w-xs" />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
-                        <span className="label-text">Diskon*(Wajib)</span>
+                        <span className="label-text">Diskon</span>
                     </div>
                     <input type="text" placeholder="Diskon" className="input input-bordered w-full max-w-xs" />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
-                        <span className="label-text">Harga Pengiriman*(Wajib)</span>
+                        <span className="label-text">Harga Pengiriman</span>
                     </div>
                     <input type="text" placeholder="Harga pengiriman" className="input input-bordered w-full max-w-xs" />
                 </label>

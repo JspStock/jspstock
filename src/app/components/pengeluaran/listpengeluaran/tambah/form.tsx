@@ -27,7 +27,7 @@ const Form = () => {
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
-                        <span className="label-text">Rekening*(Wajib)</span>
+                        <span className="label-text">Rekening</span>
                     </div>
                     <select id="countries" className="bg-gray-50 border input input-bordered w-full max-w-xs">
                         <option selected className="text-gray-200">Rekening</option>

@@ -15,12 +15,12 @@ const Form = () => {
                 <Comboboxproduk />
             </label>
             <Tabletambahpenjualan />
-            <h1 className="py-2 text-gray-900">Dokumen*(Wajib)</h1>
+            <h1 className="py-2 text-gray-900">Dokumen</h1>
             <input type="file" className="file-input file-input-bordered w-full max-w-xs" />
             <div className="grid lg:grid-cols-2 gap-5 mt-5">
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
-                        <span className="label-text">Nomor Referensi*(Wajib)</span>
+                        <span className="label-text">Nomor Referensi</span>
                     </div>
                     <input type="text" placeholder="Masukkan Nomor Referensi" className="input input-bordered w-full max-w-xs" />
                 </label>
@@ -54,13 +54,13 @@ const Form = () => {
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
-                        <span className="label-text">Diskon*(Wajib)</span>
+                        <span className="label-text">Diskon</span>
                     </div>
                     <input type="text" placeholder="Diskon" className="input input-bordered w-full max-w-xs" />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
-                        <span className="label-text">Biaya Pengiriman*(Wajib)</span>
+                        <span className="label-text">Biaya Pengiriman</span>
                     </div>
                     <input type="text" placeholder="Biaya" className="input input-bordered w-full max-w-xs" />
                 </label>

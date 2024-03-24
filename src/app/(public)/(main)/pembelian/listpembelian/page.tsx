@@ -5,7 +5,6 @@ const TableList = dynamic(() => import("@/app/components/pembelian/listpembelian
 const Pagination = dynamic(() => import("@/app/components/pembelian/listpembelian/pagination"))
 const Perpage = dynamic(() => import("@/app/components/pembelian/listpembelian/perpage"))
 const Datepicker = dynamic(() => import("@/app/components/pembelian/listpembelian/datepicker"))
-const Tokopicker = dynamic(() => import("@/app/components/pembelian/listpembelian/tokopicker"))
 const TabsList = dynamic(() => import("@/app/components/pembelian/listpembelian/tablist"))
 
 export default function Listpembelian() {
@@ -13,7 +12,6 @@ export default function Listpembelian() {
         <>
             <div className="lg:flex mb-5 w-full items-center justify-center p-5 bg-white rounded-lg space-x-2">
                 <Datepicker />
-                <Tokopicker />
                 <button className="btn bg-blue-900 mt-9 text-white">Submit</button>
             </div>
             <div className="flex max-lg:grid max-lg:space-y-2 lg:space-x-2">

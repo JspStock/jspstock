@@ -5,7 +5,6 @@ const TableList = dynamic(() => import("@/app/components/penjualan/listpenjualan
 const Pagination = dynamic(() => import("@/app/components/penjualan/listpenjualan/pagination"))
 const Perpage = dynamic(() => import("@/app/components/penjualan/listpenjualan/perpage"))
 const Datepicker = dynamic(() => import("@/app/components/penjualan/listpenjualan/datepicker"))
-const Tokopicker = dynamic(() => import("@/app/components/penjualan/listpenjualan/tokopicker"))
 const TabsList = dynamic(() => import("@/app/components/penjualan/listpenjualan/tablist"))
 
 export default function Listpenjualan() {
@@ -13,7 +12,6 @@ export default function Listpenjualan() {
         <>
             <div className="lg:flex mb-5 w-full items-center justify-center p-5 bg-white rounded-lg space-x-2">
                 <Datepicker />
-                <Tokopicker />
                 <button className="btn bg-blue-900 mt-9 text-white">Submit</button>
             </div>
             <div className="flex max-lg:grid max-lg:space-y-2 lg:space-x-2">

@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 const Tablelist = () => {
     return (
         <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900">
@@ -50,6 +52,7 @@ const Tablelist = () => {
                                 <summary className="m-1 bg-blue-900 text-white btn">Action</summary>
                                 <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
                                     <li><a>Edit</a></li>
+                                    <li><Link href={'listpenjualan/323/pembayaran'}>Pembayaran</Link></li>
                                     <li><a>Hapus</a></li>
                                 </ul>
                             </details>

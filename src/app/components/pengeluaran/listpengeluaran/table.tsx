@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 const Tablelist = () => {
     return (
         <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900">

@@ -5,10 +5,6 @@ import NextTopLoader from "nextjs-toploader";
 const Navbar = dynamic(() => import("@/app/components/navbar"))
 const DrawerSide = dynamic(() => import("@/app/components/layout/sidenav"))
 
-export const metadata: Metadata = {
-    title: "JSP",
-};
-
 export default function AllLayout({
     children,
 }: {

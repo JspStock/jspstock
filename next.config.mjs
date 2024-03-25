@@ -16,6 +16,11 @@ const nextConfig = {
       destination: '/dashboard',
       source: '/',
       permanent: true
+    },
+    {
+      destination: '/auth/signin',
+      source: '/auth',
+      permanent: false
     }
   ]
 };

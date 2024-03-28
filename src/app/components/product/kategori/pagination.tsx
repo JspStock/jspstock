@@ -1,4 +1,4 @@
-import { generateSearchParams } from "@/app/(public)/(main)/produk/kategori/page"
+import { generateSearchParams } from "@/utils/produk/kategori/utils"
 import Link from "next/link"
 
 const Pagination = ({ page, count, show }: { page?: number, count: number, show?: number }) => {

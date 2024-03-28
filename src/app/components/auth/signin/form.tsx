@@ -1,10 +1,11 @@
 "use client"
 
-import { checkExistUsername, validatePasswordUser } from '@/app/(public)/auth/signin/actions'
+import { getUser } from '@/app/(public)/auth/signin/actions'
 import { useFormik } from 'formik'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ObjectSchema, object, string } from 'yup'
+import { compare } from 'bcrypt-ts'
 
 export interface Form {
     username: string,
@@ -27,22 +28,24 @@ const Form = () => {
         },
         validationSchema: formSchema,
         onSubmit: async (e) => {
-            if (await checkExistUsername(e.username)) {
-                if (await validatePasswordUser(e.username, e.password)) {
-                    const onSignIn = await signIn("credentials", {
-                        username: e.username,
-                        password: e.password,
-                        redirect: false
+            const user = await getUser(e.username)
+
+            if(user){
+                const validatePass = await compare(e.password, user.password)
+                if(validatePass){
+                    const result = await signIn('credentials', {
+                        ...e,
+                        redirect: false,
                     })
 
-                    if (onSignIn != undefined && onSignIn.ok) {
-                        router.replace(params.get("callbackUrl") ?? '/')
+                    if(result && result.ok){
+                        router.replace(`${params.has('callbackUrl') ? params.get('callbackUrl') : '/dashboard'}`)
                     }
-                } else {
-                    form.setFieldError("password", "Kata sandi salah!")
+                }else{
+                    form.setFieldError("password", 'Kata sandi salah!')
                 }
-            } else {
-                form.setFieldError("username", "Nama pengguna tidak tersedia!")
+            }else{
+                form.setFieldError("username", "Nama pengguna tidak ditemukan!")
             }
         }
     })

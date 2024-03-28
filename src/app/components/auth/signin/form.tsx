@@ -32,6 +32,7 @@ const Form = () => {
 
             if(user){
                 const validatePass = await compare(e.password, user.password)
+                console.log(validatePass)
                 if(validatePass){
                     const result = await signIn('credentials', {
                         ...e,

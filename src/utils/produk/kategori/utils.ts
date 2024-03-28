@@ -1,4 +1,4 @@
-export const generateSearchParams = ({ show, search, page }: { show?: number, search?: string, page?: number }) => {
+export const generateSearchParams = ({ show, search, page }: { show?: number | string, search?: string, page?: number }) => {
     let temp = []
     if(show){
         temp.push(`show=${show}`)

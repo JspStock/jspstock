@@ -3,7 +3,7 @@ import Link from "next/link"
 
 const Pagination = ({ page, count, show }: { page?: number, count: number, show?: number }) => {
     const isFirst = ( page ?? 1 ) == 1 || page == 0
-    const isLast = ( page ?? 1 ) > (Math.ceil(count / (show ?? 10)) - 1)
+    const isLast = ( page ?? 1 ) > (Math.ceil(count / (show ? show : 10)) - 1)
 
     return (
         <div className="join mt-3">

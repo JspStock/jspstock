@@ -35,6 +35,7 @@ const authOptions = NextAuth({
                         if(validatePassword){
                             if(getUser.idStore){
                                 cookies().set("store", getUser.idStore, {secure: true})
+                                cookies().set('role', getUser.role, {secure: true})
                             }else if(getUser.role == $Enums.Role.OWNER){
                                 const getStore = await prisma.store.findFirst({
                                     select: {
@@ -44,6 +45,8 @@ const authOptions = NextAuth({
 
                                 if(getStore != null){
                                     cookies().set("store", getStore?.id, {secure: true})
+                                    cookies().set('role', getUser.role, {secure: true})
+                                    
                                     return{
                                         id: getUser.id,
                                         name: getUser.name,

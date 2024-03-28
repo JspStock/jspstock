@@ -15,6 +15,8 @@ export default function AllLayout({
     const store = cookies().has("store")
     !store ? redirect('/auth/signin') : null
 
+    cookies().get('role')?.value.toLowerCase() != 'owner' ? redirect('/dashboard') : null
+
     return (
         <div className="drawer lg:drawer-open">
             <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />

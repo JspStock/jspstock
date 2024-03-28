@@ -41,7 +41,7 @@ const TableKategori = ({ data }: { data: Array<Category> }) => {
                             <td>
                                 <div className="avatar">
                                     <div className="w-20 rounded">
-                                        <Image src={e.imagePath.trim() == '' ? Logo : e.imagePath} width={0} height={0} fill alt={e.name} />
+                                        <Image src={e.imagePath.trim() == '' ? Logo : e.imagePath} fill alt={e.name} quality={100} />
                                     </div>
                                 </div>
                             </td>

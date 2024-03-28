@@ -6,6 +6,7 @@ import { getAllCategories, getCountCategoryData } from "./action"
 const TableKategori = dynamic(() => import("@/app/components/product/kategori/table"))
 const Pagination = dynamic(() => import("@/app/components/product/kategori/pagination"))
 const Perpage = dynamic(() => import("@/app/components/product/kategori/perpage"))
+const SearchForm = dynamic(() => import('@/app/components/product/kategori/searchForm'))
 
 export const metadata: Metadata = {
     title: 'Kategori produk'
@@ -24,8 +25,8 @@ export default async function Kategori({ searchParams }: { searchParams: { show?
                     <button className="text-white w-20 border-0 bg-red-400 btn">Hapus</button>
                 </div>
             </div>
-            <input type="text" placeholder="Pencarian" className="input mt-5 bg-white text-gray-900 input-bordered w-full max-w-xs" />
-            <Perpage />
+            <SearchForm />
+            <Perpage show={searchParams.show} />
             <TableKategori data={allCategories} />
             <Pagination page={parseInt(searchParams.page ?? '1')} count={countAllCategories} show={parseInt(searchParams.show ?? '10')}/>
         </>

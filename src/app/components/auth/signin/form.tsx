@@ -5,7 +5,7 @@ import { useFormik } from 'formik'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ObjectSchema, object, string } from 'yup'
-import { compare } from 'bcrypt-ts'
+import { compareSync } from 'bcrypt-ts'
 
 export interface Form {
     username: string,
@@ -31,7 +31,8 @@ const Form = () => {
             const user = await getUser(e.username)
 
             if(user){
-                const validatePass = await compare(e.password, user.password)
+                const validatePass = compareSync(e.password, user.password)
+                console.log(validatePass)
                 if(validatePass){
                     const result = await signIn('credentials', {
                         ...e,

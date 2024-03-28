@@ -4,9 +4,8 @@ import prisma from '../../../../../prisma/database'
 import bcrypt from 'bcrypt'
 import { cookies } from 'next/headers'
 import { $Enums } from '@prisma/client'
-import { signOut } from 'next-auth/react'
 
-export const authOptions = NextAuth({
+const authOptions = NextAuth({
     providers: [
         CredentialProviders({
             name: 'credentials',

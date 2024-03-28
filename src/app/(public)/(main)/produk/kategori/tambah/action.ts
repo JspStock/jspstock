@@ -5,24 +5,27 @@ import prisma from "../../../../../../../prisma/database"
 import { revalidatePath } from "next/cache"
 import { cookies } from "next/headers"
 
-const store = cookies()
 
-export const getProductCategories = async () => await prisma.productCategories.findMany({
-    where: { 
-        idStore: store.get('store')?.value,
-     },
-    select: {
-        id: true,
-        name: true,
-        idProductCategories: true
-    },
-    orderBy: {
-        name: 'asc',
-    }
-})
+export const getProductCategories = async () => {
+    const store = cookies()
+    return await prisma.productCategories.findMany({
+        where: {
+            idStore: store.get('store')?.value,
+        },
+        select: {
+            id: true,
+            name: true,
+            idProductCategories: true
+        },
+        orderBy: {
+            name: 'asc',
+        }
+    })
+}
 
 export const addCategory = async (form: FormData) => {
     try {
+        const store = cookies()
         const file = form.get("file") as File
         const name = form.get("name") as string
         const parent = form.get("parent") as string
@@ -53,7 +56,7 @@ export const addCategory = async (form: FormData) => {
         })
 
         revalidatePath("/", "layout")
-    } catch(e) {
+    } catch (e) {
         console.log(e)
         throw new Error("Kesalahan pada server!")
     }

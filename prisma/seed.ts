@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 const main = async () => {
     try{
         const saltPassword = await bcrypt.genSalt(10)
-        const hashedPassword = await bcrypt.hash("default", saltPassword)
+        const hashedPassword = await bcrypt.hash("defaults", saltPassword)
         await prisma.$transaction(async e => {
             await e.store.create({
                 data: {

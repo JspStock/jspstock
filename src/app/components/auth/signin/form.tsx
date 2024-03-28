@@ -16,16 +16,8 @@ const Form = () => {
     const router = useRouter()
 
     const formSchema: ObjectSchema<Form> = object().shape({
-        username: string().required("Nama pengguna wajib diisi!").test({
-            name: "Check Exists Username",
-            test: async (e: string) => await checkExistUsername(e) > 0,
-            message: `Nama pengguna tidak terdaftar!`
-        }),
-        password: string().required("Kata sandi wajib diisi!").min(8, "Kata sandi harus minimal 8 karakter!").test({
-            name: "Check Password",
-            test: async (e: string) => await validatePasswordUser(form.values.username, e),
-            message: 'Kata sandi salah!'
-        })
+        username: string().required("Nama pengguna wajib diisi!"),
+        password: string().required("Kata sandi wajib diisi!").min(8, "Kata sandi harus minimal 8 karakter!")
     })
 
     const form = useFormik<Form>({
@@ -35,15 +27,23 @@ const Form = () => {
         },
         validationSchema: formSchema,
         onSubmit: async (e) => {
-            const onSignIn =  await signIn("credentials", { 
-                username: e.username,
-                password: e.password,
-                redirect: false
-             })
+            if (await checkExistUsername(e.username)) {
+                if (await validatePasswordUser(e.username, e.password)) {
+                    const onSignIn = await signIn("credentials", {
+                        username: e.username,
+                        password: e.password,
+                        redirect: false
+                    })
 
-             if(onSignIn != undefined && onSignIn.ok){
-                router.replace(params.get("callbackUrl") ?? '/')
-             }
+                    if (onSignIn != undefined && onSignIn.ok) {
+                        router.replace(params.get("callbackUrl") ?? '/')
+                    }
+                } else {
+                    form.setFieldError("password", "Kata sandi salah!")
+                }
+            } else {
+                form.setFieldError("username", "Nama pengguna tidak tersedia!")
+            }
         }
     })
 
@@ -66,7 +66,7 @@ const Form = () => {
 
         <div className="form-control mt-6">
             <button className="btn rounded-box bg-blue-950 text-white" disabled={isSubmitting}>
-                { isSubmitting ? <div className="loading"></div> : null }
+                {isSubmitting ? <div className="loading"></div> : null}
                 <span>Masuk</span>
             </button>
         </div>

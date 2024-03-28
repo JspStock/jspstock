@@ -1,32 +1,76 @@
 import NextAuth from 'next-auth'
 import CredentialProviders from 'next-auth/providers/credentials'
+import prisma from '../../../../../prisma/database'
+import bcrypt from 'bcrypt'
+import { cookies } from 'next/headers'
+import { $Enums } from '@prisma/client'
+import { signOut } from 'next-auth/react'
 
 export const authOptions = NextAuth({
     providers: [
         CredentialProviders({
             name: 'credentials',
             credentials: {},
-            authorize(credentials, req) {
-                const { username, password } = credentials as {
-                    username: string,
-                    password: string
-                }
+            async authorize(credentials, _) {
+                try{
+                    const { username, password } = credentials as {
+                        username: string,
+                        password: string
+                    }
 
-                if(username != 'eugene' && password != 'eugene702'){
-                    throw new Error('Invalid credentials')
-                }
+                    const getUser = await prisma.user.findFirst({
+                        where: { username },
+                        select: { 
+                            id: true,
+                            email: true,
+                            name: true,
+                            password: true,
+                            idStore: true,
+                            role: true
+                        }
+                    })
 
-                return {
-                    id: '1',
-                    name: username,
-                    email: username
+                    if(getUser){
+                        const validatePassword = await bcrypt.compare(password, getUser.password)
+                        
+                        if(validatePassword){
+                            if(getUser.idStore){
+                                cookies().set("store", getUser.idStore, {secure: true})
+                            }else if(getUser.role == $Enums.Role.OWNER){
+                                const getStore = await prisma.store.findFirst({
+                                    select: {
+                                        id: true
+                                    }
+                                })
+
+                                if(getStore != null){
+                                    cookies().set("store", getStore?.id, {secure: true})
+                                    return{
+                                        id: getUser.id,
+                                        name: getUser.name,
+                                        email: getUser.email,
+                                    }
+                                }
+                            }
+
+                            throw new Error("Tidak ada toko!")
+                        }else{
+                            throw new Error("Kata sandi pengguna salah!")
+                        }
+                    }else{
+                        throw new Error("Pengguna tidak ditemukan!")
+                    }
+                }catch(e){
+                    console.log(e)
+                    throw new Error("Kesalahan pada server!")
                 }
             },
         })
     ],
 
     pages: {
-        signIn: '/auth/signin'
+        signIn: '/auth/signin',
+        signOut: '/auth/signout'
     }
 })
 

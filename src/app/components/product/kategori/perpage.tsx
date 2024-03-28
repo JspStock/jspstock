@@ -1,18 +1,14 @@
 const Perpage = () => {
     return (
         <div className="flex items-center mt-3">
-            <ul className="menu menu-horizontal px-1">
-                <li>
-                    <details>
-                        <summary>10</summary>
-                        <ul className="p-2 z-20 shadow-md">
-                            <li><a>10</a></li>
-                            <li><a>50</a></li>
-                            <li><a>All</a></li>
-                        </ul>
-                    </details>
-                </li>
-            </ul>
+            <div className="dropdown">
+                <div tabIndex={0} role="button" className="btn m-1">10</div>
+                <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 bg-base-100 rounded-box w-52 shadow-xl">
+                    <li><button>10</button></li>
+                    <li><button>50</button></li>
+                    <li><button>ALL</button></li>
+                </ul>
+            </div>
             <h1>Per halaman</h1>
         </div>
     )

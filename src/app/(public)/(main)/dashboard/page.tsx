@@ -1,13 +1,14 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getServerSession } from "next-auth";
+import { Metadata } from "next";
 import dynamic from "next/dynamic";
 
 const CardDash = dynamic(() => import("@/app/components/dashboard/carddash"))
 const FilterDrop = dynamic(() => import("@/app/components/dashboard/filter"))
 
-export default async function Home() {
-  const session = await getServerSession(authOptions)
+export const metadata: Metadata = {
+  title: 'Dashboard'
+}
 
+export default async function Home() {
   return (
     <>
       <h1 className="text-gray-900 font-bold text-xl lg:text-2xl">Selamat Datang Admin</h1>

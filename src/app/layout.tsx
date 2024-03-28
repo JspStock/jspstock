@@ -20,8 +20,6 @@ export default function RootLayout({
   children: React.ReactNode;
   params: { session: Session }
 }>) {
-
-
   return (
     <html className="bg-gray-100" data-theme="light" lang="en">
       <body className={mulish.className}>

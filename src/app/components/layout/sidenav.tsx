@@ -1,11 +1,11 @@
 "use client"
 import Image from "next/image"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { LinkNav, linkNav } from "../../(public)/(main)/data"
+import { signOut } from "next-auth/react"
 
 const Sidenav = () => {
-    const router = useRouter()
     const path = usePathname()
 
     const renderMenu = (items: Array<LinkNav>, sublink?: string) => items.map((e, index) => <li key={index}>
@@ -52,6 +52,9 @@ const Sidenav = () => {
             <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label>
             <ul className="menu p-4 w-72 min-h-full bg-blue-950 max-md:overflow-scroll text-white">
                 {renderMenu(linkNav)}
+                <li>
+                    <button className="hover:bg-gray-400 focus:bg-gray-400 focus:text-white p-3" onClick={() => signOut()}>keluar</button>
+                </li>
             </ul>
 
         </div>

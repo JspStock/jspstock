@@ -1,7 +1,9 @@
-import { Cloudinary } from "@cloudinary/url-gen/index";
+import { v2 as Cloudinary } from "cloudinary";
 
-export const cloudinary = new Cloudinary({
-    cloud: {
-        cloudName: process.env.CLOUDINARY_CLOUD_NAME
-    }
+Cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
 })
+
+export default Cloudinary

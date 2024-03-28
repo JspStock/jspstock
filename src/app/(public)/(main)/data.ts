@@ -219,9 +219,5 @@ export const linkNav: Array<LinkNav> = [
         icon: 'https://res.cloudinary.com/dblroye9s/image/upload/v1710781635/jspstock/sidebar/settings_kmuf2y.svg',
         text: 'Pengaturan',
         link: '/pengaturan/profil'
-    },
-    {
-        text: 'keluar',
-        link: '/auth/signout'
     }
 ]

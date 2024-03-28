@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import NextTopLoader from "nextjs-toploader";
 
 const Navbar = dynamic(() => import("@/app/components/navbar"))
@@ -10,6 +12,9 @@ export default function AllLayout({
 }: {
     children: React.ReactNode;
 }) {
+    const store = cookies().has("store")
+    !store ? redirect('/auth/signin') : null
+
     return (
         <div className="drawer lg:drawer-open">
             <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />

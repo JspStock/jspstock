@@ -1,11 +1,37 @@
+import { Metadata } from "next"
 import dynamic from "next/dynamic"
 import Link from "next/link"
+import { getAllCategories, getCountCategoryData } from "./action"
 
 const TableKategori = dynamic(() => import("@/app/components/product/kategori/table"))
 const Pagination = dynamic(() => import("@/app/components/product/kategori/pagination"))
 const Perpage = dynamic(() => import("@/app/components/product/kategori/perpage"))
 
-export default function Kategori() {
+export const metadata: Metadata = {
+    title: 'Kategori produk'
+}
+
+export const generateSearchParams = ({ show, search, page }: { show?: number, search?: string, page?: number }) => {
+    let temp = []
+    if(show){
+        temp.push(`show=${show}`)
+    }
+
+    if(search){
+        temp.push(`search=${search}`)
+    }
+
+    if(page){
+        temp.push(`page=${page}`)
+    }
+
+    return temp.join('&')
+}
+
+export default async function Kategori({ searchParams }: { searchParams: { show?: string, search?: string, page?: string } }) {
+    const countAllCategories = await getCountCategoryData()
+    const allCategories = await getAllCategories(searchParams.show, searchParams.search, searchParams.page)
+
     return (
         <>
             <div className="flex max-lg:grid max-lg:space-y-2 lg:space-x-2">
@@ -17,8 +43,8 @@ export default function Kategori() {
             </div>
             <input type="text" placeholder="Pencarian" className="input mt-5 bg-white text-gray-900 input-bordered w-full max-w-xs" />
             <Perpage />
-            <TableKategori />
-            <Pagination />
+            <TableKategori data={allCategories} />
+            <Pagination page={parseInt(searchParams.page ?? '1')} count={countAllCategories} show={parseInt(searchParams.show ?? '10')}/>
         </>
     )
 }

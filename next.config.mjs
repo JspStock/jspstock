@@ -6,7 +6,11 @@ const nextConfig = {
         protocol: "https",
         hostname: "res.cloudinary.com",
         port: "",
-        pathname: "/dblroye9s/image/upload/**",
+      },
+      {
+        protocol: "http",
+        hostname: "res.cloudinary.com",
+        port: "",
       },
     ],
   },
@@ -14,14 +18,19 @@ const nextConfig = {
   redirects: async () => [
     {
       destination: '/dashboard',
+      source: '/dashboard/dashboard',
+      permanent: false
+    },
+    {
+      destination: '/dashboard',
       source: '/',
-      permanent: true
+      permanent: false
     },
     {
       destination: '/auth/signin',
       source: '/auth',
       permanent: false
-    }
+    },
   ]
 };
 

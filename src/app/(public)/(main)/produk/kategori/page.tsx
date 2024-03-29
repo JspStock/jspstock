@@ -12,23 +12,39 @@ export const metadata: Metadata = {
     title: 'Kategori produk'
 }
 
-export default async function Kategori({ searchParams }: { searchParams: { show?: string, search?: string, page?: string } }) {
-    const countAllCategories = await getCountCategoryData()
+const DeleteButton = dynamic(() => import('@/app/components/product/kategori/deleteCategoryButton'))
+const PrintButton = dynamic(() => import('@/app/components/product/kategori/printButton')) 
+
+export default async function Kategori({ searchParams }: { searchParams: { show?: string, search?: string, page?: string, select?: string } }) {
+    const countAllCategories = await getCountCategoryData(searchParams.search)
     const allCategories = await getAllCategories(searchParams.show, searchParams.search, searchParams.page)
+
+    const isSelected = (): boolean => {
+        if (searchParams.select != undefined) {
+            const selectedCategories = searchParams.select.split(",")
+            selectedCategories.findIndex(e => e == "") != -1 ? selectedCategories.splice(selectedCategories.findIndex(e => e == ""), 1) : null
+            return selectedCategories.length > 0
+        } else {
+            return false
+        }
+    }
 
     return (
         <>
             <div className="flex max-lg:grid max-lg:space-y-2 lg:space-x-2">
                 <Link href="/produk/kategori/tambah" className="text-white w-62 border-0 bg-green-500 btn">+ Tambah Kategori</Link>
                 <div className="max-lg:flex max-lg:space-x-2 lg:space-x-2">
-                    <button className="text-white w-20 border-0 bg-gray-400 btn">Print</button>
-                    <button className="text-white w-20 border-0 bg-red-400 btn">Hapus</button>
+                    <PrintButton disable={!isSelected()} data={allCategories} />
+                    <DeleteButton disable={!isSelected()} data={searchParams.select} />
                 </div>
             </div>
             <SearchForm />
             <Perpage show={searchParams.show} />
             <TableKategori data={allCategories} />
-            <Pagination page={parseInt(searchParams.page ?? '1')} count={countAllCategories} show={parseInt(searchParams.show ?? '10')}/>
+            <Pagination
+                page={parseInt(searchParams.page ?? '1')}
+                count={countAllCategories}
+                show={parseInt(searchParams.show ?? '10')} />
         </>
     )
 }

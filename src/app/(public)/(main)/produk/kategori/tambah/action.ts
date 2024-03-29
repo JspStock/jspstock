@@ -57,7 +57,6 @@ export const addCategory = async (form: FormData) => {
 
         revalidatePath("/", "layout")
     } catch (e) {
-        console.log(e)
         throw new Error("Kesalahan pada server!")
     }
 }

@@ -158,7 +158,7 @@ model ProductCategories{
   createdAt DateTime @default(now())
 
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  parent ProductCategories? @relation("ProductCategories", fields: [idProductCategories], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  parent ProductCategories? @relation("ProductCategories", fields: [idProductCategories], references: [id], onDelete: SetNull, onUpdate: Cascade)
   productCategories ProductCategories[] @relation("ProductCategories")
   product Product[]
 }

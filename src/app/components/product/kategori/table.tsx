@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Logo from '@/assets/images/logo.png'
+import dynamic from "next/dynamic";
+import Link from "next/link";
 
 export interface Category {
     id: string;
@@ -13,6 +15,10 @@ export interface Category {
     }
 }
 
+const CheckAll = dynamic(() => import('./(table)/checkAll'))
+const Check = dynamic(() => import('./(table)/check'))
+const DeleteButton = dynamic(() => import('./deleteButton'))
+
 const TableKategori = ({ data }: { data: Array<Category> }) => {
     return (
         <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900">
@@ -20,9 +26,7 @@ const TableKategori = ({ data }: { data: Array<Category> }) => {
                 <thead className=" text-gray-900">
                     <tr>
                         <th>
-                            <label>
-                                <input type="checkbox" className="checkbox" />
-                            </label>
+                            <CheckAll data={data} />
                         </th>
                         <th>Foto</th>
                         <th>Kategori</th>
@@ -34,9 +38,7 @@ const TableKategori = ({ data }: { data: Array<Category> }) => {
                     {
                         data.map(e => <tr key={e.id}>
                             <td>
-                                <label>
-                                    <input type="checkbox" className="checkbox" />
-                                </label>
+                                <Check id={ e.id } />
                             </td>
                             <td>
                                 <div className="avatar">
@@ -51,8 +53,8 @@ const TableKategori = ({ data }: { data: Array<Category> }) => {
                                 <div className="dropdown dropdown-right">
                                     <div tabIndex={0} role="button" className="btn m-1">Lainnya</div>
                                     <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-xl bg-base-100 rounded-box w-52">
-                                        <li><a>Edit</a></li>
-                                        <li><a>Hapus</a></li>
+                                        <li><Link href={`/produk/kategori/${e.id}/edit`}>Edit</Link></li>
+                                        <li><DeleteButton id={e.id} /></li>
                                     </ul>
                                 </div>
                             </td>

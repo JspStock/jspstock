@@ -2,20 +2,22 @@ import dynamic from "next/dynamic"
 import { getAllStore } from "./action"
 import { cookies } from "next/headers"
 
+const AllowedRoleWrapper = dynamic(() => import('@/app/components/allowedRoleWrapper'))
+const BackButton = dynamic(() => import('@/app/components/backButton'))
 const Form = dynamic(() => import("@/app/components/beralihtoko/form"))
 
 const Beralihtoko = async () => {
-    const allStore = await getAllStore()
+    return <AllowedRoleWrapper>
+        <div className="bg-white p-14">
+            <BackButton />
 
-    return (
-        <>
-            <main className="bg-white p-14">
+            <div className="mt-5">
                 <h1 className="text-gray-900 font-semibold text-xl">Apakah Kamu ingin Beralih Toko?</h1>
-                <Form 
-                    data={allStore}
+                <Form
+                    data={await getAllStore()}
                     currentStore={cookies().get('store')!.value} />
-            </main>
-        </>
-    )
+            </div>
+        </div>
+    </AllowedRoleWrapper>
 }
 export default Beralihtoko

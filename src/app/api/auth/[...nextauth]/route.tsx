@@ -11,7 +11,7 @@ const authOptions = NextAuth({
             name: 'credentials',
             credentials: {},
             async authorize(credentials, _) {
-                try{
+                try {
                     const { username, password } = credentials as {
                         username: string,
                         password: string
@@ -19,7 +19,7 @@ const authOptions = NextAuth({
 
                     const getUser = await prisma.user.findFirst({
                         where: { username },
-                        select: { 
+                        select: {
                             id: true,
                             email: true,
                             name: true,
@@ -29,25 +29,31 @@ const authOptions = NextAuth({
                         }
                     })
 
-                    if(getUser){
+                    if (getUser) {
                         const validatePassword = await bcrypt.compare(password, getUser.password)
-                        
-                        if(validatePassword){
-                            if(getUser.idStore){
-                                cookies().set("store", getUser.idStore, {secure: true})
-                                cookies().set('role', getUser.role, {secure: true})
-                            }else if(getUser.role == $Enums.Role.OWNER){
+
+                        if (validatePassword) {
+                            if (getUser.idStore) {
+                                cookies().set("store", getUser.idStore, { secure: true })
+                                cookies().set('role', getUser.role, { secure: true })
+
+                                return {
+                                    id: getUser.id,
+                                    name: getUser.name,
+                                    email: getUser.email,
+                                }
+                            } else if (getUser.role == $Enums.Role.OWNER) {
                                 const getStore = await prisma.store.findFirst({
                                     select: {
                                         id: true
                                     }
                                 })
 
-                                if(getStore != null){
-                                    cookies().set("store", getStore?.id, {secure: true})
-                                    cookies().set('role', getUser.role, {secure: true})
-                                    
-                                    return{
+                                if (getStore != null) {
+                                    cookies().set("store", getStore?.id, { secure: true })
+                                    cookies().set('role', getUser.role, { secure: true })
+
+                                    return {
                                         id: getUser.id,
                                         name: getUser.name,
                                         email: getUser.email,
@@ -56,14 +62,13 @@ const authOptions = NextAuth({
                             }
 
                             throw new Error("Tidak ada toko!")
-                        }else{
+                        } else {
                             throw new Error("Kata sandi pengguna salah!")
                         }
-                    }else{
+                    } else {
                         throw new Error("Pengguna tidak ditemukan!")
                     }
-                }catch(e){
-                    console.log(e)
+                } catch (e) {
                     throw new Error("Kesalahan pada server!")
                 }
             },
@@ -73,7 +78,7 @@ const authOptions = NextAuth({
     pages: {
         signIn: '/auth/signin',
         signOut: '/auth/signout'
-    }
+    },
 })
 
 export { authOptions as GET, authOptions as POST }

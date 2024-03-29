@@ -1,12 +1,14 @@
 "use client"
 import Image from "next/image"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { redirect, usePathname, useRouter } from "next/navigation"
 import { LinkNav, linkNav } from "../../(public)/(main)/data"
 import { signOut } from "next-auth/react"
+import { useState } from "react"
 
 const Sidenav = ({ role }: { role: string }) => {
     const path = usePathname()
+    const [isLoadingSignOut, setIsLoadingSignOut] = useState<boolean>(false)
 
     const renderMenu = (items: Array<LinkNav>, sublink?: string) => items.map((e, index) =>
         e.isShow == undefined || e.isShow == true ? <li key={index}>
@@ -50,7 +52,11 @@ const Sidenav = ({ role }: { role: string }) => {
         </li> : null
     )
 
-
+    const handleSignOut = async () => {
+        setIsLoadingSignOut(true)
+        await signOut()
+        setIsLoadingSignOut(false)
+    }
 
     return (
         <div className="drawer-side z-20">
@@ -58,10 +64,12 @@ const Sidenav = ({ role }: { role: string }) => {
             <ul className="menu p-4 w-72 min-h-full bg-blue-950 max-md:overflow-scroll text-white">
                 {renderMenu(linkNav({ role: role }))}
                 <li>
-                    <button className="hover:bg-gray-400 focus:bg-gray-400 focus:text-white p-3" onClick={() => signOut()}>keluar</button>
+                    <button className="hover:bg-gray-400 focus:bg-gray-400 focus:text-white p-3" onClick={handleSignOut} disabled={isLoadingSignOut}>
+                        { isLoadingSignOut ? <div className="load"></div> : null }
+                        <span>Keluar</span>
+                    </button>
                 </li>
             </ul>
-
         </div>
     )
 }

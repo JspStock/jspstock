@@ -1,13 +1,16 @@
-import { headers } from "next/headers"
-import Link from "next/link"
+"use client"
 
-const Perpage = async ({ show }: { show?: string }) => {
-    const generateSearchParams = (value: number | string) => {
-        const url = new URL(headers().get("x-url")!)
-        const searchParams = new URLSearchParams(url.searchParams)
-        searchParams.set("show", value.toString())
-    
-        return searchParams.toString()
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+
+const Perpage = ({ show }: { show?: string }) => {
+    const router = useRouter()
+    const pathName = usePathname()
+    const searchParams = useSearchParams()
+
+    const changeContentShow = (value: number | string) => {
+        const params = new URLSearchParams(searchParams)
+        params.set("show", value.toString())
+        router.replace(`${pathName}/${params.size > 0 ? `?${params}` : ''}`)
     }
 
     return (
@@ -15,9 +18,9 @@ const Perpage = async ({ show }: { show?: string }) => {
             <div className="dropdown">
                 <div tabIndex={0} role="button" className="btn m-1">{ show ? show : 10 }</div>
                 <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 bg-base-100 rounded-box w-52 shadow-xl">
-                    <li><Link href={`/produk/kategori?${generateSearchParams(10)}`} replace>10</Link></li>
-                    <li><Link href={`/produk/kategori?${generateSearchParams(50)}`} replace>50</Link></li>
-                    <li><Link href={`/produk/kategori?${generateSearchParams("all")}`} replace>ALL</Link></li>
+                    <li><button onClick={() => changeContentShow(10)}>10</button></li>
+                    <li><button onClick={() => changeContentShow(50)}>50</button></li>
+                    <li><button onClick={() => changeContentShow('all')}>ALL</button></li>
                 </ul>
             </div>
             <h1>Per halaman</h1>

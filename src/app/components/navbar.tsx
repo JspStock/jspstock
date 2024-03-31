@@ -18,7 +18,7 @@ const Navbar = () => {
                 />
             </div>
             {
-                ['owner', 'admin'].includes(cookies().get('role')!.value.toLowerCase()) ? <div className="flex-none">
+                ['owner'].includes(cookies().get('role')!.value.toLowerCase()) ? <div className="flex-none">
                     <Link href="/beralihtoko" className="btn btn-ghost btn-circle">
                         <Image
                             alt="beralih toko"

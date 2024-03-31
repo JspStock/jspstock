@@ -2,11 +2,13 @@ import { cookies } from "next/headers"
 import { ReactNode } from "react"
 
 const AllowedRoleWrapper = ({
-    children
+    children,
+    allowed = ['owner', 'admin']
 }: {
-    children: ReactNode
+    children: ReactNode,
+    allowed?: Array<string>
 }) => {
-    if(['owner', 'admin'].includes(cookies().get('role')!.value.toLowerCase())){
+    if(allowed.includes(cookies().get('role')!.value.toLowerCase())){
         return children
     }else{
         return <div className="bg-white p-14">

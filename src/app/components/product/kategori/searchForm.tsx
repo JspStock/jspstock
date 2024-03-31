@@ -1,23 +1,26 @@
 "use client"
 
 import { usePathname, useSearchParams, useRouter } from "next/navigation"
-import { useState } from "react"
+import { useDebouncedCallback } from 'use-debounce'
+
+interface Form {
+    search: string
+}
 
 const SearchForm = () => {
     const router = useRouter()
     const pathName = usePathname()
     const searchParams = useSearchParams()
-    const [search, setSearch] = useState<string>(searchParams.get("search") || '')
 
-    const generateSearchParams = (val: string) => {
-        setSearch(val)
+    const handleSearch = useDebouncedCallback((e: string) => {
         const params = new URLSearchParams(searchParams)
-        params.delete('select')
-        params.set('search', val)
-        router.replace(`${pathName}${params.size > 0 ? `?${params}` : ''}`)
-    }
+        params.set('search', e)
+        router.replace(`${pathName}/${params.size > 0 ? `?${params}` : ''}`)
+    }, 300)
 
-    return <input type="text" placeholder="Pencarian" className="input mt-5 bg-white text-gray-900 input-bordered w-full max-w-xs" value={search} onChange={e => generateSearchParams(e.target.value)} />
+    return <div className="form-control">
+        <input type="text" placeholder="Pencarian" className="input mt-5 bg-white text-gray-900 input-bordered w-full max-w-xs" name="search" defaultValue={searchParams.get('search')?.toString()} onChange={e => handleSearch(e.target.value)} />
+    </div>
 }
 
 export default SearchForm

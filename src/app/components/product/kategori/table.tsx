@@ -38,20 +38,27 @@ const TableKategori = ({ data }: { data: Array<Category> }) => {
                     {
                         data.map(e => <tr key={e.id}>
                             <td>
-                                <Check id={ e.id } />
+                                <Check id={e.id} />
                             </td>
                             <td>
                                 <div className="avatar">
-                                    <div className="w-20 rounded">
-                                        <Image src={e.imagePath.trim() == '' ? Logo : e.imagePath} fill alt={e.name} quality={100} />
+                                    <div className="w-20 rounded relative">
+                                        <Image
+                                            width={0}
+                                            height={0}
+                                            src={e.imagePath.trim() == '' ? Logo : e.imagePath}
+                                            alt={e.name}
+                                            quality={100}
+                                            sizes="100vw"
+                                            className="w-full h-auto" />
                                     </div>
                                 </div>
                             </td>
-                            <td>{ e.name }</td>
-                            <td>{ e.parent ? e.parent.name : 'N/A' }</td>
+                            <td>{e.name}</td>
+                            <td>{e.parent ? e.parent.name : 'N/A'}</td>
                             <td>
                                 <div className="dropdown dropdown-right">
-                                    <div tabIndex={0} role="button" className="btn m-1">Lainnya</div>
+                                    <div tabIndex={0} role="button" className="btn btn-ghost m-1">Lainnya</div>
                                     <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-xl bg-base-100 rounded-box w-52">
                                         <li><Link href={`/produk/kategori/${e.id}/edit`}>Edit</Link></li>
                                         <li><DeleteButton id={e.id} /></li>

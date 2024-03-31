@@ -1,7 +1,7 @@
 "use client"
 import Image from "next/image"
 import Link from "next/link"
-import { redirect, usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { LinkNav, linkNav } from "../../(public)/(main)/data"
 import { signOut } from "next-auth/react"
 import { useState } from "react"

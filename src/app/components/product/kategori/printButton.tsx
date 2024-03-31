@@ -5,14 +5,13 @@ import { Category } from "./table"
 import Logo from '@/assets/images/logo.png'
 import { useRef, useState } from "react"
 import { useReactToPrint } from 'react-to-print'
-import { useSearchParams } from "next/navigation"
+import useStore from "@/app/(public)/(main)/produk/kategori/store"
 
-const PrintButton = ({ disable, data }: {
-    disable: boolean,
+const PrintButton = ({ data }: {
     data: Array<Category>
 }) => {
+    const select = useStore(state => state.select)
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const searchParams = useSearchParams()
     const printTableRef = useRef(null)
     const handlePrint = useReactToPrint({
         content: () => printTableRef.current,
@@ -36,7 +35,7 @@ const PrintButton = ({ disable, data }: {
                     </thead>
                     <tbody>
                         {
-                            data.map(e => searchParams.get('select')?.includes(e.id) ? <tr key={e.id}>
+                            data.map(e => select.includes(e.id) ? <tr key={e.id}>
                                 <td>
                                     <div className="avatar">
                                         <div className="w-20 rounded">
@@ -53,7 +52,7 @@ const PrintButton = ({ disable, data }: {
             </div>
         </div>
 
-        <button className="text-white w-20 border-0 bg-gray-400 btn" disabled={disable || isLoading} onClick={handlePrint}>
+        <button className="text-white w-20 border-0 bg-gray-400 btn" disabled={isLoading || select.length == 0} onClick={handlePrint}>
             { isLoading ? <div className="loading"></div> : null }
             <span> Print </span>
         </button>

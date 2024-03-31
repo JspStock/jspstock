@@ -7,7 +7,7 @@ const BackButton = dynamic(() => import('@/app/components/backButton'))
 const Form = dynamic(() => import("@/app/components/beralihtoko/form"))
 
 const Beralihtoko = async () => {
-    return <AllowedRoleWrapper>
+    return <AllowedRoleWrapper allowed={['owner']}>
         <div className="bg-white p-14">
             <BackButton />
 

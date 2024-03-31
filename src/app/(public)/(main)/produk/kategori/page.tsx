@@ -2,18 +2,19 @@ import { Metadata } from "next"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { getAllCategories, getCountCategoryData } from "./action"
+import { Suspense } from "react"
 
 const TableKategori = dynamic(() => import("@/app/components/product/kategori/table"))
 const Pagination = dynamic(() => import("@/app/components/product/kategori/pagination"))
 const Perpage = dynamic(() => import("@/app/components/product/kategori/perpage"))
 const SearchForm = dynamic(() => import('@/app/components/product/kategori/searchForm'))
+const TableLoadingSkeleton = dynamic(() => import('@/app/components/tableLoadingSkeleton'))
+const DeleteButton = dynamic(() => import('@/app/components/product/kategori/deleteCategoryButton'))
+const PrintButton = dynamic(() => import('@/app/components/product/kategori/printButton'))
 
 export const metadata: Metadata = {
     title: 'Kategori produk'
 }
-
-const DeleteButton = dynamic(() => import('@/app/components/product/kategori/deleteCategoryButton'))
-const PrintButton = dynamic(() => import('@/app/components/product/kategori/printButton')) 
 
 export default async function Kategori({ searchParams }: { searchParams: { show?: string, search?: string, page?: string, select?: string } }) {
     const countAllCategories = await getCountCategoryData(searchParams.search)
@@ -34,13 +35,15 @@ export default async function Kategori({ searchParams }: { searchParams: { show?
             <div className="flex max-lg:grid max-lg:space-y-2 lg:space-x-2">
                 <Link href="/produk/kategori/tambah" className="text-white w-62 border-0 bg-green-500 btn">+ Tambah Kategori</Link>
                 <div className="max-lg:flex max-lg:space-x-2 lg:space-x-2">
-                    <PrintButton disable={!isSelected()} data={allCategories} />
-                    <DeleteButton disable={!isSelected()} data={searchParams.select} />
+                    <PrintButton data={allCategories} />
+                    <DeleteButton />
                 </div>
             </div>
             <SearchForm />
             <Perpage show={searchParams.show} />
-            <TableKategori data={allCategories} />
+            <Suspense key={searchParams.page + (searchParams.search ?? '') + searchParams.show} fallback={<TableLoadingSkeleton />}>
+                <TableKategori data={allCategories} />
+            </Suspense>
             <Pagination
                 page={parseInt(searchParams.page ?? '1')}
                 count={countAllCategories}

@@ -1,0 +1,74 @@
+"use client"
+
+import { AllProduct } from "@/app/(public)/(main)/produk/listproduk/page"
+import useStore from "@/app/(public)/(main)/produk/listproduk/store"
+import { currencyFormat } from "@/utils/utils"
+import Image from "next/image"
+import { useRef, useState } from "react"
+import { useReactToPrint } from "react-to-print"
+
+const PrintButton = ({ data }: {
+    data: Array<AllProduct>
+}) => {
+    const [isLoading, setIsloading] = useState<boolean>()
+    const selected = useStore(state => state.select)
+    const printRef = useRef(null)
+    const handlePrint = useReactToPrint({
+        documentTitle: 'Daftar Produk',
+        onBeforeGetContent: () => setIsloading(true),
+        onBeforePrint: () => setIsloading(false),
+        content: () => printRef.current
+    })
+
+    return <>
+        <div className="hidden">
+            <div className="bg-white p-10 my-5 text-gray-900" ref={printRef}>
+                <h1 className="text-2xl semibold"> Daftar Produk </h1>
+                <table className="table mt-5">
+                    <thead className=" text-gray-900">
+                        <tr>
+                            <th>Foto</th>
+                            <th>Nama</th>
+                            <th>Kode</th>
+                            <th>Kategori</th>
+                            <th>Quantity</th>
+                            <th>Harga</th>
+                            <th>Biaya</th>
+                            <th>Nilai Pasti(Harga - Biaya)</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            data.map(e => selected.includes(e.id) ? <tr key={e.id}>
+                                <td>
+                                    <div className="avatar">
+                                        <div className="w-20 rounded">
+                                            <Image
+                                                src={e.imagePath}
+                                                fill
+                                                alt={e.name} />
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{e.name}</td>
+                                <td>{e.id.split("_")[1]}</td>
+                                <td>{e.productCategories ? e.productCategories.name : 'N/A'}</td>
+                                <td>{e.qty}</td>
+                                <td>{currencyFormat(e.price)}</td>
+                                <td>{currencyFormat(e.cost)}</td>
+                                <td>{currencyFormat(e.price - e.cost)}</td>
+                            </tr> : null)
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <button className="text-white w-20 border-0 bg-gray-400 btn" disabled={isLoading || selected.length == 0} onClick={handlePrint}>
+            {isLoading ? <div className="loading"></div> : null}
+            <span>Print</span>
+        </button>
+    </>
+}
+
+export default PrintButton

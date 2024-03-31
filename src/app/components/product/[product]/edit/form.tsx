@@ -1,9 +1,11 @@
 "use client"
 
-import { addProduct, checkProductCode } from "@/app/(public)/(main)/produk/tambahproduk/action";
+import { checkProductCode, updateProduct } from "@/app/(public)/(main)/produk/[product]/edit/action";
+import { ProductData } from "@/app/(public)/(main)/produk/[product]/edit/page";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 import { mixed, object, string } from "yup";
 
 export interface ProductCategories {
@@ -13,7 +15,7 @@ export interface ProductCategories {
 }
 
 export interface Form {
-    image: File | null,
+    image: File | null | string,
     name: string,
     code: string,
     category: string,
@@ -23,21 +25,27 @@ export interface Form {
 }
 
 const Form = ({
-    productCategories
+    productCategories,
+    productData
 }: {
-    productCategories: Array<ProductCategories>
+    productCategories: Array<ProductCategories>,
+    productData: ProductData
 }) => {
     const router = useRouter()
     const validImageExtension = ['jpg', 'png', 'jpeg']
     const [category, setCategory] = useState<Array<ProductCategories>>([])
     const formSchema = object().shape({
-        image: mixed().required('Foto produk harus diisi!')
+        image: mixed()
             .test({
                 name: 'isValidType',
                 message: 'Format gambar tidak benar!',
                 test: e => {
-                    const file = e as File
-                    return validImageExtension.includes(file.type.split('/')[1])
+                    if (typeof e != "string") {
+                        const file = e as File
+                        return validImageExtension.includes(file.type.split('/')[1])
+                    } else {
+                        return true
+                    }
                 }
             }),
         name: string().required('Nama produk tidak boleh kosong!'),
@@ -50,32 +58,44 @@ const Form = ({
 
     const form = useFormik<Form>({
         initialValues: {
-            image: null,
-            name: '',
-            code: '',
-            category: '',
-            qty: '',
-            price: '',
-            cost: ''
+            image: productData.imagePath,
+            name: productData.name,
+            code: productData.id.split("_")[1],
+            category: productData.idProductCategories || '',
+            qty: productData.qty.toString(),
+            price: productData.price.toString(),
+            cost: productData.cost.toString()
         },
         validationSchema: formSchema,
         onSubmit: async e => {
-            if(await checkProductCode(e.code) == 0){
-                const formData = new FormData()
-                if(e.image != null){
-                    formData.append("image", e.image)
-                    formData.append("id", e.code)
-                    formData.append("name", e.name)
-                    formData.append("category", e.category)
-                    formData.append("qty", e.qty)
-                    formData.append("price", e.price)
-                    formData.append("cost", e.cost)
-
-                    await addProduct(formData)
-                    router.replace("listproduk")
+            console.log(e)
+            if (e.code != productData.id.split("_")[1]) {
+                if (await checkProductCode(e.code)) {
+                    form.setFieldError("code", "Kode produk sudah tersedia!")
+                    return false
                 }
-            }else{
-                form.setFieldError("code", "Kode produk sudah tersedia!")
+            }
+
+            try {
+                const formData = new FormData()
+                if (e.image instanceof File) {
+                    formData.append("image", e.image)
+                }
+                formData.append("id", productData.id)
+                formData.append('code', e.code)
+                formData.append("name", e.name)
+                formData.append("category", e.category)
+                formData.append("qty", e.qty)
+                formData.append("price", e.price)
+                formData.append("cost", e.cost)
+                await updateProduct(formData)
+                router.replace("/produk/listproduk")
+            }catch{
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal menghapus!',
+                    text: 'Kesalahan saat menghapus produk, coba lagi nanti!',
+                })
             }
         }
     })
@@ -99,8 +119,8 @@ const Form = ({
     const { values, errors, touched, handleChange, handleSubmit, setFieldValue, isSubmitting } = form
     return (
         <form className="mt-10" onSubmit={handleSubmit}>
-            <h1 className="py-2">Foto Produk*</h1>
-            <input type="file" className="file-input file-input-bordered w-full" name="image" onChange={e => setFieldValue("image", e.target.files?.item(0)) } />
+            <h1 className="py-2">Foto Produk</h1>
+            <input type="file" className="file-input file-input-bordered w-full" name="image" onChange={e => setFieldValue("image", e.target.files?.item(0))} />
             {errors.image && touched.image ? <label htmlFor="" className="label">
                 <span className="label-text-alt text-error">{errors.image}</span>
             </label> : null}
@@ -167,7 +187,7 @@ const Form = ({
                 </label>
             </div>
             <button type="submit" className="btn bg-blue-900 my-5 text-white" disabled={isSubmitting}>
-                { isSubmitting ? <div className="loading"></div> : null }
+                {isSubmitting ? <div className="loading"></div> : null}
                 <span>Simpan</span>
             </button>
         </form>

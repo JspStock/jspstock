@@ -2,8 +2,8 @@ import { Metadata } from "next"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { Suspense } from "react"
+import TableKategori from "@/app/components/product/kategori/table"
 
-const TableKategori = dynamic(() => import("@/app/components/product/kategori/table"))
 const Pagination = dynamic(() => import("@/app/components/product/kategori/pagination"))
 const Perpage = dynamic(() => import("@/app/components/product/kategori/perpage"))
 const SearchForm = dynamic(() => import('@/app/components/product/kategori/searchForm'))

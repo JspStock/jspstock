@@ -5,21 +5,19 @@ import { Category } from "../table"
 
 const CheckAll = ({ data }: { data: Array<Category> }) => {
     const select = useStore(state => state.select)
-    const add = useStore(state => state.add)
+    const set = useStore(state => state.set)
     const reset = useStore(state => state.reset)
 
     const handleChecked = () => {
         if(data.length != select.length){
-            for(let row of data){
-                add(row.id)
-            }
+            set(data)
         }else{
             reset()
         }
     }
 
     return <label>
-        <input type="checkbox" className="checkbox" onChange={handleChecked} checked={select.length == data.length} />
+        <input type="checkbox" className="checkbox" onChange={handleChecked} checked={select.length == data.length && data.length != 0} />
     </label>
 }
 

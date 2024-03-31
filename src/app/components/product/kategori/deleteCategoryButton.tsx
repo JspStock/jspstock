@@ -13,9 +13,9 @@ const DeleteCategoryButton = () => {
     const handleDelete = async () => {
         try{
             setIsloading(true)
-            await deleteCategories(select)
+            await deleteCategories(select.map(e => e.id))
             setIsloading(false)
-            select.forEach(e => remove(e))
+            select.forEach(e => remove(e.id))
         }catch{
             Swal.fire({
                 title: 'Terjadi kesalahan!',

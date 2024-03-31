@@ -1,7 +1,6 @@
 import { Metadata } from "next"
 import dynamic from "next/dynamic"
 import Link from "next/link"
-import { getAllCategories, getCountCategoryData } from "./action"
 import { Suspense } from "react"
 
 const TableKategori = dynamic(() => import("@/app/components/product/kategori/table"))
@@ -12,42 +11,32 @@ const TableLoadingSkeleton = dynamic(() => import('@/app/components/tableLoading
 const DeleteButton = dynamic(() => import('@/app/components/product/kategori/deleteCategoryButton'))
 const PrintButton = dynamic(() => import('@/app/components/product/kategori/printButton'))
 
+export interface SearchParams {
+    show?: string, 
+    search?: string, 
+    page?: string
+}
+
 export const metadata: Metadata = {
     title: 'Kategori produk'
 }
 
-export default async function Kategori({ searchParams }: { searchParams: { show?: string, search?: string, page?: string, select?: string } }) {
-    const countAllCategories = await getCountCategoryData(searchParams.search)
-    const allCategories = await getAllCategories(searchParams.show, searchParams.search, searchParams.page)
-
-    const isSelected = (): boolean => {
-        if (searchParams.select != undefined) {
-            const selectedCategories = searchParams.select.split(",")
-            selectedCategories.findIndex(e => e == "") != -1 ? selectedCategories.splice(selectedCategories.findIndex(e => e == ""), 1) : null
-            return selectedCategories.length > 0
-        } else {
-            return false
-        }
-    }
-
+export default async function Kategori({ searchParams }: { searchParams: SearchParams }) {
     return (
         <>
             <div className="flex max-lg:grid max-lg:space-y-2 lg:space-x-2">
                 <Link href="/produk/kategori/tambah" className="text-white w-62 border-0 bg-green-500 btn">+ Tambah Kategori</Link>
                 <div className="max-lg:flex max-lg:space-x-2 lg:space-x-2">
-                    <PrintButton data={allCategories} />
+                    <PrintButton />
                     <DeleteButton />
                 </div>
             </div>
             <SearchForm />
             <Perpage show={searchParams.show} />
             <Suspense key={searchParams.page + (searchParams.search ?? '') + searchParams.show} fallback={<TableLoadingSkeleton />}>
-                <TableKategori data={allCategories} />
+                <TableKategori searchParams={searchParams} />
             </Suspense>
-            <Pagination
-                page={parseInt(searchParams.page ?? '1')}
-                count={countAllCategories}
-                show={parseInt(searchParams.show ?? '10')} />
+            <Pagination searchParams={searchParams} />
         </>
     )
 }

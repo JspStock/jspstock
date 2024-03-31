@@ -2,6 +2,8 @@ import Image from "next/image";
 import Logo from '@/assets/images/logo.png'
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { getAllCategories } from "@/app/(public)/(main)/produk/kategori/action";
+import { SearchParams } from "@/app/(public)/(main)/produk/kategori/page";
 
 export interface Category {
     id: string;
@@ -19,14 +21,18 @@ const CheckAll = dynamic(() => import('./(table)/checkAll'))
 const Check = dynamic(() => import('./(table)/check'))
 const DeleteButton = dynamic(() => import('./deleteButton'))
 
-const TableKategori = ({ data }: { data: Array<Category> }) => {
+const TableKategori = async ({ searchParams }: { 
+    searchParams: SearchParams
+ }) => {
+    const allCategories = await getAllCategories(searchParams.show, searchParams.search, searchParams.page)
+
     return (
         <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900">
             <table className="table">
                 <thead className=" text-gray-900">
                     <tr>
                         <th>
-                            <CheckAll data={data} />
+                            <CheckAll data={allCategories} />
                         </th>
                         <th>Foto</th>
                         <th>Kategori</th>
@@ -36,9 +42,9 @@ const TableKategori = ({ data }: { data: Array<Category> }) => {
                 </thead>
                 <tbody>
                     {
-                        data.map(e => <tr key={e.id}>
+                        allCategories.map(e => <tr key={e.id}>
                             <td>
-                                <Check id={e.id} />
+                                <Check data={e} />
                             </td>
                             <td>
                                 <div className="avatar">

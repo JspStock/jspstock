@@ -7,9 +7,7 @@ import { useRef, useState } from "react"
 import { useReactToPrint } from 'react-to-print'
 import useStore from "@/app/(public)/(main)/produk/kategori/store"
 
-const PrintButton = ({ data }: {
-    data: Array<Category>
-}) => {
+const PrintButton = () => {
     const select = useStore(state => state.select)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const printTableRef = useRef(null)
@@ -35,7 +33,7 @@ const PrintButton = ({ data }: {
                     </thead>
                     <tbody>
                         {
-                            data.map(e => select.includes(e.id) ? <tr key={e.id}>
+                            select.map(e => <tr key={e.id}>
                                 <td>
                                     <div className="avatar">
                                         <div className="w-20 rounded">
@@ -45,7 +43,7 @@ const PrintButton = ({ data }: {
                                 </td>
                                 <td>{e.name}</td>
                                 <td>{e.parent ? e.parent.name : 'N/A'}</td>
-                            </tr> : null)
+                            </tr>)
                         }
                     </tbody>
                 </table>

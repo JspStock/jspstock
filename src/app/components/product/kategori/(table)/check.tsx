@@ -1,22 +1,23 @@
 "use client"
 
 import useStore from "@/app/(public)/(main)/produk/kategori/store"
+import { Category } from "../table"
 
-const Check = ({ id }: { id: string }) => {
+const Check = ({ data }: { data: Category }) => {
     const select = useStore(state => state.select)
     const add = useStore(state => state.add)
     const remove = useStore(state => state.remove)
 
     const handleChecked = () => {
-        if(select.includes(id)){
-            remove(id)
+        if(select.find(e => e.id == data.id)){
+            remove(data.id)
         }else{
-            add(id)
+            add(data)
         }
     }
 
     return <label>
-        <input type="checkbox" className="checkbox" onChange={handleChecked} checked={select.includes(id)} />
+        <input type="checkbox" className="checkbox" onChange={handleChecked} checked={select.find(e => e.id == data.id) != undefined ? true : false} />
     </label>
 }
 

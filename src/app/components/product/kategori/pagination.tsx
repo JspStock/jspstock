@@ -12,7 +12,11 @@ const Pagination = async ({ searchParams }: { searchParams: SearchParams }) => {
         <div className="join mt-3">
             <PreviousButton page={parseInt(searchParams.page ?? "1")} />
             <button className="join-item btn text-gray-900">Halaman { searchParams.page ?? 1 }</button>
-            <NextButton count={countData} page={parseInt(searchParams.page ?? "1")} show={parseInt(searchParams.show ?? '10')} />
+            <NextButton 
+                count={countData} 
+                page={parseInt(searchParams.page ?? "1")} 
+                show={searchParams.show != undefined ? searchParams.show != "all" ? parseInt(searchParams.show) : 10 : 10}
+                showAll={searchParams.show == "all"} />
         </div>
     )
 }

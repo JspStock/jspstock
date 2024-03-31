@@ -3,13 +3,14 @@
 import useStore from "@/app/(public)/(main)/produk/kategori/store"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
-const PreviousButton = ({ page, count, show }: {
+const PreviousButton = ({ page, count, show, showAll }: {
     page: number,
     count: number,
-    show: number
+    show: number,
+    showAll: boolean
 }) => {
     const reset = useStore(state => state.reset)
-    const isLast = page > (Math.ceil(count / show) - 1) 
+    const isLast = typeof show == "number" ? page > (Math.ceil(count / show) - 1) : true
     const router = useRouter()
     const pathName = usePathname()
     const searchParams = useSearchParams()

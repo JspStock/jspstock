@@ -1,12 +1,13 @@
 import { $Enums, PrismaClient } from '@prisma/client'
-import bcrypt from 'bcrypt'
+import { genSaltSync, hashSync } from 'bcrypt'
 const prisma = new PrismaClient()
 
 const main = async () => {
     try{
-        const saltPassword = await bcrypt.genSalt(5)
-        const hashedPassword = await bcrypt.hash("defaults", saltPassword)
         await prisma.$transaction(async e => {
+            const saltPassword = genSaltSync(5)
+            const hashedPassword = hashSync("defaults", saltPassword)
+            
             await e.store.create({
                 data: {
                    id: `STR_${Date.now()}`,

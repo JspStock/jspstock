@@ -4,6 +4,7 @@ import { addProduct, checkProductCode } from "@/app/(public)/(main)/produk/tamba
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 import { mixed, object, string } from "yup";
 
 export interface ProductCategories {
@@ -60,22 +61,30 @@ const Form = ({
         },
         validationSchema: formSchema,
         onSubmit: async e => {
-            if(await checkProductCode(e.code) == 0){
-                const formData = new FormData()
-                if(e.image != null){
-                    formData.append("image", e.image)
-                    formData.append("id", e.code)
-                    formData.append("name", e.name)
-                    formData.append("category", e.category)
-                    formData.append("qty", e.qty)
-                    formData.append("price", e.price)
-                    formData.append("cost", e.cost)
-
-                    await addProduct(formData)
-                    router.replace("listproduk")
+            try{
+                if(await checkProductCode(e.code) == 0){
+                    const formData = new FormData()
+                    if(e.image != null){
+                        formData.append("image", e.image)
+                        formData.append("id", e.code)
+                        formData.append("name", e.name)
+                        formData.append("category", e.category)
+                        formData.append("qty", e.qty)
+                        formData.append("price", e.price)
+                        formData.append("cost", e.cost)
+    
+                        await addProduct(formData)
+                        router.replace("listproduk")
+                    }
+                }else{
+                    form.setFieldError("code", "Kode produk sudah tersedia!")
                 }
-            }else{
-                form.setFieldError("code", "Kode produk sudah tersedia!")
+            }catch{
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi kesalahan!',
+                    text: 'Kesalahan saat menambahkan produk, coba kembali beberapa saat dan pastikan koneksi jaringan stabil',
+                })
             }
         }
     })

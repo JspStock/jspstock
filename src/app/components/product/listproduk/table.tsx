@@ -1,4 +1,5 @@
-import { AllProduct } from "@/app/(public)/(main)/produk/listproduk/page"
+import { SearchParams } from "@/app/(public)/(main)/produk/kategori/page"
+import { getAllProduct } from "@/app/(public)/(main)/produk/listproduk/action"
 import { currencyFormat } from "@/utils/utils"
 import dynamic from "next/dynamic"
 import Image from "next/image"
@@ -8,15 +9,33 @@ const Check = dynamic(() => import('./(table)/check'))
 const CheckAll = dynamic(() => import('./(table)/checkAll'))
 const DeleteButton = dynamic(() => import('./(table)/deleteButton'))
 
-const Tablelist = ({ data }: {
-    data: Array<AllProduct>
+export interface AllProduct {
+    name: string;
+    id: string;
+    imagePath: string;
+    qty: number;
+    price: number;
+    cost: number;
+    productCategories: {
+        name: string
+    } | null;
+}
+
+const Tablelist = async ({ searchParams }: {
+    searchParams: SearchParams
 }) => {
+    const allProduct: Array<AllProduct> = await getAllProduct({
+        search: searchParams.search,
+        show: searchParams.show,
+        page: searchParams.page ? parseInt(searchParams.page) : undefined
+    })
+
     return (
         <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900">
             <table className="table">
                 <thead className=" text-gray-900">
                     <tr>
-                        <th><CheckAll data={data} /></th>
+                        <th><CheckAll data={allProduct} /></th>
                         <th>Foto</th>
                         <th>Nama</th>
                         <th>Kode</th>
@@ -30,14 +49,18 @@ const Tablelist = ({ data }: {
                 </thead>
                 <tbody>
                     {
-                        data.map(e => <tr key={e.id}>
-                            <td><Check id={e.id} /></td>
+                        allProduct.map(e => <tr key={e.id}>
+                            <td><Check data={e} /></td>
                             <td>
                                 <div className="avatar">
                                     <div className="w-20 rounded">
                                         <Image
                                             src={e.imagePath}
-                                            fill
+                                            width={0}
+                                            height={0}
+                                            sizes="100vw"
+                                            className="w-full h-auto"
+                                            quality={100}
                                             alt={e.name} />
                                     </div>
                                 </div>

@@ -1,28 +1,23 @@
 "use client"
 
 import useStore from "@/app/(public)/(main)/produk/listproduk/store"
-import { FormEvent, useEffect, useState } from "react"
+import { AllProduct } from "../table"
 
-const Check = ({ id }: {
-    id: string
+const Check = ({ data }: {
+    data: AllProduct
 }) => {
-    const [isSelected, setIsSelected] = useState<boolean>()
     const select = useStore(state => state.select)
     const add = useStore(state => state.add)
     const remove = useStore(state => state.remove)
-    const handleChecked = (e: FormEvent<HTMLInputElement>) => {
-        if (e.currentTarget.checked) {
-            add(id)
-        } else {
-            remove(id)
+    const handleChecked = () => {
+        if(select.find(e => e.id == data.id) == undefined){
+            add(data)
+        }else{
+            remove(data.id)
         }
     }
 
-    useEffect(() =>{
-        setIsSelected(select.includes(id))
-    }, [select, id])
-
-    return <input type="checkbox" className="checkbox" checked={isSelected} onChange={handleChecked} />
+    return <input type="checkbox" className="checkbox" checked={select.find(e => e.id == data.id) != undefined} onChange={handleChecked} />
 }
 
 export default Check

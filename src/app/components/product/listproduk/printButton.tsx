@@ -1,15 +1,12 @@
 "use client"
 
-import { AllProduct } from "@/app/(public)/(main)/produk/listproduk/page"
 import useStore from "@/app/(public)/(main)/produk/listproduk/store"
 import { currencyFormat } from "@/utils/utils"
 import Image from "next/image"
 import { useRef, useState } from "react"
 import { useReactToPrint } from "react-to-print"
 
-const PrintButton = ({ data }: {
-    data: Array<AllProduct>
-}) => {
+const PrintButton = () => {
     const [isLoading, setIsloading] = useState<boolean>()
     const selected = useStore(state => state.select)
     const printRef = useRef(null)
@@ -40,13 +37,17 @@ const PrintButton = ({ data }: {
                     </thead>
                     <tbody>
                         {
-                            data.map(e => selected.includes(e.id) ? <tr key={e.id}>
+                            selected.map(e => <tr key={e.id}>
                                 <td>
                                     <div className="avatar">
                                         <div className="w-20 rounded">
                                             <Image
                                                 src={e.imagePath}
-                                                fill
+                                                width={0}
+                                                height={0}
+                                                sizes="100vw"
+                                                className="w-full h-auto"
+                                                quality={100}
                                                 alt={e.name} />
                                         </div>
                                     </div>
@@ -58,7 +59,7 @@ const PrintButton = ({ data }: {
                                 <td>{currencyFormat(e.price)}</td>
                                 <td>{currencyFormat(e.cost)}</td>
                                 <td>{currencyFormat(e.price - e.cost)}</td>
-                            </tr> : null)
+                            </tr>)
                         }
                     </tbody>
                 </table>

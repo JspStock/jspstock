@@ -3,7 +3,7 @@
 import { $Enums } from "@prisma/client"
 import { useFormik } from "formik"
 import { object, string } from "yup"
-import { checkEmail, checkNoWa, checkUsername, createUser } from "./action"
+import { checkEmail, checkNoWa, checkUsername, createUser } from "../../../(public)/(main)/pengguna/costomer/tambah/action"
 import Swal from 'sweetalert2'
 import { useRouter } from "next/navigation"
 

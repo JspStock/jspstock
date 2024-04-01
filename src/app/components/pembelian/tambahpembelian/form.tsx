@@ -1,18 +1,22 @@
+import { Product, Supplier } from "@/app/(public)/(main)/pembelian/tambahpembelian/page"
 import dynamic from "next/dynamic"
 
 const Tabletambahpembelian = dynamic(() => import("@/app/components/pembelian/tambahpembelian/tabletambahpembelian"))
 const TableTotal = dynamic(() => import("@/app/components/pembelian/tambahpembelian/tabletotal"))
-const ComboboxSupplier = dynamic(() => import("@/app/components/pembelian/tambahpembelian/cbsupplier"))
-const Comboboxproduk = dynamic(() => import("@/app/components/pembelian/tambahpembelian/cbproduk"))
+const SupplierComboBox = dynamic(() => import('@/app/components/comboBoxInput'))
+const ProductComboBox = dynamic(() => import('@/app/components/comboBoxInput'))
 
-const Form = () => {
+const Form = ({ product, supplier }: {
+    product: Array<Product>,
+    supplier: Array<Supplier>
+}) => {
     return (
         <form className="mt-10 relative">
             <label className="form-control w-full max-w-xs">
                 <div className="label">
                     <span className="label-text">Pilih Produk*(Wajib)</span>
                 </div>
-                <Comboboxproduk />
+                <ProductComboBox data={product} />
             </label>
             <Tabletambahpembelian />
             <h1 className="py-2 text-gray-900">Dokumen</h1>
@@ -22,7 +26,7 @@ const Form = () => {
                     <div className="label">
                         <span className="label-text">Supplier</span>
                     </div>
-                    <ComboboxSupplier />
+                    <SupplierComboBox data={supplier} />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">

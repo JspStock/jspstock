@@ -1,7 +1,7 @@
 "use server"
 
 import { $Enums } from "@prisma/client"
-import prisma from "../../../../../prisma/database"
+import prisma from "../../../../../../../prisma/database"
 import { genSalt, hash } from 'bcrypt-ts'
 import { cookies } from "next/headers"
 

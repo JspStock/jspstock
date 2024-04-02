@@ -1,6 +1,8 @@
 import { getAllSupplier } from "@/app/(public)/(main)/pengguna/supplier/action"
+import { SearchParams } from "@/app/(public)/(main)/pengguna/supplier/page";
+import dynamic from "next/dynamic";
 
-export interface Supplier{
+export interface Supplier {
     id: string;
     name: string;
     email: string;
@@ -8,19 +10,19 @@ export interface Supplier{
     address: string | null;
 }
 
-const Tablelist = async () => {
-    const supplier: Array<Supplier> = await getAllSupplier()
+const CheckAll = dynamic(() => import('@/app/components/pengguna/supplier/(table)/checkAll'))
+const Check = dynamic(() => import('@/app/components/pengguna/supplier/(table)/check'))
+const DeleteButton = dynamic(() => import('@/app/components/pengguna/supplier/(table)/deleteButton'))
+
+const Tablelist = async ({ searchParams}: { searchParams: SearchParams }) => {
+    const supplier: Array<Supplier> = await getAllSupplier(searchParams)
 
     return (
         <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900">
             <table className="table">
                 <thead className=" text-gray-900">
                     <tr>
-                        <th>
-                            <label>
-                                <input type="checkbox" className="checkbox" />
-                            </label>
-                        </th>
+                        <th><CheckAll data={supplier} /></th>
                         <th>Nama</th>
                         <th>Email</th>
                         <th>No WhatsApp</th>
@@ -31,23 +33,19 @@ const Tablelist = async () => {
                 <tbody>
                     {
                         supplier.map(e => <tr key={e.id}>
+                            <td><Check data={e} /></td>
+                            <td>{e.name}</td>
+                            <td>{e.email}</td>
+                            <td>{e.noWa}</td>
+                            <td>{e.address}</td>
                             <td>
-                                <label>
-                                    <input type="checkbox" className="checkbox" />
-                                </label>
-                            </td>
-                            <td>{ e.name }</td>
-                            <td>{ e.email }</td>
-                            <td>{ e.noWa }</td>
-                            <td>{ e.address }</td>
-                            <td>
-                                <details className="dropdown dropdown-top dropdown-end">
-                                    <summary className="m-1 bg-blue-900 text-white btn">Action</summary>
-                                    <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
-                                        <li><a>Edit</a></li>
-                                        <li><a>Hapus</a></li>
+                                <div className="dropdown dropdown-left">
+                                    <button tabIndex={0} role="button" className="btn btn-ghost m-1">Lainnya</button>
+                                    <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                                        <li><a>Ubah</a></li>
+                                        <li><DeleteButton id={e.id} /></li>
                                     </ul>
-                                </details>
+                                </div>
                             </td>
                         </tr>)
                     }

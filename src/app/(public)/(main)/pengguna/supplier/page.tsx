@@ -7,25 +7,33 @@ import { Metadata } from "next"
 const TableLoadingSkeleton = dynamic(() => import('@/app/components/tableLoadingSkeleton'))
 const Pagination = dynamic(() => import("@/app/components/pengguna/supplier/pagination"))
 const Perpage = dynamic(() => import("@/app/components/pengguna/supplier/perpage"))
+const SearchInput = dynamic(() => import('@/app/components/pengguna/supplier/searchInput'))
+const DeleteButton = dynamic(() => import('@/app/components/pengguna/supplier/deleteButton'))
+
+export interface SearchParams{
+    search?: string,
+    show?: string,
+    page?: string
+}
 
 export const metadata: Metadata = {
     title: 'Supplier'
 }
 
-export default function ListSupplier() {
+export default function ListSupplier({ searchParams }: { searchParams: SearchParams }) {
     return (
         <>
             <div className="flex space-x-2">
                 <Link href="/pengguna/supplier/tambah" className="text-white w-62 border-0 bg-green-500 btn">+ Tambah List Supplier</Link>
                 <button className="text-white w-20 border-0 bg-gray-400 btn">Print</button>
-                <button className="text-white w-20 border-0 bg-red-400 btn">Hapus</button>
+                <DeleteButton />
             </div>
-            <input type="text" placeholder="Pencarian" className="input mt-5 bg-white text-gray-900 input-bordered w-full max-w-xs" />
             <Perpage />
+            <SearchInput />
             <Suspense fallback={<TableLoadingSkeleton />}>
-                <TableList />
+                <TableList searchParams={searchParams} />
             </Suspense>
-            <Pagination />
+            <Pagination searchParams={searchParams} />
         </>
     )
 }

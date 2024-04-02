@@ -7,7 +7,7 @@ export interface LinkNav {
 }
 
 export const linkNav = ({ role }: { role: string }) => {
-    const validateRole = () => role.toLowerCase() == 'owner' || role.toLowerCase() == 'admin' ? true : false
+    const validateRole = (validRole: Array<string>) => validRole.includes(role)
 
     return [
         {
@@ -199,7 +199,7 @@ export const linkNav = ({ role }: { role: string }) => {
                 {
                     text: 'Daftar Pengguna',
                     link: '',
-                    isShow: validateRole(),
+                    isShow: validateRole(['admin', 'owner']),
                 },
                 {
                     text: 'Daftar Kustomer',
@@ -215,7 +215,7 @@ export const linkNav = ({ role }: { role: string }) => {
             icon: 'https://res.cloudinary.com/dblroye9s/image/upload/v1710781636/jspstock/sidebar/toko_a1xwi9.svg',
             text: 'Toko',
             link: '/toko',
-            isShow: validateRole()
+            isShow: validateRole(['admin'])
         },
         {
             icon: 'https://res.cloudinary.com/dblroye9s/image/upload/v1710781635/jspstock/sidebar/settings_kmuf2y.svg',

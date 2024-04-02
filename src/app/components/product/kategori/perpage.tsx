@@ -1,8 +1,10 @@
 "use client"
 
+import useStore from "@/app/(public)/(main)/produk/kategori/store"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 const Perpage = ({ show }: { show?: string }) => {
+    const reset = useStore(state => state.reset)
     const router = useRouter()
     const pathName = usePathname()
     const searchParams = useSearchParams()
@@ -10,6 +12,7 @@ const Perpage = ({ show }: { show?: string }) => {
     const changeContentShow = (value: number | string) => {
         const params = new URLSearchParams(searchParams)
         params.set("show", value.toString())
+        reset()
         router.replace(`${pathName}/${params.size > 0 ? `?${params}` : ''}`)
     }
 

@@ -3,6 +3,7 @@
 import { Form } from "@/app/components/pengguna/supplier/tambah/form";
 import prisma from "../../../../../../../prisma/database";
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 export const checkEmail = async (email: string) => await prisma.supplier.count({
     where: {
@@ -33,6 +34,8 @@ export const createSupplier = async (form: Form) => {
                 region: form.region
             }
         })
+
+        revalidatePath('/', 'layout')
     }catch{
         throw new Error("Kesalahan saat menambahkan Supplier!")
     }

@@ -62,7 +62,7 @@ const Sidenav = ({ role }: { role: string }) => {
         <div className="drawer-side z-20">
             <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label>
             <ul className="menu p-4 w-72 min-h-full bg-blue-950 max-md:overflow-scroll text-white">
-                {renderMenu(linkNav({ role: role }))}
+                {renderMenu(linkNav({ role: role.toLowerCase() }))}
                 <li>
                     <button className="hover:bg-gray-400 focus:bg-gray-400 focus:text-white p-3" onClick={handleSignOut} disabled={isLoadingSignOut}>
                         { isLoadingSignOut ? <div className="load"></div> : null }

@@ -93,14 +93,14 @@ const Form = () => {
                     <div className="label">
                         <span className="label-text">No WhatsApp*(Wajib)</span>
                     </div>
-                    <input type="number" placeholder="Masukkan Nomor Referensi" className="input input-bordered w-full max-w-xs" name="noWa" value={values.noWa} onChange={handleChange} />
+                    <input type="number" className="input input-bordered w-full max-w-xs" name="noWa" value={values.noWa} onChange={handleChange} />
                     {errors.noWa && touched.noWa ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.noWa}</span></label> : null}
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
                         <span className="label-text">Alamat</span>
                     </div>
-                    <textarea className="textarea textarea-bordered" placeholder="Alamat"></textarea>
+                    <textarea className="textarea textarea-bordered" placeholder="Alamat" name="address" value={values.address} onChange={handleChange}></textarea>
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">

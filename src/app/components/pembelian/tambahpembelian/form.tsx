@@ -1,3 +1,5 @@
+"use client"
+
 import { Product, Supplier } from "@/app/(public)/(main)/pembelian/tambahpembelian/page"
 import dynamic from "next/dynamic"
 

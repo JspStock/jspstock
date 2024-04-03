@@ -1,6 +1,7 @@
 import { getAllSupplier } from "@/app/(public)/(main)/pengguna/supplier/action"
 import { SearchParams } from "@/app/(public)/(main)/pengguna/supplier/page";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 
 export interface Supplier {
     id: string;
@@ -42,7 +43,7 @@ const Tablelist = async ({ searchParams}: { searchParams: SearchParams }) => {
                                 <div className="dropdown dropdown-left">
                                     <button tabIndex={0} role="button" className="btn btn-ghost m-1">Lainnya</button>
                                     <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                                        <li><a>Ubah</a></li>
+                                        <li><Link href={`/pengguna/supplier/${e.id}/edit`}>Ubah</Link></li>
                                         <li><DeleteButton id={e.id} /></li>
                                     </ul>
                                 </div>

@@ -23,7 +23,7 @@ const PrintButton = () => {
         <div className="hidden">
             <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900" ref={printTableRef}>
                 <h1 className="text-2xl font-semibold">Kategori Produk</h1>
-                <table className="table mt-5">
+                <table className="table mt-5 table-zebra">
                     <thead className=" text-gray-900">
                         <tr>
                             <th>Foto</th>

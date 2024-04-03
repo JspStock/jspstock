@@ -215,7 +215,7 @@ export const linkNav = ({ role }: { role: string }) => {
             icon: 'https://res.cloudinary.com/dblroye9s/image/upload/v1710781636/jspstock/sidebar/toko_a1xwi9.svg',
             text: 'Toko',
             link: '/toko',
-            isShow: validateRole(['admin'])
+            isShow: validateRole(['owner'])
         },
         {
             icon: 'https://res.cloudinary.com/dblroye9s/image/upload/v1710781635/jspstock/sidebar/settings_kmuf2y.svg',

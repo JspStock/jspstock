@@ -9,6 +9,7 @@ const Pagination = dynamic(() => import("@/app/components/pengguna/supplier/pagi
 const Perpage = dynamic(() => import("@/app/components/pengguna/supplier/perpage"))
 const SearchInput = dynamic(() => import('@/app/components/pengguna/supplier/searchInput'))
 const DeleteButton = dynamic(() => import('@/app/components/pengguna/supplier/deleteButton'))
+const PrintButton = dynamic(() => import('@/app/components/pengguna/supplier/printButton'))
 
 export interface SearchParams{
     search?: string,
@@ -25,7 +26,7 @@ export default function ListSupplier({ searchParams }: { searchParams: SearchPar
         <>
             <div className="flex space-x-2">
                 <Link href="/pengguna/supplier/tambah" className="text-white w-62 border-0 bg-green-500 btn">+ Tambah List Supplier</Link>
-                <button className="text-white w-20 border-0 bg-gray-400 btn">Print</button>
+                <PrintButton />
                 <DeleteButton />
             </div>
             <Perpage />

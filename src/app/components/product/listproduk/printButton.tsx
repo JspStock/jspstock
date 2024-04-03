@@ -21,7 +21,7 @@ const PrintButton = () => {
         <div className="hidden">
             <div className="bg-white p-10 my-5 text-gray-900" ref={printRef}>
                 <h1 className="text-2xl semibold"> Daftar Produk </h1>
-                <table className="table mt-5">
+                <table className="table mt-5 table-zebra">
                     <thead className=" text-gray-900">
                         <tr>
                             <th>Foto</th>

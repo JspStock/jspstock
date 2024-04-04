@@ -1,3 +1,4 @@
+import { Metadata } from "next"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 
@@ -7,12 +8,15 @@ const Perpage = dynamic(() => import("@/app/components/pembelian/listpembelian/p
 const Datepicker = dynamic(() => import("@/app/components/pembelian/listpembelian/datepicker"))
 const TabsList = dynamic(() => import("@/app/components/pembelian/listpembelian/tablist"))
 
+export const metadata: Metadata = {
+    title: "Daftar pembelian"
+}
+
 export default function Listpembelian() {
     return (
         <>
             <div className="lg:flex mb-5 w-full items-center justify-center p-5 bg-white rounded-lg space-x-2">
                 <Datepicker />
-                <button className="btn bg-blue-900 mt-9 text-white">Submit</button>
             </div>
             <div className="flex max-lg:grid max-lg:space-y-2 lg:space-x-2">
                 <Link href="/pembelian/tambahpembelian" className="text-white w-62 border-0 bg-green-500 btn">+ Tambah List Pembelian</Link>

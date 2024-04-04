@@ -1,1 +1,0 @@
-INSERT INTO Store VALUES(null, "test")

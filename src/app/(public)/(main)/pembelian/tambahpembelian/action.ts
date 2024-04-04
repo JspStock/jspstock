@@ -5,6 +5,7 @@ import prisma from "../../../../../../prisma/database";
 import { Order } from "@/app/components/pembelian/tambahpembelian/tabletambahpembelian";
 import Cloudinary from "@/utils/cloudinary";
 import { revalidatePath } from "next/cache";
+import { $Enums } from "@prisma/client";
 
 export const getProductData = async () => await prisma.product.findMany({
     where: {
@@ -34,7 +35,7 @@ export const addPurchase = async (form: FormData) => {
         const order = form.get('order') as string
         const document = form.get('document') as File
         const supplier = form.get('supplier') as string | null
-        const purchaseStatus = form.get('purchaseStatus') as string
+        const purchaseStatus = form.get('purchaseStatus') as $Enums.PurchaseStatus
         const discount = form.get('discount') as string | null
         const shippingCost = form.get('shippingCost') as string | null
         const note = form.get('note') as string | null
@@ -51,7 +52,7 @@ export const addPurchase = async (form: FormData) => {
                     discount: discount ? parseInt(discount) : undefined,
                     shippingCost: shippingCost ? parseInt(shippingCost) : undefined,
                     notes: note,
-                    purchaseStatus: "DITERIMA",
+                    purchaseStatus: $Enums.PurchaseStatus[purchaseStatus],
                     purchaseOrder: {
                         createMany: {
                             data: parseOrder.map(val => ({

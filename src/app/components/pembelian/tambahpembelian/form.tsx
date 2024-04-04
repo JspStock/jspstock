@@ -8,7 +8,7 @@ import { useFormik } from "formik"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
-import { array, object } from "yup"
+import { array, object, string } from "yup"
 
 const Tabletambahpembelian = dynamic(() => import("@/app/components/pembelian/tambahpembelian/tabletambahpembelian"))
 const TableTotal = dynamic(() => import("@/app/components/pembelian/tambahpembelian/tabletotal"))
@@ -33,6 +33,7 @@ const Form = ({ product, supplier }: {
     const router = useRouter()
     const formSchema = object().shape({
         order: array().min(1, 'Order produk harus terisi!'),
+        purchaseStatus: string().required('Status pembelian harus diisi!')
     })
 
     const form = useFormik<Form>({
@@ -114,9 +115,11 @@ const Form = ({ product, supplier }: {
                     <div className="label">
                         <span className="label-text">Status Pembelian</span>
                     </div>
-                    <select className="bg-gray-50 border input input-bordered w-full max-w-xs capitalize" name="purchaseStatus" onChange={handleChange}>
+                    <select className="bg-gray-50 border input input-bordered w-full max-w-xs capitalize" name="purchaseStatus" defaultValue="" onChange={handleChange}>
+                        <option value="" disabled>Pilih status pembelian</option>
                         {Object.keys($Enums.PurchaseStatus).map(key => <option value={key} key={key}>{key.split("_").join(" ").toLowerCase()}</option>)}
                     </select>
+                    {touched.purchaseStatus && errors.purchaseStatus ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.purchaseStatus}</span></label> : null}
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">

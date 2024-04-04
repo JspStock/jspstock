@@ -89,7 +89,7 @@ const Form = ({
                 formData.append("price", e.price)
                 formData.append("cost", e.cost)
                 await updateProduct(formData)
-                router.replace("/produk/listproduk")
+                router.push("/produk/listproduk")
             }catch{
                 Swal.fire({
                     icon: 'error',

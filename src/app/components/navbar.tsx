@@ -1,8 +1,11 @@
+import { getServerSession } from "next-auth"
 import { cookies } from "next/headers"
 import Image from "next/image"
 import Link from "next/link"
 
-const Navbar = () => {
+const Navbar = async () => {
+    const session = await getServerSession()
+
     return (
         <div className="navbar max-lg:fixed px-32 z-10 max-lg:px-10 max-md:px-5 bg-white text-gray-900">
             <label htmlFor="my-drawer-2" className="btn bg-white text-gray-900 shadow-none btn-circle border-0 drawer-button lg:hidden">
@@ -42,7 +45,12 @@ const Navbar = () => {
                 <div className="dropdown dropdown-end">
                     <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                         <div className="w-10 rounded-full">
-                            <img alt="Tailwind CSS Navbar component" src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                            <Image
+                                src={`https://ui-avatars.com/api/?name=${session ? session.user ? session.user.name ? session.user.name.toLowerCase() == 'default' ? 'JSP' : session.user.name : 'JSP' : 'JSP' : 'JSP'}`} 
+                                alt={`Profile ${session?.user?.name}`}
+                                width={0}
+                                height={0}
+                                sizes="100vw"/>
                         </div>
                     </div>
                     <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-white text-gray-900 rounded-box w-52">

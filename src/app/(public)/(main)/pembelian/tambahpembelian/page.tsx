@@ -6,7 +6,7 @@ const Form = dynamic(() => import("@/app/components/pembelian/tambahpembelian/fo
 const BackButton = dynamic(() => import('@/app/components/backButton'))
 
 export const metadata: Metadata = {
-    title: 'Tambah pemblian'
+    title: 'Tambah pembelian'
 }
 
 export interface Product{

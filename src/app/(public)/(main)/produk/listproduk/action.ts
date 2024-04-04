@@ -4,10 +4,12 @@ import { cookies } from "next/headers"
 import prisma from "../../../../../../prisma/database"
 import Cloudinary from "@/utils/cloudinary"
 import { revalidatePath } from "next/cache"
+import moment from 'moment'
 
 export const getCountProduct = async (search?: string) => await prisma.product.count({
     where: {
         idStore: cookies().get('store')!.value,
+        deletedAt: null,
         OR: [
             {
                 id: {
@@ -28,6 +30,7 @@ export const getCountProduct = async (search?: string) => await prisma.product.c
 export const getAllProduct = async ({ show, search, page }: { show?: number | string, search?: string, page?: number }) => await prisma.product.findMany({
     where: {
         idStore: cookies().get('store')!.value,
+        deletedAt: null,
         OR: [
             {
                 id: {
@@ -64,10 +67,14 @@ export const deleteProducts = async (idProduct: Array<string>) => {
     try{
         await prisma.$transaction(async e => {
             for(let row of idProduct){
-                await e.product.delete({
+                await e.product.update({
                     where: {
                         idStore: cookies().get('store')!.value,
                         id: row
+                    },
+                    data: {
+                        id: `DEL_${idProduct}`,
+                        deletedAt: new Date()
                     }
                 })
 
@@ -78,7 +85,8 @@ export const deleteProducts = async (idProduct: Array<string>) => {
         })
 
         revalidatePath('/', 'layout')
-    }catch{
+    }catch(e){
+        console.log(e)
         throw new Error("Kesalahan saat mengahapus produk")
     }
 }

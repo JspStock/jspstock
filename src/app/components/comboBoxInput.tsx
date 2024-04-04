@@ -11,12 +11,15 @@ export interface Data{
 
 export default function ProductComboBox({
   data,
-  placeholder
+  placeholder,
+  setSelected,
+  selected,
 }: {
   data: Array<Data>,
-  placeholder?: string
+  placeholder?: string,
+  setSelected: (val: any) => void,
+  selected: any | null,
 }) {
-  const [selected, setSelected] = useState()
   const [query, setQuery] = useState('')
 
   const filteredData =
@@ -36,7 +39,7 @@ export default function ProductComboBox({
           <div className="relative join w-full">
             <Combobox.Input
               className="input input-bordered w-full join-item !rounded-lg"
-              displayValue={(e: {id: string, name: string}) => e.name}
+              displayValue={(e: Data) => e ? e.name : ''}
               onChange={(event) => setQuery(event.target.value)}
               placeholder={placeholder}
             />

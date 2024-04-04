@@ -12,7 +12,7 @@ const DeleteButton = () => {
     const handleDelete = async () => {
         try {
             setIsLoading(true)
-            await deleteProducts(selected)
+            await deleteProducts(selected.map(e => e.id))
             setIsLoading(false)
             reset()
         }catch{

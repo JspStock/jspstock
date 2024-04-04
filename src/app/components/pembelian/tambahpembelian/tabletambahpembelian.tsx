@@ -34,7 +34,7 @@ const TableTambahpembelian = ({ data, changeQty, onDelete }: {
                         <td>{ e.id.split("_")[1] }</td>
                         <td>
                             <select className="select select-bordered" onChange={val => changeQty(index, val.target.value)}>
-                                { Array.from({ length: e.qty }).map((_, index) => <option value={index + 1} selected={(index + 1) == e.selectQty}>{index + 1} Pcs</option>) }
+                                { Array.from({ length: e.qty }).map((_, index) => <option value={index + 1} selected={(index + 1) == e.selectQty} key={index}>{index + 1} Pcs</option>) }
                             </select>
                         </td>
                         <td>{ currencyFormat(e.price) }</td>

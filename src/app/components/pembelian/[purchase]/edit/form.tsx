@@ -1,17 +1,16 @@
 "use client"
 
-import { addPurchase } from "@/app/(public)/(main)/pembelian/tambahpembelian/action"
-import { Product, Supplier } from "@/app/(public)/(main)/pembelian/tambahpembelian/page"
-import { Order } from "@/app/components/pembelian/tambahpembelian/tabletambahpembelian"
-import { $Enums } from "@prisma/client"
+import { Product, PurchaseData, Supplier } from "@/app/(public)/(main)/pembelian/[purchase]/edit/page"
 import { useFormik } from "formik"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
 import { array, object, string } from "yup"
+import TableTotal from "./tabletotal"
+import Tabletambahpembelian, { Order } from "./tabletambahpembelian"
+import { $Enums } from "@prisma/client"
+import { updatePurchase } from "@/app/(public)/(main)/pembelian/[purchase]/edit/action"
 
-const Tabletambahpembelian = dynamic(() => import("@/app/components/pembelian/tambahpembelian/tabletambahpembelian"))
-const TableTotal = dynamic(() => import("@/app/components/pembelian/tambahpembelian/tabletotal"))
 const SupplierComboBox = dynamic(() => import('@/app/components/comboBoxInput'))
 const ProductComboBox = dynamic(() => import('@/app/components/comboBoxInput'))
 
@@ -26,9 +25,10 @@ export interface Form {
     note: string
 }
 
-const Form = ({ product, supplier }: {
+const Form = ({ product, supplier, data }: {
     product: Array<Product>,
-    supplier: Array<Supplier>
+    supplier: Array<Supplier>,
+    data: PurchaseData
 }) => {
     const router = useRouter()
     const formSchema = object().shape({
@@ -38,19 +38,27 @@ const Form = ({ product, supplier }: {
 
     const form = useFormik<Form>({
         initialValues: {
-            order: [],
+            order: data.purchaseOrder.map(e => ({ 
+                id: e.id,
+                name: e.product!.name,
+                price: e.product!.price,
+                qty: e.product!.qty,
+                selectQty: e.qty,
+                subTotal: e.qty * e.product!.price
+             })),
             product: null,
             document: null,
-            supplier: null,
-            purchaseStatus: '',
-            discount: '',
-            shippingCost: '',
-            note: ''
+            supplier: data.supplier,
+            purchaseStatus: data.purchaseStatus,
+            discount: data.discount.toString(),
+            shippingCost: data.shippingCost.toString(),
+            note: data.notes ?? ''
         },
         validationSchema: formSchema,
         onSubmit: async e => {
             try {
                 const formData = new FormData()
+                formData.append('id', data.id)
                 formData.append("order", JSON.stringify(e.order))
                 e.document != null ? formData.append("document", e.document) : null
                 e.supplier != null ? formData.append("supplier", e.supplier.id) : null
@@ -58,7 +66,7 @@ const Form = ({ product, supplier }: {
                 e.discount != '' ? formData.append('discount', e.discount) : null
                 e.shippingCost != '' ? formData.append('shippingCost', e.shippingCost) : null
                 e.note.trim() != '' ? formData.append('note', e.note) : null
-                await addPurchase(formData)
+                await updatePurchase(formData)
                 router.push("/pembelian/listpembelian")
             } catch(e) {
             console.log(e)
@@ -116,7 +124,7 @@ const Form = ({ product, supplier }: {
                     <div className="label">
                         <span className="label-text">Status Pembelian</span>
                     </div>
-                    <select className="bg-gray-50 border input input-bordered w-full max-w-xs capitalize" name="purchaseStatus" defaultValue="" onChange={handleChange}>
+                    <select className="bg-gray-50 border input input-bordered w-full max-w-xs capitalize" name="purchaseStatus" defaultValue={values.purchaseStatus} onChange={handleChange}>
                         <option value="" disabled>Pilih status pembelian</option>
                         {Object.keys($Enums.PurchaseStatus).map(key => <option value={key} key={key}>{key.split("_").join(" ").toLowerCase()}</option>)}
                     </select>

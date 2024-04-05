@@ -1,17 +1,25 @@
 "use client"
 
-import { useState } from 'react'
-import DatePicker, { DateValueType, ClassNamesTypeProp } from 'react-tailwindcss-datepicker'
+import useStore from '@/app/(public)/(main)/pembelian/listpembelian/store'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import DatePicker, { DateValueType } from 'react-tailwindcss-datepicker'
 
 const Datepickers = () => {
-    const [value, setValue] = useState<DateValueType>({
-        startDate: null,
-        endDate: null
-    })
+    const reset = useStore(state => state.reset)
+    const router = useRouter()
+    const pathName = usePathname()
+    const searchParams = useSearchParams()
+    const params = new URLSearchParams(searchParams)
 
     const handleValueChange = (e: DateValueType) => {
-        setValue(e)
-        console.log(e)
+        if(e && e.startDate != null && e.endDate != null){
+            params.set("date", `${e.startDate}to${e.endDate}`)
+        }else{
+            params.delete("date")
+        }
+
+        reset()
+        router.replace(`${pathName}/${params.size > 0 ? `?${params}` : ''}`)
     }
 
     return (
@@ -21,8 +29,9 @@ const Datepickers = () => {
             </div>
             
             <DatePicker
-                value={value}
+                value={{startDate: params.get("date")?.split("to")[0] ?? null, endDate: params.get("date")?.split("to")[1] ?? null}}
                 onChange={handleValueChange}
+                showShortcuts={true}
                 inputClassName="input input-bordered w-full" />
         </label>
     )

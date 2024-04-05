@@ -1,9 +1,5 @@
-import dynamic from "next/dynamic"
+import dynamic from "next/dynamic";
 
 const Loader = dynamic(() => import('@/app/components/loader'))
-
-const loading = () => {
-    return <Loader />
-}
-
+const loading = () => <Loader />
 export default loading

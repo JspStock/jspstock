@@ -1,11 +1,12 @@
 "use server"
 
-import { cookies } from "next/headers";
-import prisma from "../../../../../../prisma/database";
-import { Order } from "@/app/components/pembelian/tambahpembelian/tabletambahpembelian";
-import Cloudinary from "@/utils/cloudinary";
-import { revalidatePath } from "next/cache";
-import { $Enums } from "@prisma/client";
+import { cookies } from "next/headers"
+import prisma from "../../../../../../../prisma/database"
+import { $Enums } from "@prisma/client"
+import { Order } from "@/app/components/pembelian/[purchase]/edit/tabletambahpembelian"
+import Cloudinary from "@/utils/cloudinary"
+import { revalidatePath } from "next/cache"
+import { UploadApiOptions } from "cloudinary"
 
 export const getProductData = async () => await prisma.product.findMany({
     where: {
@@ -30,8 +31,45 @@ export const getSupplierData = async () => await prisma.supplier.findMany({
     }
 })
 
-export const addPurchase = async (form: FormData) => {
+export const getPurchaseData = async (id: string) => await prisma.purchase.findUnique({
+    where: {
+        idStore: cookies().get('store')?.value,
+        id: id
+    },
+    select: {
+        id: true,
+        purchaseOrder: {
+            select: {
+                id: true,
+                idProduct: true,
+                qty: true,
+                product: {
+                    select: {
+                        id: true,
+                        name: true,
+                        price: true,
+                        qty: true
+                    }
+                }
+            }
+        },
+        supplier: {
+            select: {
+                id: true,
+                name: true
+            }
+        },
+        documentPath: true,
+        purchaseStatus: true,
+        discount: true,
+        shippingCost: true,
+        notes: true
+    }
+})
+
+export const updatePurchase = async (form: FormData) => {
     try {
+        const id = form.get('id') as string
         const order = form.get('order') as string
         const document = form.get('document') as File
         const supplier = form.get('supplier') as string | null
@@ -42,23 +80,27 @@ export const addPurchase = async (form: FormData) => {
         const parseOrder = JSON.parse(order) as Array<Order>
 
         await prisma.$transaction(async e => {
-            const idPurchase = await e.purchase.create({
+            const idPurchase = await e.purchase.update({
+                where: {
+                    idStore: cookies().get('store')?.value,
+                    id: id
+                },
                 data: {
-                    id: `PUR_${Date.now()}`,
-                    idStore: cookies().get('store')!.value,
                     idSupplier: supplier,
                     discount: discount ? parseInt(discount) : undefined,
                     shippingCost: shippingCost ? parseInt(shippingCost) : undefined,
                     notes: note,
                     purchaseStatus: $Enums.PurchaseStatus[purchaseStatus],
                     purchaseOrder: {
-                        createMany: {
-                            data: parseOrder.map(val => ({
-                                idStore: cookies().get('store')!.value,
-                                idProduct: val.id,
-                                qty: val.selectQty,
-                            }))
-                        },
+                        updateMany: parseOrder.map(e => ({
+                            where: {
+                                idStore: cookies().get('store')?.value,
+                                id: e.id
+                            },
+                            data: {
+                                qty: e.selectQty
+                            }
+                        }))
                     }
                 },
                 select: {
@@ -73,15 +115,16 @@ export const addPurchase = async (form: FormData) => {
                         id: i.id
                     },
                     data: {
-                        qty: i.qty - i.selectQty
+                        qty: i.selectQty > i.qty ? i.qty - i.selectQty : i.selectQty < i.qty ? i.qty + i.selectQty : undefined
                     }
                 })
             }
 
             if (document != null) {
                 const buffer = Buffer.from(await document.arrayBuffer()).toString("base64")
+                console.log(document.type)
                 const resultUpload = await Cloudinary.uploader.upload(`data:${document.type};base64,${buffer}`, {
-                    public_id: `${cookies().get('store')?.value}/purchase/${idPurchase.id}`
+                    public_id: `${cookies().get('store')?.value}/purchase/${idPurchase.id}`,
                 })
 
                 await e.purchase.update({
@@ -98,6 +141,7 @@ export const addPurchase = async (form: FormData) => {
 
         revalidatePath("/", "layout")
     } catch(e) {
+        console.log(e)
         throw new Error("Kesalahan saat menambahkan data!")
     }
 }

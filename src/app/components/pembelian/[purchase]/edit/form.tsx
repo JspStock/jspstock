@@ -42,11 +42,13 @@ const Form = ({ product, supplier, data }: {
         initialValues: {
             order: data.purchaseOrder.map(e => ({ 
                 id: e.id,
+                idProduct: e.product!.id,
                 name: e.product!.name,
                 price: e.product!.price,
                 qty: e.product!.qty,
                 selectQty: e.qty,
-                subTotal: e.qty * e.product!.price
+                subTotal: e.qty * e.product!.price,
+                selectQtyOld: e.qty
              })),
             product: null,
             document: null,

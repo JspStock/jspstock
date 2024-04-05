@@ -6,7 +6,6 @@ import { $Enums } from "@prisma/client"
 import { Order } from "@/app/components/pembelian/[purchase]/edit/tabletambahpembelian"
 import Cloudinary from "@/utils/cloudinary"
 import { revalidatePath } from "next/cache"
-import { UploadApiOptions } from "cloudinary"
 
 export const getProductData = async () => await prisma.product.findMany({
     where: {
@@ -73,6 +72,7 @@ export const updatePurchase = async (form: FormData) => {
         const order = form.get('order') as string
         const document = form.get('document') as File
         const supplier = form.get('supplier') as string | null
+        const selectQty = form.get('selectQty') as string
         const purchaseStatus = form.get('purchaseStatus') as $Enums.PurchaseStatus
         const discount = form.get('discount') as string | null
         const shippingCost = form.get('shippingCost') as string | null
@@ -101,7 +101,7 @@ export const updatePurchase = async (form: FormData) => {
                                 qty: e.selectQty
                             }
                         }))
-                    }
+                    },
                 },
                 select: {
                     id: true,
@@ -109,13 +109,13 @@ export const updatePurchase = async (form: FormData) => {
             })
 
             for(let i of parseOrder){
-                await e.product.updateMany({
+                await e.product.update({
                     where: {
                         idStore: cookies().get('store')?.value,
-                        id: i.id
+                        id: i.idProduct
                     },
                     data: {
-                        qty: i.selectQty > i.qty ? i.qty - i.selectQty : i.selectQty < i.qty ? i.qty + i.selectQty : undefined
+                        qty: i.selectQty > i.selectQtyOld ? i.qty - i.selectQty : i.selectQty < i.selectQtyOld ? i.qty + i.selectQty : undefined
                     }
                 })
             }

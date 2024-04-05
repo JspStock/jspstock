@@ -6,6 +6,8 @@ import { currencyFormat } from "@/utils/utils"
 export interface Order extends Product{
     selectQty: number,
     subTotal: number,
+    selectQtyOld: number
+    idProduct: string
 }
 
 const TableTambahpembelian = ({ data, changeQty, onDelete }: {

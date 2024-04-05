@@ -11,6 +11,38 @@ export const deleteData = async ({ data }: { data: Array<string> }) => {
     try{
         await prisma.$transaction(async e => {
             for(let i of data){
+                const oldData = await e.purchase.findUnique({
+                    where: {
+                        idStore: cookies().get('store')?.value,
+                        id: i
+                    },
+                    select: {
+                        purchaseOrder: {
+                            select: {
+                                qty: true,
+                                product: {
+                                    select: {
+                                        id: true,
+                                        qty: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
+
+                for(let i of oldData!.purchaseOrder){
+                    await e.product.update({
+                        where: {
+                            idStore: cookies().get('store')?.value,
+                            id: i.product!.id
+                        },
+                        data: {
+                            qty: i.product!.qty + i.qty
+                        }
+                    })
+                }
+
                 await e.purchase.delete({
                     where: {
                         idStore: cookies().get('store')?.value,

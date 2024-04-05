@@ -5,7 +5,7 @@ import { useFormik } from "formik"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
-import { array, object, string } from "yup"
+import { array, boolean, object, string } from "yup"
 import TableTotal from "./tabletotal"
 import Tabletambahpembelian, { Order } from "./tabletambahpembelian"
 import { $Enums } from "@prisma/client"
@@ -41,14 +41,15 @@ const Form = ({ product, supplier, data }: {
     const form = useFormik<Form>({
         initialValues: {
             order: data.purchaseOrder.map(e => ({ 
-                id: e.id,
-                idProduct: e.product!.id,
+                id: e.product!.id,
                 name: e.product!.name,
                 price: e.product!.price,
                 qty: e.product!.qty,
                 selectQty: e.qty,
                 subTotal: e.qty * e.product!.price,
-                selectQtyOld: e.qty
+                selectQtyOld: e.qty,
+                isDelete: false,
+                isNewAdded: false
              })),
             product: null,
             document: null,
@@ -61,6 +62,11 @@ const Form = ({ product, supplier, data }: {
         validationSchema: formSchema,
         onSubmit: async e => {
             try {
+                if(e.order.filter(e => e.isDelete == false).length == 0){
+                    form.setFieldError("order", "Order produk harus diisi!")
+                    return false
+                }
+
                 const formData = new FormData()
                 formData.append('id', data.id)
                 formData.append("order", JSON.stringify(e.order))
@@ -83,12 +89,14 @@ const Form = ({ product, supplier, data }: {
         }
     })
     const { touched, errors, values, isSubmitting, handleSubmit, handleChange, setFieldValue } = form
-    const handleProductInput = (e: Product) => setFieldValue("order", [...values.order, { ...product.filter(val => val.id == e.id)[0], selectQty: 1, subTotal: product.filter(val => val.id == e.id)[0].price }])
+    const handleProductInput = (e: Product) => setFieldValue("order", [...values.order, { ...product.filter(val => val.id == e.id)[0], selectQty: 1, isDelete: false, isNewAdded: true, subTotal: product.filter(val => val.id == e.id)[0].price }])
     const changeQtyOrder = (id: number, qty: string) => {
         setFieldValue(`order[${id}].selectQty`, parseInt(qty))
         setFieldValue(`order[${id}].subTotal`, values.order[id].price * parseInt(qty))
     }
-    const onDeleteOrder = (val: number) => setFieldValue('order', [...values.order].filter((_, index) => index != val))
+    const onDeleteOrder = (val: number) => {
+        setFieldValue(`order[${val}].isDelete`, true)
+    }
 
     return (
         <form className="mt-10 relative" onSubmit={handleSubmit}>

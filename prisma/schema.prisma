@@ -177,7 +177,6 @@ model Product{
 
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
   productCategories ProductCategories? @relation(fields: [idProductCategories], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  purchase Purchase[]
   purchaseOrder PurchaseOrder[]
   sales Sales[]
   saleOrder SaleOrder[]
@@ -191,7 +190,6 @@ model Purchase{
   id String @id
   idStore String
   idSupplier String?
-  idProduct String?
   documentPath String?
   discount Int @default(0)
   shippingCost Int @default(0)
@@ -201,7 +199,6 @@ model Purchase{
 
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
   supplier Supplier? @relation(fields: [idSupplier], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  product Product? @relation(fields: [idProduct], references: [id], onDelete: SetNull, onUpdate: Cascade)
   purchaseOrder PurchaseOrder[]
   purchasePayment PurchasePayment[]
   purchaseReturns PurchaseReturns[]

@@ -7,7 +7,8 @@ export interface Order extends Product{
     selectQty: number,
     subTotal: number,
     selectQtyOld: number
-    idProduct: string
+    isDelete: boolean,
+    isNewAdded: boolean
 }
 
 const TableTambahpembelian = ({ data, changeQty, onDelete }: {
@@ -31,27 +32,27 @@ const TableTambahpembelian = ({ data, changeQty, onDelete }: {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((e, index) => <tr key={index}>
+                    {data.map((e, index) => !e.isDelete ? <tr key={index}>
                         <td>{ e.name }</td>
                         <td>{ e.id.split("_")[1] }</td>
                         <td>
-                            <select className="select select-bordered" onChange={val => changeQty(index, val.target.value)} defaultValue={e.selectQty}>
+                            <select className="select select-bordered" onChange={val => changeQty(index, val.target.value)} value={e.selectQty}>
                                 { Array.from({ length: e.qty }).map((_, index) => <option value={index + 1} selected={(index + 1) == e.selectQty} key={index}>{index + 1} Pcs</option>) }
                             </select>
                         </td>
                         <td>{ currencyFormat(e.price) }</td>
                         <td>{ currencyFormat(e.subTotal) }</td>
-                        <td><button className="btn btn-ghost text-red-400" onClick={() => onDelete(index)}>Hapus</button></td>
-                    </tr>)}
+                        <td><button type="button" className="btn btn-ghost text-red-400" onClick={() => onDelete(index)}>Hapus</button></td>
+                    </tr> : null)}
 
                 </tbody>
                 <tfoot>
                     <tr>
                         <th>Total</th>
                         <th></th>
-                        <th>{ data.length > 0 ? data.map(e => e.selectQty).reduce((e, prev) => e + prev) : 0 }</th>
+                        <th>{ data.filter(e => e.isDelete == false).length > 0 ? data.filter(e => e.isDelete == false).map(e => e.selectQty).reduce((e, prev) => e + prev) : 0 }</th>
                         <th></th>
-                        <th>{ currencyFormat(data.length > 0 ? (data.map(e => e.subTotal).reduce((e, prev) => e + prev)) : 0) }</th>
+                        <th>{ currencyFormat(data.filter(e => e.isDelete == false).length > 0 ? (data.filter(e => e.isDelete == false).map(e => e.subTotal).reduce((e, prev) => e + prev)) : 0) }</th>
                     </tr>
                 </tfoot>
             </table>

@@ -6,13 +6,13 @@ const TableTotal = ({ form }: {
 }) => {
     const discount = isNaN(parseInt(form.discount)) ? 0 : parseInt(form.discount)
     const shippingCost = isNaN(parseInt(form.shippingCost)) ? 0 : parseInt(form.shippingCost)
-    const subTotal = form.order.length > 0 ? form.order.map(e => e.subTotal).reduce((val, prev) => val + prev) : 0
+    const subTotal = form.order.filter(e => e.isDelete == false).length > 0 ? form.order.filter(e => e.isDelete == false).map(e => e.subTotal).reduce((val, prev) => val + prev) : 0
 
     return(
         <div className="lg:flex text-gray-900 w-full justify-center mt-10 items-center lg:gap-10 grid max-lg:space-y-5">
             <div className="flex space-x-2">
                 <h1>Items : </h1>
-                <h1 className="font-bold">{ form.order.length }</h1>
+                <h1 className="font-bold">{ form.order.filter(e => e.isDelete == false).length }</h1>
             </div>
             <div className="flex space-x-2">
                 <h1>Sub Total : </h1>

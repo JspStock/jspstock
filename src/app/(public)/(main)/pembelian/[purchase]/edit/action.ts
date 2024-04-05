@@ -72,7 +72,6 @@ export const updatePurchase = async (form: FormData) => {
         const order = form.get('order') as string
         const document = form.get('document') as File
         const supplier = form.get('supplier') as string | null
-        const selectQty = form.get('selectQty') as string
         const purchaseStatus = form.get('purchaseStatus') as $Enums.PurchaseStatus
         const discount = form.get('discount') as string | null
         const shippingCost = form.get('shippingCost') as string | null
@@ -92,15 +91,14 @@ export const updatePurchase = async (form: FormData) => {
                     notes: note,
                     purchaseStatus: $Enums.PurchaseStatus[purchaseStatus],
                     purchaseOrder: {
-                        updateMany: parseOrder.map(e => ({
-                            where: {
-                                idStore: cookies().get('store')?.value,
-                                id: e.id
-                            },
-                            data: {
-                                qty: e.selectQty
-                            }
-                        }))
+                        deleteMany: {},
+                        createMany: {
+                            data: parseOrder.filter(e => e.isDelete == false).map(e => ({
+                                idProduct: e.id,
+                                idStore: cookies().get('store')!.value,
+                                qty: e.selectQty,
+                            }))
+                        }
                     },
                 },
                 select: {
@@ -109,20 +107,43 @@ export const updatePurchase = async (form: FormData) => {
             })
 
             for(let i of parseOrder){
+                const qtyProduct = await e.product.findUnique({
+                    where: {
+                        idStore: cookies().get('store')?.value,
+                        id: i.id
+                    },
+                    select: {
+                        qty: true
+                    }
+                })
+
+                const updateProduct = () => {
+                    if(i.isDelete == true && i.isNewAdded == false ){
+                        return qtyProduct!.qty + i.selectQtyOld
+                    }else if(i.selectQty > i.selectQtyOld){
+                        return qtyProduct!.qty - i.selectQty
+                    }else if(i.selectQty < i.selectQtyOld){
+                        return qtyProduct!.qty + i.selectQty
+                    }else if(i.isNewAdded == true && i.isDelete == false){
+                        return qtyProduct!.qty - i.selectQty
+                    }else{
+                        return undefined
+                    }
+                }
+
                 await e.product.update({
                     where: {
                         idStore: cookies().get('store')?.value,
-                        id: i.idProduct
+                        id: i.id
                     },
                     data: {
-                        qty: i.selectQty > i.selectQtyOld ? i.qty - i.selectQty : i.selectQty < i.selectQtyOld ? i.qty + i.selectQty : undefined
+                        qty: updateProduct()
                     }
                 })
             }
 
             if (document != null) {
                 const buffer = Buffer.from(await document.arrayBuffer()).toString("base64")
-                console.log(document.type)
                 const resultUpload = await Cloudinary.uploader.upload(`data:${document.type};base64,${buffer}`, {
                     public_id: `${cookies().get('store')?.value}/purchase/${idPurchase.id}`,
                 })

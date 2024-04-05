@@ -10,6 +10,7 @@ import TableTotal from "./tabletotal"
 import Tabletambahpembelian, { Order } from "./tabletambahpembelian"
 import { $Enums } from "@prisma/client"
 import { updatePurchase } from "@/app/(public)/(main)/pembelian/[purchase]/edit/action"
+import useStore from "@/app/(public)/(main)/pembelian/listpembelian/store"
 
 const SupplierComboBox = dynamic(() => import('@/app/components/comboBoxInput'))
 const ProductComboBox = dynamic(() => import('@/app/components/comboBoxInput'))
@@ -30,6 +31,7 @@ const Form = ({ product, supplier, data }: {
     supplier: Array<Supplier>,
     data: PurchaseData
 }) => {
+    const reset = useStore(state => state.reset)
     const router = useRouter()
     const formSchema = object().shape({
         order: array().min(1, 'Order produk harus terisi!'),
@@ -68,8 +70,8 @@ const Form = ({ product, supplier, data }: {
                 e.note.trim() != '' ? formData.append('note', e.note) : null
                 await updatePurchase(formData)
                 router.push("/pembelian/listpembelian")
+                reset()
             } catch(e) {
-            console.log(e)
                 Swal.fire({
                     icon: 'error',
                     title: 'Terjadi kesalahan!',
@@ -134,19 +136,19 @@ const Form = ({ product, supplier, data }: {
                     <div className="label">
                         <span className="label-text">Diskon</span>
                     </div>
-                    <input type="number" placeholder="Diskon" className="input input-bordered w-full max-w-xs" name="discount" onChange={handleChange} />
+                    <input type="number" placeholder="Diskon" className="input input-bordered w-full max-w-xs" name="discount" value={values.discount} onChange={handleChange} />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
                         <span className="label-text">Biaya Pengiriman</span>
                     </div>
-                    <input type="number" placeholder="Biaya" className="input input-bordered w-full max-w-xs" name="shippingCost" onChange={handleChange} />
+                    <input type="number" placeholder="Biaya" className="input input-bordered w-full max-w-xs" name="shippingCost" value={values.shippingCost} onChange={handleChange} />
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
                         <span className="label-text">Catatan</span>
                     </div>
-                    <textarea className="textarea textarea-bordered" placeholder="Catatan" name="note" onChange={handleChange}></textarea>
+                    <textarea className="textarea textarea-bordered" placeholder="Catatan" name="note" value={values.note} onChange={handleChange}></textarea>
                 </label>
             </div>
             <TableTotal form={values} />

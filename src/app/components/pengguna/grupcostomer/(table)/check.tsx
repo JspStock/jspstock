@@ -1,0 +1,27 @@
+"use client"
+
+import useStore from "@/app/(public)/(main)/pengguna/grupcostomer/store"
+import { CustomerGroup } from "../table"
+
+const Check = ({ data }: {
+    data: CustomerGroup
+}) => {
+    const select = useStore(state => state.select)
+    const add = useStore(state => state.add)
+    const remove = useStore(state => state.remove)
+    const handleChecked = () => {
+        if(select.find(e => e.id == data.id) != undefined){
+            remove(data.id)
+        }else{
+            add(data)
+        }
+    }
+
+    return <input 
+        type="checkbox" 
+        className="checkbox"
+        checked={select.find(e => e.id == data.id) != undefined}
+        onChange={handleChecked} />
+}
+
+export default Check

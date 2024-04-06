@@ -121,9 +121,9 @@ export const updatePurchase = async (form: FormData) => {
                     if(i.isDelete == true && i.isNewAdded == false ){
                         return qtyProduct!.qty + i.selectQtyOld
                     }else if(i.selectQty > i.selectQtyOld){
-                        return qtyProduct!.qty - i.selectQty
+                        return qtyProduct!.qty - (i.selectQtyOld - i.selectQty)
                     }else if(i.selectQty < i.selectQtyOld){
-                        return qtyProduct!.qty + i.selectQty
+                        return qtyProduct!.qty + (i.selectQtyOld - i.selectQty)
                     }else if(i.isNewAdded == true && i.isDelete == false){
                         return qtyProduct!.qty - i.selectQty
                     }else{

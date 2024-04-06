@@ -1,6 +1,7 @@
 "use client"
 
-import { createCustomerGroup } from "@/app/(public)/(main)/pengguna/grupcostomer/tambah/action"
+import { updateData } from "@/app/(public)/(main)/pengguna/grupcostomer/[customerGroup]/edit/action"
+import { CustomerGroup } from "@/app/(public)/(main)/pengguna/grupcostomer/[customerGroup]/edit/page"
 import { useFormik } from "formik"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
@@ -10,7 +11,9 @@ export interface Form{
     name: string
 }
 
-const Form = () => {
+const Form = ({ data }: {
+    data: CustomerGroup
+}) => {
     const router = useRouter()
     const formSchema = object().shape({
         name: string().required('Nama tidak boleh kosong!')
@@ -18,12 +21,12 @@ const Form = () => {
 
     const form = useFormik<Form>({
         initialValues: {
-            name: ''
+            name: data.name
         },
         validationSchema: formSchema,
         onSubmit: async e => {
             try{
-                await createCustomerGroup(e.name)
+                await updateData(data.id, e.name)
                 router.push("/pengguna/grupcostomer")
             }catch{
                 Swal.fire({

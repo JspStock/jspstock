@@ -1,47 +1,53 @@
 "use server"
 
-import { $Enums } from "@prisma/client"
-import prisma from "../../../../../../../prisma/database"
-import { genSalt, hash } from 'bcrypt-ts'
 import { cookies } from "next/headers"
+import prisma from "../../../../../../../prisma/database"
+import { Form } from "@/app/components/pengguna/costomer/tambah/form"
+import { revalidatePath } from "next/cache"
 
-export const checkUsername = async (username: string) => await prisma.user.count({
+export const getCountDataByEmail = async (val: string) => await prisma.customerUser.count({
     where: {
-        username: username
+        idStore: cookies().get('store')?.value,
+        email: val
     }
 })
 
-export const checkEmail = async (email: string) => await prisma.user.count({
+export const getCountDataByNoWa = async (val: string) => await prisma.customerUser.count({
     where: {
-        email: email
+        idStore: cookies().get('store')?.value,
+        noWa: val
     }
 })
 
-export const checkNoWa = async (noWa: string) => await prisma.user.count({
+export const getCustomerGroup = async () => await prisma.customerGroup.findMany({
     where: {
-        noWa: noWa
+        idStore: cookies().get('store')?.value,
+    },
+    select: {
+        id: true,
+        name: true
     }
 })
 
-export const createUser = async (name: string, username: string, email: string, password: string, noWa: string, role: $Enums.Role) => {
+export const addData = async (form: Form) => {
     try{
-        const saltPassword = await genSalt(5)
-        const hashPassword = await hash(password, saltPassword)
-
-        await prisma.user.create({
+        await prisma.customerUser.create({
             data: {
-                id: `USR_${Date.now()}`,
-                idStore: role != $Enums.Role.OWNER ? cookies().get('store')?.value : undefined,
-                username: username,
-                email: email,
-                password: hashPassword,
-                noWa: noWa,
-                role: role,
-                name: name,
-                status: $Enums.UserStatus.AKTIF
+                id: `CUS_${Date.now()}`,
+                idStore: cookies().get('store')!.value,
+                idCustomerGroup: form.customerGroup,
+                name: form.name,
+                email: form.email,
+                noWa: form.noWa,
+                address: form.address,
+                city: form.city,
+                zipCode: form.zipCode,
+                region: form.region
             }
         })
+
+        revalidatePath("/", "layout")
     }catch{
-        throw new Error("Kesalahan pada server!")
+        throw new Error("Kesalahan saat menambahkan data!")
     }
 }

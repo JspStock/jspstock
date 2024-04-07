@@ -1,6 +1,7 @@
 "use client"
 
-import { addData, getCountDataByEmail, getCountDataByNoWa } from "@/app/(public)/(main)/pengguna/costomer/tambah/action"
+import { getCountDataByEmail, getCountDataByNoWa, updateData } from "@/app/(public)/(main)/pengguna/costomer/[customer]/edit/action"
+import { Customer } from "@/app/(public)/(main)/pengguna/costomer/[customer]/edit/page"
 import { CustomerGroup } from "@/app/(public)/(main)/pengguna/costomer/tambah/page"
 import { useFormik } from "formik"
 import { useRouter } from "next/navigation"
@@ -18,8 +19,9 @@ export interface Form{
     region: string
 }
 
-const Form = ({ customerGroup }: {
-    customerGroup: Array<CustomerGroup>
+const Form = ({ customerGroup, customerData }: {
+    customerGroup: Array<CustomerGroup>,
+    customerData: Customer
 }) => {
     const router = useRouter()
     const formSchema = object().shape({
@@ -35,20 +37,20 @@ const Form = ({ customerGroup }: {
 
     const form = useFormik<Form>({
         initialValues: {
-            customerGroup: '',
-            name: '',
-            email: '',
-            noWa: '',
-            address: '',
-            city: '',
-            zipCode: '',
-            region: ''
+            customerGroup: customerData.idCustomerGroup ?? '',
+            name: customerData.name,
+            email: customerData.email,
+            noWa: customerData.noWa,
+            address: customerData.address ?? '',
+            city: customerData.city,
+            zipCode: customerData.zipCode,
+            region: customerData.region
         },
         validationSchema: formSchema,
         onSubmit: async e => {
             if(await validationFormEmailAndWhatsApp()){
                 try{
-                    await addData(e)
+                    await updateData(customerData.id, e)
                     router.push("/pengguna/costomer")
                 }catch{
                     Swal.fire({
@@ -63,12 +65,12 @@ const Form = ({ customerGroup }: {
     const { handleChange, handleSubmit, values, errors, touched, isSubmitting, setFieldError } = form
     const validationFormEmailAndWhatsApp = async (): Promise<boolean> => {
         let isValid = true
-        if(await getCountDataByEmail(values.email) > 0){
+        if(await getCountDataByEmail(values.email) > 0 && values.email != customerData.email){
             setFieldError("email", "Email sudah terpakai!")
             isValid = false
         }
 
-        if(await getCountDataByNoWa(values.noWa) > 0){
+        if(await getCountDataByNoWa(values.noWa) > 0 && values.noWa != customerData.noWa){
             setFieldError("noWa", "Nomor WhatsApp sudah terpakai!")
             isValid = false
         }

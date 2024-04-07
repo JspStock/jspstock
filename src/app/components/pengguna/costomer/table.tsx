@@ -1,53 +1,71 @@
-const Tablelist = () => {
-    return (
+import { getAllData } from "@/app/(public)/(main)/pengguna/costomer/action"
+import { SearchParams } from "@/app/(public)/(main)/pengguna/costomer/page"
+import dynamic from "next/dynamic";
+import Link from "next/link";
+
+export interface Customer {
+    customerGroup: {
+        name: string;
+    } | null;
+    name: string;
+    email: string;
+    noWa: string;
+    address: string | null;
+    id: string;
+}
+
+const CheckAll = dynamic(() => import('@/app/components/pengguna/costomer/(table)/checkAll'))
+const Check = dynamic(() => import('@/app/components/pengguna/costomer/(table)/check'))
+const Pagination = dynamic(() => import('@/app/components/pengguna/costomer/(table)/pagination'))
+const DeleteButton = dynamic(() => import('@/app/components/pengguna/costomer/(table)/deleteButton'))
+
+const Tablelist = async ({ searchParams }: {
+    searchParams: SearchParams
+}) => {
+    const data = await getAllData(searchParams)
+
+    return <>
         <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900">
             <table className="table">
-                {/* head */}
                 <thead className=" text-gray-900">
                     <tr>
-                        <th>
-                            <label>
-                                <input type="checkbox" className="checkbox" />
-                            </label>
-                        </th>
+                        <th><CheckAll data={data.result} /></th>
                         <th>Grup Costomer</th>
                         <th>Nama</th>
                         <th>Email</th>
                         <th>No WhatsApp</th>
                         <th>Alamat</th>
-                        <th>Action</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {/* row 1 */}
-                    <tr>
-                        <td>
-                            <label>
-                                <input type="checkbox" className="checkbox" />
-                            </label>
-                        </td>
-                        <td>
-                            Instagram
-                        </td>
-                        <td>
-                            Pipit
-                        </td>
-                        <td>pipita@gmail.com</td>
-                        <td>085762536253</td>
-                        <td>Jl. Panekukan no 1 RT 01 RW 02 Jawa barat</td>
-                        <td>
-                            <details className="dropdown dropdown-top dropdown-end">
-                                <summary className="m-1 bg-blue-900 text-white btn">Action</summary>
-                                <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
-                                    <li><a>Edit</a></li>
-                                    <li><a>Hapus</a></li>
-                                </ul>
-                            </details>
-                        </td>
-                    </tr>
+                    {
+                        data.result.map(e => <tr key={e.id}>
+                            <td><Check data={e} /></td>
+                            <td>{e.customerGroup ? e.customerGroup.name : 'N/A'}</td>
+                            <td>{e.name}</td>
+                            <td>{e.email}</td>
+                            <td>{e.noWa}</td>
+                            <td>{e.address}</td>
+                            <td>
+                                <div className="dropdown dropdown-left">
+                                    <div tabIndex={0} role="button" className="btn btn-ghost">Lainnya</div>
+                                    <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                                        <li><Link href={`/pengguna/costomer/${e.id}/edit`}>Edit</Link></li>
+                                        <li><DeleteButton id={e.id} /></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>)
+                    }
                 </tbody>
             </table>
         </div>
-    )
+
+        <Pagination
+            hasNextPage={data.hasNextPage}
+            hasPrevPage={data.hasPrevPage}
+            page={data.page} />
+    </>
 }
 export default Tablelist

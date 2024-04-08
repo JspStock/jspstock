@@ -5,11 +5,14 @@ export default withAuth(
     function middleware(request: Request){
         const requestHeaders = new Headers(request.headers)
         requestHeaders.set('x-url', request.url)
-        return NextResponse.next({
-            request: {
-                headers: requestHeaders
-            }
-        })
+
+        if(request.url != `${process.env.BASE_URL}/manifest.json}`){
+            return NextResponse.next({
+                request: {
+                    headers: requestHeaders
+                }
+            })
+        }
     },
     {
     pages: {

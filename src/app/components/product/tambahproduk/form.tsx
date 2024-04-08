@@ -18,7 +18,6 @@ export interface Form {
     name: string,
     code: string,
     category: string,
-    qty: string,
     price: string,
     cost: string
 }
@@ -44,7 +43,6 @@ const Form = ({
         name: string().required('Nama produk tidak boleh kosong!'),
         code: string().required('Kode produk tidak boleh kosong!'),
         category: string().required('Kategori tidak boleh kosong!'),
-        qty: string().required('Kuantitas produk tidak boleh kosong!'),
         price: string().required('Harga produk tidak boleh kosong!'),
         cost: string().required('Biaya produk tidak boleh kosong!')
     })
@@ -55,7 +53,6 @@ const Form = ({
             name: '',
             code: '',
             category: '',
-            qty: '',
             price: '',
             cost: ''
         },
@@ -69,7 +66,6 @@ const Form = ({
                         formData.append("id", e.code)
                         formData.append("name", e.name)
                         formData.append("category", e.category)
-                        formData.append("qty", e.qty)
                         formData.append("price", e.price)
                         formData.append("cost", e.cost)
     
@@ -145,15 +141,6 @@ const Form = ({
                     </select>
                     {errors.category && touched.category ? <label htmlFor="" className="label">
                         <span className="label-text-alt text-error">{errors.category}</span>
-                    </label> : null}
-                </label>
-                <label className="form-control w-full">
-                    <div className="label">
-                        <span className="label-text">Quantity Produk*(Wajib)</span>
-                    </div>
-                    <input type="number" placeholder="Quantity" className="input input-bordered w-full" value={values.qty} name="qty" onChange={handleChange} />
-                    {errors.qty && touched.qty ? <label htmlFor="" className="label">
-                        <span className="label-text-alt text-error">{errors.qty}</span>
                     </label> : null}
                 </label>
                 <label className="form-control w-full">

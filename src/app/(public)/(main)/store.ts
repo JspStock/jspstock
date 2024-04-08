@@ -1,0 +1,28 @@
+"use client"
+
+import purchaseStore from "@/app/(public)/(main)/pembelian/listpembelian/store"
+import customerStore from "@/app/(public)/(main)/pengguna/costomer/store"
+import customerGroupStore from "@/app/(public)/(main)/pengguna/grupcostomer/store"
+import supplierStore from "@/app/(public)/(main)/pengguna/supplier/store"
+import categoryStore from "@/app/(public)/(main)/produk/kategori/store"
+import productListStore from "@/app/(public)/(main)/produk/listproduk/store"
+import saleStore from '@/app/(public)/(main)/penjualan/listpenjualan/store'
+import { create } from "zustand"
+
+interface Action{
+    reset: () => void
+}
+
+const useStore = create<Action>()(_ => ({
+    reset: () => {
+        purchaseStore.getState().reset()
+        customerStore.getState().reset()
+        customerGroupStore.getState().reset()
+        supplierStore.getState().reset()
+        categoryStore.getState().reset()
+        productListStore.getState().reset()
+        saleStore.getState().reset()
+    }
+}))
+
+export default useStore

@@ -56,7 +56,6 @@ export const updateProduct = async (form: FormData) => {
         const photo = form.get('image') as File
         const name = form.get('name') as string
         const category = form.get('category') as string
-        const qty = form.get('qty') as string
         const price = form.get('price') as string
         const cost = form.get('cost') as string
 
@@ -70,7 +69,6 @@ export const updateProduct = async (form: FormData) => {
                     name: name,
                     id: `PROD_${code}`,
                     idProductCategories: category ?? null,
-                    qty: parseInt(qty),
                     price: parseInt(price),
                     cost: parseInt(cost)
                 },

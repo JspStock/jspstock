@@ -19,7 +19,6 @@ export interface Form {
     name: string,
     code: string,
     category: string,
-    qty: string,
     price: string,
     cost: string
 }
@@ -62,7 +61,6 @@ const Form = ({
             name: productData.name,
             code: productData.id.split("_")[1],
             category: productData.idProductCategories || '',
-            qty: productData.qty.toString(),
             price: productData.price.toString(),
             cost: productData.cost.toString()
         },
@@ -85,7 +83,6 @@ const Form = ({
                 formData.append('code', e.code)
                 formData.append("name", e.name)
                 formData.append("category", e.category)
-                formData.append("qty", e.qty)
                 formData.append("price", e.price)
                 formData.append("cost", e.cost)
                 await updateProduct(formData)
@@ -156,15 +153,6 @@ const Form = ({
                     </select>
                     {errors.category && touched.category ? <label htmlFor="" className="label">
                         <span className="label-text-alt text-error">{errors.category}</span>
-                    </label> : null}
-                </label>
-                <label className="form-control w-full">
-                    <div className="label">
-                        <span className="label-text">Quantity Produk*(Wajib)</span>
-                    </div>
-                    <input type="number" placeholder="Quantity" className="input input-bordered w-full" value={values.qty} name="qty" onChange={handleChange} />
-                    {errors.qty && touched.qty ? <label htmlFor="" className="label">
-                        <span className="label-text-alt text-error">{errors.qty}</span>
                     </label> : null}
                 </label>
                 <label className="form-control w-full">

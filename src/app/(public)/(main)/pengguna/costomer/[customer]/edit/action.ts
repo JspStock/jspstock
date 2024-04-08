@@ -65,8 +65,7 @@ export const updateData = async (id: string, data: Form) => {
                 id: id
             },
             data: {
-                idCustomerGroup: data.customerGroup,
-                name: data.customerGroup,
+                name: data.name,
                 email: data.email,
                 noWa: data.noWa,
                 address: data.address,

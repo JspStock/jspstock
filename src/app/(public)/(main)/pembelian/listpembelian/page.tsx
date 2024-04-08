@@ -8,7 +8,7 @@ const PrintButton = dynamic(() => import('@/app/components/pembelian/listpembeli
 const DeleteButton = dynamic(() => import('@/app/components/pembelian/listpembelian/deleteButton'))
 const TableLoadingSkeleton = dynamic(() => import('@/app/components/tableLoadingSkeleton'))
 const Perpage = dynamic(() => import("@/app/components/pembelian/listpembelian/perpage"))
-const Datepicker = dynamic(() => import("@/app/components/pembelian/listpembelian/datepicker"))
+const Datepicker = dynamic(() => import("@/app/components/datePicker"))
 const SearchForm = dynamic(() => import('@/app/components/pembelian/listpembelian/searchForm'))
 
 export interface SearchParams {

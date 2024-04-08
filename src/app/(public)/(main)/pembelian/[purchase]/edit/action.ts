@@ -79,7 +79,7 @@ export const updatePurchase = async (form: FormData) => {
         const parseOrder = JSON.parse(order) as Array<Order>
 
         await prisma.$transaction(async e => {
-            const idPurchase = await e.purchase.update({
+            const purchase = await e.purchase.update({
                 where: {
                     idStore: cookies().get('store')?.value,
                     id: id
@@ -118,17 +118,19 @@ export const updatePurchase = async (form: FormData) => {
                 })
 
                 const updateProduct = () => {
+                    let qty = qtyProduct!.qty
+
                     if(i.isDelete == true && i.isNewAdded == false ){
-                        return qtyProduct!.qty + i.selectQtyOld
+                        qty -= i.selectQtyOld
                     }else if(i.selectQty > i.selectQtyOld){
-                        return qtyProduct!.qty - (i.selectQtyOld - i.selectQty)
+                        qty += (i.selectQty - i.selectQtyOld)
                     }else if(i.selectQty < i.selectQtyOld){
-                        return qtyProduct!.qty + (i.selectQtyOld - i.selectQty)
+                        qty -= (i.selectQtyOld - i.selectQty)
                     }else if(i.isNewAdded == true && i.isDelete == false){
-                        return qtyProduct!.qty - i.selectQty
-                    }else{
-                        return undefined
+                        qty += i.selectQty
                     }
+
+                    return qty
                 }
 
                 await e.product.update({
@@ -145,12 +147,12 @@ export const updatePurchase = async (form: FormData) => {
             if (document != null) {
                 const buffer = Buffer.from(await document.arrayBuffer()).toString("base64")
                 const resultUpload = await Cloudinary.uploader.upload(`data:${document.type};base64,${buffer}`, {
-                    public_id: `${cookies().get('store')?.value}/purchase/${idPurchase.id}`,
+                    public_id: `${cookies().get('store')?.value}/purchase/${purchase.id}`,
                 })
 
                 await e.purchase.update({
                     where: {
-                        id: idPurchase.id,
+                        id: purchase.id,
                         idStore: cookies().get('store')?.value
                     },
                     data: {

@@ -5,10 +5,10 @@ import { Suspense } from "react"
 import { Metadata } from "next"
 
 const TableLoadingSkeleton = dynamic(() => import('@/app/components/tableLoadingSkeleton'))
-const Perpage = dynamic(() => import("@/app/components/pengguna/costomer/perpage"))
+const Perpage = dynamic(() => import("@/app/components/perpage"))
 const PrintButton = dynamic(() => import('@/app/components/pengguna/costomer/printButton'))
 const DeleteButton = dynamic(() => import('@/app/components/pengguna/costomer/deleteButton'))
-const SearchForm = dynamic(() => import('@/app/components/pengguna/costomer/searchForm'))
+const SearchForm = dynamic(() => import('@/app/components/searchForm'))
 
 export interface SearchParams{
     show?: string,

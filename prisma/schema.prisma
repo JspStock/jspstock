@@ -60,10 +60,8 @@ model Store{
   purchase Purchase[]
   purchaseOrder PurchaseOrder[]
   savingAccounts SavingAccounts[]
-  purchasePayment PurchasePayment[]
   sales Sales[]
   saleOrder SaleOrder[]
-  salePayment SalePayment[]
   expenditureCategory ExpenditureCategory[]
   expenditures Expenditures[]
   saleReturns SaleReturns[]
@@ -143,7 +141,6 @@ model SavingAccounts{
   createdAt DateTime @default(now())
 
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  purchasePayment PurchasePayment[]
   expenditures Expenditures[]
   sender MoneyTransfer[] @relation("FromSavingAccounts")
   recipient MoneyTransfer[] @relation("ToSavingAccounts")
@@ -178,9 +175,7 @@ model Product{
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
   productCategories ProductCategories? @relation(fields: [idProductCategories], references: [id], onDelete: SetNull, onUpdate: Cascade)
   purchaseOrder PurchaseOrder[]
-  sales Sales[]
   saleOrder SaleOrder[]
-  salePayment SalePayment[]
   saleReturns SaleReturns[]
   packaging Packaging[]
   packagingOrder PackagingOrder[]
@@ -200,7 +195,6 @@ model Purchase{
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
   supplier Supplier? @relation(fields: [idSupplier], references: [id], onDelete: SetNull, onUpdate: Cascade)
   purchaseOrder PurchaseOrder[]
-  purchasePayment PurchasePayment[]
   purchaseReturns PurchaseReturns[]
 }
 
@@ -208,35 +202,20 @@ model PurchaseOrder{
   id String @id @default(uuid())
   idStore String
   idPurchase String
-  idProduct String?
+  idProduct String
   qty Int
   createdAt DateTime @default(now())
 
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
   purchase Purchase @relation(fields: [idPurchase], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  product Product? @relation(fields: [idProduct], references: [id], onDelete: SetNull, onUpdate: Cascade)
-}
-
-model PurchasePayment{
-  id String @id
-  idStore String
-  idPurchase String
-  idSavingAccount String?
-  total Int
-  paymentMethods PaymentMethods
-  notes String?
-  createdAt DateTime @default(now())
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  purchase Purchase @relation(fields: [idPurchase], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  savingAccounts SavingAccounts? @relation(fields: [idSavingAccount], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  product Product @relation(fields: [idProduct], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Sales{
   id String @id
   idStore String
-  idProduct String?
   idCustomerUser String?
+  documentPath String?
   saleStatus SaleStatus
   purchaseStatus SalePurchaseStatus
   discount Int @default(0)
@@ -246,36 +225,21 @@ model Sales{
   createdAt DateTime @default(now())
 
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  product Product? @relation(fields: [idProduct], references: [id], onDelete: SetNull, onUpdate: Cascade)
   customerUser CustomerUser? @relation(fields: [idCustomerUser], references: [id], onDelete: SetNull, onUpdate: Cascade)
   saleOrder SaleOrder[]
-  salePayment SalePayment[]
 }
 
 model SaleOrder{
   id String @id @default(uuid())
   idStore String
   idSale String
-  idProduct String?
+  idProduct String
   qty Int
   createdAt DateTime @default(now())
 
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
   sale Sales @relation(fields: [idSale], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  product Product? @relation(fields: [idProduct], references: [id], onDelete: SetNull, onUpdate: Cascade)
-}
-
-model SalePayment{
-  id String @id @default(uuid())
-  idStore String
-  idSales String
-  idProduct String?
-  qty Int
-  createdAt DateTime @default(now())
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  sale Sales @relation(fields: [idSales], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  product Product? @relation(fields: [idProduct], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  product Product @relation(fields: [idProduct], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model ExpenditureCategory{

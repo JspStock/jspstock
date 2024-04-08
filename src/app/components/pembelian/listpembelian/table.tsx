@@ -6,7 +6,7 @@ import moment from "moment"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 
-const Pagination = dynamic(() => import('@/app/components/pembelian/listpembelian/pagination'))
+const Pagination = dynamic(() => import('@/app/components/pagination'))
 const CheckAll = dynamic(() => import('@/app/components/pembelian/listpembelian/(table)/checkAll'))
 const Check = dynamic(() => import('@/app/components/pembelian/listpembelian/(table)/check'))
 const DeleteButton = dynamic(() => import('@/app/components/pembelian/listpembelian/(table)/deleteButton'))
@@ -95,11 +95,10 @@ const Tablelist = async ({ searchParams }: {
             </table>
         </div>
 
-        <Pagination pagination={{
-            page: purchaseData.page,
-            hasNextPage: purchaseData.hasNextPage,
-            hasPrevPage: purchaseData.hasPrevPage
-        }} />
+        <Pagination 
+            hasNextPage={purchaseData.hasNextPage}
+            hasPrevPage={purchaseData.hasPrevPage}
+            page={purchaseData.page} />
     </>
 }
 

@@ -1,11 +1,10 @@
 "use client"
 
-import useStore from '@/app/(public)/(main)/pembelian/listpembelian/store'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import DatePicker, { DateValueType } from 'react-tailwindcss-datepicker'
+import useStore from '../(public)/(main)/store'
 
 const Datepickers = () => {
-    const reset = useStore(state => state.reset)
     const router = useRouter()
     const pathName = usePathname()
     const searchParams = useSearchParams()
@@ -18,7 +17,7 @@ const Datepickers = () => {
             params.delete("date")
         }
 
-        reset()
+        useStore.getState().reset()
         router.replace(`${pathName}/${params.size > 0 ? `?${params}` : ''}`)
     }
 

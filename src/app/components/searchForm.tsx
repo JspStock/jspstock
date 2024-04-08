@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useDebouncedCallback } from "use-debounce"
+import useStore from "../(public)/(main)/store"
 
 const SearchForm = () => {
     const router = useRouter()
@@ -11,6 +12,7 @@ const SearchForm = () => {
     const handleChange = useDebouncedCallback((val: string) => {
         params.set('search', val)
         router.replace(`${pathName}/${params.size > 0 ? `?${params}` : ''}`)
+        useStore.getState().reset()
     }, 300)
 
     return <input 

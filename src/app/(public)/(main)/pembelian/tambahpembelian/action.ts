@@ -73,7 +73,7 @@ export const addPurchase = async (form: FormData) => {
                         id: i.id
                     },
                     data: {
-                        qty: i.qty - i.selectQty
+                        qty: i.qty + i.selectQty
                     }
                 })
             }

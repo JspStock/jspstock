@@ -29,7 +29,6 @@ export const addProduct = async (form: FormData) => {
         const productId = form.get('id') as string
         const name = form.get('name') as string
         const categoryId = form.get('category') as string
-        const qty = form.get('qty') as string
         const price = form.get('price') as string
         const cost = form.get('cost') as string
 
@@ -40,7 +39,7 @@ export const addProduct = async (form: FormData) => {
                     id: `PROD_${productId}`,
                     name: name,
                     idProductCategories: categoryId,
-                    qty: parseInt(qty),
+                    qty: 0,
                     price: parseInt(price),
                     cost: parseInt(cost),
                     imagePath: '',

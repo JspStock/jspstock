@@ -1,6 +1,7 @@
 "use client"
 
-import { addData, getCountDataById } from "@/app/(public)/(main)/penjualan/tambahpenjualan/action"
+import { getCountDataById, updateData } from "@/app/(public)/(main)/penjualan/listpenjualan/[sales]/edit/action"
+import { Sales } from "@/app/(public)/(main)/penjualan/listpenjualan/[sales]/edit/page"
 import { Customer, Product } from "@/app/(public)/(main)/penjualan/tambahpenjualan/page"
 import { $Enums } from "@prisma/client"
 import { useFormik } from "formik"
@@ -16,12 +17,14 @@ const Comboboxproduk = dynamic(() => import("@/app/components/comboBoxInput"))
 
 export interface Order {
     id: string,
+    idOrder?: string,
     name: string,
-    qty: string
+    qty: string,
 }
 
 export interface Form {
     order: Array<Order>,
+    orderDeleted: Array<Order>,
     document: File | undefined,
     ref: string | undefined,
     customer: Customer | undefined,
@@ -34,14 +37,15 @@ export interface Form {
 }
 
 export type FormWithoutDocument = Omit<Form, 'document'>
-const Form = ({ product, customer }: {
+const Form = ({ product, customer, sales }: {
     product: Array<Product>,
-    customer: Array<Customer>
+    customer: Array<Customer>,
+    sales: Sales
 }) => {
     const router = useRouter()
     const formSchema = object().shape({
         order: array().min(1, "Order tidak boleh kosong!"),
-        ref: string(),
+        ref: string().required("Nomor referensi tidak boleh kosong!"),
         customer: mixed().required('Kustomer tidak boleh kosong!'),
         saleStatus: string().required("Status penjualan tidak boleh kosong!"),
         salePurchaseStatus: string().required("Status pembayaran tidak boleh kosong!")
@@ -49,21 +53,27 @@ const Form = ({ product, customer }: {
 
     const form = useFormik<Form>({
         initialValues: {
-            order: [],
+            order: sales.saleOrder.map(e => ({
+                id: e.product.id,
+                idOrder: e.id,
+                name: e.product.name,
+                qty: e.qty.toString(),
+            })),
+            orderDeleted: [],
             document: undefined,
-            ref: undefined,
-            customer: undefined,
-            saleStatus: undefined,
-            salePurchaseStatus: undefined,
-            discount: undefined,
-            shippingCost: undefined,
-            saleNotes: undefined,
-            staffNotes: undefined
+            ref: sales.id.split("_")[1],
+            customer: sales.idCustomerUser ? customer.find(e => e.id == sales.idCustomerUser) : undefined,
+            saleStatus: sales.saleStatus,
+            salePurchaseStatus: sales.purchaseStatus,
+            discount: sales.discount.toString(),
+            shippingCost: sales.shippingCost.toString(),
+            saleNotes: sales.saleNotes ?? undefined,
+            staffNotes: sales.staffNotes ?? undefined
         },
         validationSchema: formSchema,
         onSubmit: async e => {
             try{
-                if(e.ref != undefined && e.ref.trim() != ""){
+                if(e.ref == sales.id){
                     if(await checkIdExists() == false){
                         return false
                     }
@@ -73,7 +83,7 @@ const Form = ({ product, customer }: {
                 const formWithoutDocument: Form = {...e}
                 delete formWithoutDocument.document
                 
-                await addData(formWithoutDocument, document)
+                await updateData(sales.id, formWithoutDocument, document)
                 router.push('/penjualan/listpenjualan')
             }catch{
                 Swal.fire({
@@ -95,8 +105,11 @@ const Form = ({ product, customer }: {
             return false
         }
     }
-    const handleChangeProduct = (e: Product) => setFieldValue("order", [...values.order, { ...e, qty: 1 }])
-    const handleDeleteItemProuct = (val: number) => setFieldValue("order", [...values.order].filter((_, index) => index != val))
+    const handleChangeProduct = (e: Product) => setFieldValue("order", [...values.order, { ...e, qty: 1, action: "add" }])
+    const handleDeleteItemProuct = (val: number) => {
+        setFieldValue('orderDeleted', [...values.orderDeleted, values.order.find((_, index) => index == val)])
+        setFieldValue('order', [...values.order].filter((_, index) => index != val))
+    }
     const handleChangeQtyItemProduct = (index: number, qty: string) => setFieldValue(`order[${index}].qty`, qty)
 
     return (

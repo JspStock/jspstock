@@ -35,11 +35,7 @@ const TableTambahpembelian = ({ data, changeQty, onDelete }: {
                     {data.map((e, index) => !e.isDelete ? <tr key={index}>
                         <td>{ e.name }</td>
                         <td>{ e.id.split("_")[1] }</td>
-                        <td>
-                            <select className="select select-bordered" onChange={val => changeQty(index, val.target.value)} value={e.selectQty}>
-                                { Array.from({ length: e.qty }).map((_, index) => <option value={index + 1} selected={(index + 1) == e.selectQty} key={index}>{index + 1} Pcs</option>) }
-                            </select>
-                        </td>
+                        <td><input type="number" className="input input-bordered max-w-20" value={e.selectQty} onChange={e => changeQty(index, e.target.value)} /></td>
                         <td>{ currencyFormat(e.price) }</td>
                         <td>{ currencyFormat(e.subTotal) }</td>
                         <td><button type="button" className="btn btn-ghost text-red-400" onClick={() => onDelete(index)}>Hapus</button></td>

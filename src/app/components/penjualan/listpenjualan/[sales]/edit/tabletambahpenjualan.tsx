@@ -1,8 +1,8 @@
 "use client"
 
 import { Product } from "@/app/(public)/(main)/penjualan/tambahpenjualan/page"
+import { Order } from "./form"
 import { currencyFormat } from "@/utils/utils"
-import { Order } from "../listpenjualan/[sales]/edit/form"
 
 const TableTambahpembelian = ({ order, product, onDeleteItem, onChangeQtyItem }: {
     order: Array<Order>,

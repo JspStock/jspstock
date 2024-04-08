@@ -1,6 +1,7 @@
 "use client"
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import useStore from "../(public)/(main)/store"
 
 const Perpage = () => {
     const router = useRouter()
@@ -10,6 +11,7 @@ const Perpage = () => {
     const handleClick = (val: string) => {
         params.set('show', val)
         router.replace(`${pathName}/${params.size > 0 ? `?${params}` : ''}`)
+        useStore.getState().reset()
     }
 
     return (

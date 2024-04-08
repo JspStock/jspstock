@@ -38,7 +38,7 @@ export const deleteData = async ({ data }: { data: Array<string> }) => {
                             id: i.product!.id
                         },
                         data: {
-                            qty: i.product!.qty + i.qty
+                            qty: i.product!.qty - i.qty
                         }
                     })
                 }

@@ -1,11 +1,16 @@
+import { Metadata } from "next"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 
 const TableList = dynamic(() => import("@/app/components/pengeluaran/listpengeluaran/table"))
 const Pagination = dynamic(() => import("@/app/components/pengeluaran/listpengeluaran/pagination"))
 const Perpage = dynamic(() => import("@/app/components/pengeluaran/listpengeluaran/perpage"))
-const Datepicker = dynamic(() => import("@/app/components/pengeluaran/listpengeluaran/datepicker"))
+const Datepicker = dynamic(() => import("@/app/components/datePicker"))
 const TabsList = dynamic(() => import("@/app/components/pengeluaran/listpengeluaran/tablist"))
+
+export const metadata: Metadata = {
+    title: 'Daftar pengeluaran'
+}
 
 export default function Listpenngeluaran() {
     return (

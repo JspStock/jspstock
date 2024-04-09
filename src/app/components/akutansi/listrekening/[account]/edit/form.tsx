@@ -1,6 +1,7 @@
 "use client"
 
-import { addData, getCountDataByNo } from "@/app/(public)/(main)/akutansi/listrekening/tambah/action"
+import { getCountDataByNo, updateData } from "@/app/(public)/(main)/akutansi/listrekening/[account]/edit/action"
+import { SavingAccount } from "@/app/(public)/(main)/akutansi/listrekening/[account]/edit/page"
 import { useFormik } from "formik"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
@@ -13,7 +14,9 @@ export interface Form{
     startingBalance: number
 }
 
-const Form = () => {
+const Form = ({ data }: {
+    data: SavingAccount
+}) => {
     const router = useRouter()
     const formSchema = object().shape({
         no: string().required("Nomor rekening harus diisi!"),
@@ -23,16 +26,16 @@ const Form = () => {
 
     const form = useFormik<Form>({
         initialValues: {
-            no: '',
-            name: '',
-            notes: '',
-            startingBalance: 0
+            no: data.id,
+            name: data.name,
+            notes: data.notes ?? '',
+            startingBalance: data.startingBalance
         },
         validationSchema: formSchema,
         onSubmit: async e => {
             try{
                 if(await checkExistsNo()){
-                    await addData(e)
+                    await updateData(data.id, e)
                     router.push("/akutansi/listrekening")
                 }else{
                     return false

@@ -1,6 +1,7 @@
 "use client"
 
-import { addData } from "@/app/(public)/(main)/pengeluaran/kategoripengeluaran/tambah/action"
+import { ExpenditureCategory, Params } from "@/app/(public)/(main)/pengeluaran/kategoripengeluaran/[expenditures]/edit/page"
+import { updateData } from "@/app/(public)/(main)/pengeluaran/kategoripengeluaran/tambah/action"
 import { useFormik } from "formik"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
@@ -10,7 +11,10 @@ export interface Form{
     name: string
 }
 
-const Form = () => {
+const Form = ({ params, data }: {
+    params: Params,
+    data: ExpenditureCategory
+}) => {
     const router = useRouter()
     const formSchema = object().shape({
         name: string().required("Nama pengeluaran tidak boleh kosong!")
@@ -18,12 +22,12 @@ const Form = () => {
 
     const form = useFormik<Form>({
         initialValues: {
-            name: ''
+            name: data.name
         },
         validationSchema: formSchema,
         onSubmit: async (e) => {
             try{
-                await addData(e)
+                await updateData({ id: params.expenditures, name: e.name })
                 router.push('/pengeluaran/kategoripengeluaran')
             }catch{
                 Swal.fire({
@@ -34,7 +38,7 @@ const Form = () => {
             }
         }
     })
-    const { values, handleSubmit, handleChange, touched, isSubmitting, setFieldError, errors } = form
+    const { values, handleSubmit, handleChange, touched, isSubmitting, errors } = form
 
 
     return (

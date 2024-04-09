@@ -1,21 +1,58 @@
+"use client"
+
+import { addData, getCountDataById } from "@/app/(public)/(main)/pengeluaran/kategoripengeluaran/tambah/action"
+import { useFormik } from "formik"
+import { useRouter } from "next/navigation"
+import Swal from "sweetalert2"
+import { object, string } from "yup"
+
+export interface Form{
+    name: string
+}
+
 const Form = () => {
+    const router = useRouter()
+    const formSchema = object().shape({
+        name: string().required("Nama pengeluaran tidak boleh kosong!")
+    })
+
+    const form = useFormik<Form>({
+        initialValues: {
+            name: ''
+        },
+        validationSchema: formSchema,
+        onSubmit: async (e) => {
+            try{
+                await addData(e)
+                router.push('/pengeluaran/kategoripengeluaran')
+            }catch{
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi kesalahan!',
+                    text: 'Kesalahan pada server, silahkan coba kembali beberapa saat.'
+                })
+            }
+        }
+    })
+    const { values, handleSubmit, handleChange, touched, isSubmitting, setFieldError, errors } = form
+
+
     return (
-        <form className="mt-10">
+        <form className="mt-10" onSubmit={handleSubmit}>
             <div className="grid lg:grid-cols-2 gap-5 mt-5">
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
-                        <span className="label-text">Kode Pengeluaran*(Wajib)</span>
-                    </div>
-                    <input type="text" placeholder="Kode" className="input input-bordered w-full max-w-xs" />
-                </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
                         <span className="label-text">Nama Pengeluaran*(Wajib)</span>
                     </div>
-                    <input type="text" placeholder="Nama" className="input input-bordered w-full max-w-xs" />
+                    <input type="text" placeholder="Nama" className="input input-bordered w-full max-w-xs" name="name" value={values.name} onChange={handleChange} />
+                    { errors.name && touched.name ? <label htmlFor="" className="label"><span className="label-text-error">{ errors.name }</span></label> : null }
                 </label>
             </div>
-            <button className="btn bg-blue-900 my-5 text-white">Simpan</button>
+
+            <button type="submit" className="btn bg-blue-900 my-5 text-white" disabled={isSubmitting}>
+                { isSubmitting ? <div className="loading"></div> : null }
+                <span>Simpan</span>
+            </button>
         </form>
     )
 }

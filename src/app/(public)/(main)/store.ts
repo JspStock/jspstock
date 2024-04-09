@@ -7,6 +7,7 @@ import supplierStore from "@/app/(public)/(main)/pengguna/supplier/store"
 import categoryStore from "@/app/(public)/(main)/produk/kategori/store"
 import productListStore from "@/app/(public)/(main)/produk/listproduk/store"
 import saleStore from '@/app/(public)/(main)/penjualan/listpenjualan/store'
+import expenditureCategoryStore from '@/app/(public)/(main)/pengeluaran/kategoripengeluaran/store'
 import { create } from "zustand"
 
 interface Action{
@@ -22,6 +23,7 @@ const useStore = create<Action>()(_ => ({
         categoryStore.getState().reset()
         productListStore.getState().reset()
         saleStore.getState().reset()
+        expenditureCategoryStore.getState().reset()
     }
 }))
 

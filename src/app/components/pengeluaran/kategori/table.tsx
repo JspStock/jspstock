@@ -1,45 +1,57 @@
-const TableKategori = () => {
-    return (
+import { getAllData } from "@/app/(public)/(main)/pengeluaran/kategoripengeluaran/action"
+import { SearchParams } from "@/app/(public)/(main)/pengeluaran/kategoripengeluaran/page"
+import dynamic from "next/dynamic";
+import Link from "next/link"
+
+const CheckAll = dynamic(() => import('@/app/components/pengeluaran/kategori/(table)/checkAll'))
+const Check = dynamic(() => import('@/app/components/pengeluaran/kategori/(table)/check'))
+const DeleteButton = dynamic(() => import('@/app/components/pengeluaran/kategori/(table)/deleteButton'))
+const Pagination = dynamic(() => import('@/app/components/pagination'))
+
+export interface ExpenditureCategory {
+    id: string;
+    name: string;
+}
+
+const TableKategori = async ({ searchParams }: {
+    searchParams: SearchParams
+}) => {
+    const expenditureCategory = await getAllData(searchParams)
+
+    return <>
         <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900">
             <table className="table">
-                {/* head */}
                 <thead className=" text-gray-900">
                     <tr>
-                        <th>
-                            <label>
-                                <input type="checkbox" className="checkbox" />
-                            </label>
-                        </th>
+                        <th><CheckAll data={expenditureCategory.result} /></th>
                         <th>Kode</th>
                         <th>Nama</th>
-                        <th>Action</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {/* row 1 */}
-                    <tr>
+                    {expenditureCategory.result.map((e, index) => <tr key={index}>
+                        <td><Check data={e} /></td>
+                        <td>{e.id.split('_')[1]}</td>
+                        <td>{e.name}</td>
                         <td>
-                            <label>
-                                <input type="checkbox" className="checkbox" />
-                            </label>
-                        </td>
-                        <td>
-                            KBB02
-                        </td>
-                        <td>Pengeluaran Beli barang ke supplier</td>
-                        <td>
-                            <details className="dropdown dropdown-top dropdown-end">
-                                <summary className="m-1 bg-blue-900 text-white btn">Action</summary>
-                                <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
-                                    <li><a>Edit</a></li>
-                                    <li><a>Hapus</a></li>
+                            <div className="dropdown dropdown-left">
+                                <div tabIndex={0} role="button" className="btn btn-ghost">Lainnya</div>
+                                <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                                    <li><Link href={`/pengeluaran/kategoripengeluaran/${e.id}/edit`}>Edit</Link></li>
+                                    <li><DeleteButton id={e.id} /></li>
                                 </ul>
-                            </details>
+                            </div>
                         </td>
-                    </tr>
+                    </tr>)}
                 </tbody>
             </table>
         </div>
-    )
+
+        <Pagination
+            hasNextPage={expenditureCategory.hasNextPage}
+            hasPrevPage={expenditureCategory.hasPrevPage}
+            page={expenditureCategory.page} />
+    </>
 }
 export default TableKategori

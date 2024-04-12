@@ -1,7 +1,7 @@
 "use client"
 
+import { updateData } from "@/app/(public)/(main)/pengeluaran/kategoripengeluaran/[expenditures]/edit/action"
 import { ExpenditureCategory, Params } from "@/app/(public)/(main)/pengeluaran/kategoripengeluaran/[expenditures]/edit/page"
-import { updateData } from "@/app/(public)/(main)/pengeluaran/kategoripengeluaran/tambah/action"
 import { useFormik } from "formik"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"

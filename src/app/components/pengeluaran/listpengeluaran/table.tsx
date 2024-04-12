@@ -1,54 +1,62 @@
+import { getAllData } from "@/app/(public)/(main)/pengeluaran/listpengeluaran/action"
+import { SearchParams } from "@/app/(public)/(main)/pengeluaran/listpengeluaran/page"
+import { currencyFormat } from "@/utils/utils"
+import moment from "moment"
+import dynamic from "next/dynamic"
 import Link from "next/link"
 
-const Tablelist = () => {
-    return (
+export interface Expenditures {
+    expenditureCategory: {
+        name: string;
+    } | null;
+    createdAt: Date;
+    id: string;
+    total: number;
+    notes: string | null;
+}
+
+const Pagination = dynamic(() => import('@/app/components/pagination'))
+const CheckAll = dynamic(() => import('@/app/components/pengeluaran/listpengeluaran/(table)/checkAll'))
+const Check = dynamic(() => import('@/app/components/pengeluaran/listpengeluaran/(table)/check'))
+const DeleteButton = dynamic(() => import('@/app/components/pengeluaran/listpengeluaran/(table)/deleteButton'))
+
+const Tablelist = async ({ searchParams }: {
+    searchParams: SearchParams
+}) => {
+    const expenditures = await getAllData(searchParams)
+
+    return <>
         <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900">
             <table className="table">
-                {/* head */}
                 <thead className=" text-gray-900">
                     <tr>
-                        <th>
-                            <label>
-                                <input type="checkbox" className="checkbox" />
-                            </label>
-                        </th>
+                        <th><CheckAll data={expenditures.result} /></th>
                         <th>Tanggal</th>
                         <th>Referensi</th>
-                        <th>Toko</th>
                         <th>Kategori</th>
                         <th>Jumlah</th>
                         <th>Catatan</th>
-                        <th>Action</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {/* row 1 */}
-                    <tr>
+                    {expenditures.result.map((e, index) => <tr key={index}>
+                        <td><Check data={e} /></td>
+                        <td>{moment(e.createdAt).format('DD-MM-YYYY')}</td>
+                        <td>{e.id}</td>
+                        <td>{e.expenditureCategory?.name}</td>
+                        <td>{currencyFormat(e.total)}</td>
+                        <td>{e.notes}</td>
                         <td>
-                            <label>
-                                <input type="checkbox" className="checkbox" />
-                            </label>
-                        </td>
-                        <td>
-                            10-04-2023
-                        </td>
-                        <td>
-                            posr-28134812-827263
-                        </td>
-                        <td>JSP OLSHOP DEPOK</td>
-                        <td>Pengeluaran beli Barang ke supplier</td>
-                        <td>Rp.10000</td>
-                        <td>Pembelanjaan Supplier tgl 9 maret 2024</td>
-                        <td>
-                            <details className="dropdown dropdown-top dropdown-end">
-                                <summary className="m-1 bg-blue-900 text-white btn">Action</summary>
-                                <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
-                                    <li><a>Edit</a></li>
-                                    <li><a>Hapus</a></li>
+                            <div className="dropdown dropdown-left">
+                                <div tabIndex={0} role="button" className="btn">Lainnya</div>
+                                <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box">
+                                    <li><Link href={`/pengeluaran/listpengeluaran/${e.id}/edit`}>Edit</Link></li>
+                                    <li><DeleteButton id={e.id} /></li>
                                 </ul>
-                            </details>
+                            </div>
                         </td>
-                    </tr>
+                    </tr>)}
                 </tbody>
                 <tfoot>
                     <tr>
@@ -56,15 +64,16 @@ const Tablelist = () => {
                         <th>Total</th>
                         <th></th>
                         <th></th>
-                        <th></th>
-                        <th>Rp.100000</th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
+                        <th>{currencyFormat(expenditures.result.length > 0 ? expenditures.result.map(e => e.total).reduce((val, prev) => val + prev) : 0)}</th>
                     </tr>
                 </tfoot>
             </table>
         </div>
-    )
+
+        <Pagination
+            hasNextPage={expenditures.hasNextPage}
+            hasPrevPage={expenditures.hasPrevPage}
+            page={expenditures.page} />
+    </>
 }
 export default Tablelist

@@ -1,36 +1,45 @@
 import { Metadata } from "next"
 import dynamic from "next/dynamic"
 import Link from "next/link"
+import { Suspense } from "react"
+import TableList from "@/app/components/pengeluaran/listpengeluaran/table"
 
-const TableList = dynamic(() => import("@/app/components/pengeluaran/listpengeluaran/table"))
-const Pagination = dynamic(() => import("@/app/components/pengeluaran/listpengeluaran/pagination"))
-const Perpage = dynamic(() => import("@/app/components/pengeluaran/listpengeluaran/perpage"))
+const TableLoadingSkeleton = dynamic(() => import('@/app/components/tableLoadingSkeleton'))
 const Datepicker = dynamic(() => import("@/app/components/datePicker"))
-const TabsList = dynamic(() => import("@/app/components/pengeluaran/listpengeluaran/tablist"))
+const SearchForm = dynamic(() => import('@/app/components/searchForm'))
+const PerPage = dynamic(() => import('@/app/components/perpage'))
+const DeleteButton = dynamic(() => import('@/app/components/pengeluaran/listpengeluaran/deleteButton'))
+const PrintButton = dynamic(() => import('@/app/components/pengeluaran/listpengeluaran/printButton'))
+
+export interface SearchParams {
+    show?: string,
+    date?: string,
+    search?: string,
+    page?: string
+}
 
 export const metadata: Metadata = {
     title: 'Daftar pengeluaran'
 }
 
-export default function Listpenngeluaran() {
+export default function Listpenngeluaran({ searchParams }: { searchParams: SearchParams }) {
     return (
         <>
             <div className="lg:flex mb-5 w-full items-center justify-center p-5 bg-white rounded-lg space-x-2">
                 <Datepicker />
-                <button className="btn bg-blue-900 mt-9 text-white">Submit</button>
             </div>
             <div className="flex max-lg:grid max-lg:space-y-2 lg:space-x-2">
                 <Link href="/pengeluaran/listpengeluaran/tambah" className="text-white w-62 border-0 bg-green-500 btn">+ Tambah List Pengeluaran</Link>
                 <div className="max-lg:flex max-lg:space-x-2 lg:space-x-2">
-                    <button className="text-white w-20 border-0 bg-gray-400 btn">Print</button>
-                    <button className="text-white w-20 border-0 bg-red-400 btn">Hapus</button>
+                    <PrintButton />
+                    <DeleteButton />
                 </div>
             </div>
-            <input type="text" placeholder="Pencarian" className="input mt-5 bg-white text-gray-900 input-bordered w-full max-w-xs" />
-            <Perpage />
-            <TabsList />
-            <TableList />
-            <Pagination />
+            <SearchForm />
+            <PerPage />
+            <Suspense fallback={<TableLoadingSkeleton />} key={`${searchParams.date}_${searchParams.page}_${searchParams.search}_${searchParams.show}`}>
+                <TableList searchParams={searchParams} />
+            </Suspense>
         </>
     )
 }

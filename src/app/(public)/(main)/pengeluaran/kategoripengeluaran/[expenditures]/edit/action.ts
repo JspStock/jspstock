@@ -1,7 +1,6 @@
 "use server"
 
 import { cookies } from "next/headers"
-import { Form } from "@/app/components/pengeluaran/kategori/tambah/form"
 import { revalidatePath } from "next/cache"
 import prisma from "../../../../../../../../prisma/database"
 
@@ -15,18 +14,20 @@ export const getData = async (id: string) => await prisma.expenditureCategory.fi
     }
 })
 
-export const addData = async (data: Form) => {
+export const updateData = async ({ id, name }: {id: string, name: string}) => {
     try{
-        await prisma.expenditureCategory.create({
+        await prisma.expenditureCategory.update({
+            where: {
+                idStore: cookies().get('store')?.value,
+                id: id
+            },
             data: {
-                id: `KGR_${Date.now()}`,
-                idStore: cookies().get('store')!.value,
-                name: data.name
+                name: name
             }
         })
 
         revalidatePath("/", "layout")
     }catch{
-        throw new Error("Kesalan pada server!")
+        throw new Error("Kesalahan pada server!")
     }
 }

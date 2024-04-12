@@ -1,7 +1,7 @@
 "use client"
 
-import { addData } from "@/app/(public)/(main)/pengeluaran/listpengeluaran/tambah/action"
-import { ExpenditureCategory, SavingAccounts } from "@/app/(public)/(main)/pengeluaran/listpengeluaran/tambah/page"
+import { updateData } from "@/app/(public)/(main)/pengeluaran/listpengeluaran/[expenditure]/edit/action"
+import { Expenditure, ExpenditureCategory, SavingAccounts } from "@/app/(public)/(main)/pengeluaran/listpengeluaran/[expenditure]/edit/page"
 import { useFormik } from "formik"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
@@ -14,9 +14,10 @@ export interface FormState {
     note: string | undefined
 }
 
-const Form = ({ expenditureCategory, savingAccounts }: {
+const Form = ({ expenditureCategory, savingAccounts, data }: {
     expenditureCategory: Array<ExpenditureCategory>,
-    savingAccounts: Array<SavingAccounts>
+    savingAccounts: Array<SavingAccounts>,
+    data: Expenditure
 }) => {
     const router = useRouter()
     const formSchema = object().shape({
@@ -34,17 +35,17 @@ const Form = ({ expenditureCategory, savingAccounts }: {
 
     const form = useFormik<FormState>({
         initialValues: {
-            expenditureCategory: "",
-            account: "",
-            totalExpenditure: 0,
-            note: undefined
+            expenditureCategory: data.idExpenditureCategory ?? undefined,
+            account: data.idSavingAccount ?? undefined,
+            totalExpenditure: data.total,
+            note: data.notes ?? undefined
         },
         validationSchema: formSchema,
         onSubmit: async (e, {setFieldError}) => {
             try{
                 const balance = savingAccounts.find(val => val.id == e.account)!.startingBalance
                 if(e.totalExpenditure <= balance){
-                    await addData(e)
+                    await updateData(data.id, e)
                     router.push("/pengeluaran/listpengeluaran")
                 }else{
                     setFieldError("totalExpenditure", `Jumlah pengeluaran tidak boleh melebihi jumlah tabungan (max: ${balance})`)

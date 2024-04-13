@@ -4,64 +4,81 @@ import { cookies } from "next/headers"
 import prisma from "../../../../../../prisma/database"
 import Cloudinary from "@/utils/cloudinary"
 import { revalidatePath } from "next/cache"
-import moment from 'moment'
+import { extension } from "prisma-paginate"
+import { SearchParams } from "./page"
 
-export const getCountProduct = async (search?: string) => await prisma.product.count({
-    where: {
-        idStore: cookies().get('store')!.value,
-        deletedAt: null,
-        OR: [
-            {
-                id: {
-                    contains: search ?? '',
-                    mode: 'insensitive'
-                }
-            },
-            {
-                name: {
-                    contains: search ?? '',
-                    mode: 'insensitive'
-                }
-            }
-        ],
-    },
-})
+export const getAllProduct = async (searchParams: SearchParams) => {
+    const extend = prisma.$extends(extension)
+    const getCountData = await extend.product.count({
+        where: {
+            idStore: cookies().get('store')?.value
+        }
+    })
 
-export const getAllProduct = async ({ show, search, page }: { show?: number | string, search?: string, page?: number }) => await prisma.product.findMany({
-    where: {
-        idStore: cookies().get('store')!.value,
-        deletedAt: null,
-        OR: [
-            {
-                id: {
-                    contains: search ?? '',
-                    mode: 'insensitive'
+    return await extend.product.paginate({
+        where: {
+            idStore: cookies().get('store')!.value,
+            deletedAt: null,
+            OR: [
+                {
+                    id: {
+                        contains: searchParams.search ?? '',
+                        mode: 'insensitive'
+                    }
+                },
+                {
+                    name: {
+                        contains: searchParams.search ?? '',
+                        mode: 'insensitive'
+                    }
                 }
-            },
-            {
-                name: {
-                    contains: search ?? '',
-                    mode: 'insensitive'
-                }
-            }
-        ],
-    },
-    take: show ? show == 'all' ? undefined : parseInt(show.toString()) : 10,
-    skip: page ? page > 1 ? (page - 1) * (parseInt(show ? show.toString() : '10')) : 0 : 0,
-    select: {
-        id: true,
-        name: true,
-        productCategories: {
-            select: {
-                name: true
-            }
+            ],
         },
-        qty: true,
-        price: true,
-        cost: true,
-        imagePath: true
-    }
-})
+        select: {
+            id: true,
+            name: true,
+            productCategories: {
+                select: {
+                    name: true,
+                }
+            },
+            price: true,
+            cost: true,
+            imagePath: true,
+            purchaseOrder: {
+                select: {
+                    qty: true,
+                    purchase: {
+                        select: {
+                            purchaseReturns: {
+                                select: {
+                                    qty: true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            saleOrder: {
+                select: {
+                    qty: true,
+                    sale: {
+                        select: {
+                            saleReturns: {
+                                select: {
+                                    qty: true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+        }
+    }, {
+        limit: searchParams.show ? searchParams.show == 'all' ? getCountData : parseInt(searchParams.show) : 10,
+        page: parseInt(searchParams.page ?? '1')
+    })
+}
 
 export const deleteProducts = async (idProduct: Array<string>) => {
     try{
@@ -85,8 +102,7 @@ export const deleteProducts = async (idProduct: Array<string>) => {
         })
 
         revalidatePath('/', 'layout')
-    }catch(e){
-        console.log(e)
+    }catch{
         throw new Error("Kesalahan saat mengahapus produk")
     }
 }

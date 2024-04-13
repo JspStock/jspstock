@@ -26,7 +26,6 @@ export const checkProductCode = async (code: string) => await prisma.product.cou
 export const addProduct = async (form: FormData) => {
     try{
         const image = form.get("image") as File
-        const productId = form.get('id') as string
         const name = form.get('name') as string
         const categoryId = form.get('category') as string
         const price = form.get('price') as string
@@ -36,10 +35,9 @@ export const addProduct = async (form: FormData) => {
             const getIdProduct = await e.product.create({
                 data: {
                     idStore: cookies().get('store')!.value,
-                    id: `PROD_${productId}`,
+                    id: `PROD_${Date.now()}`,
                     name: name,
                     idProductCategories: categoryId,
-                    qty: 0,
                     price: parseInt(price),
                     cost: parseInt(cost),
                     imagePath: '',
@@ -67,7 +65,6 @@ export const addProduct = async (form: FormData) => {
 
         revalidatePath('/', 'layout')
     }catch(e){
-        console.log(e)
         throw new Error("Kesalahan saat menambahkan produk!")
     }
 }

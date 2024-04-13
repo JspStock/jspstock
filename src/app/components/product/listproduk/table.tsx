@@ -8,34 +8,46 @@ import Link from "next/link"
 const Check = dynamic(() => import('./(table)/check'))
 const CheckAll = dynamic(() => import('./(table)/checkAll'))
 const DeleteButton = dynamic(() => import('./(table)/deleteButton'))
+const Pagination = dynamic(() => import('@/app/components/pagination'))
 
 export interface AllProduct {
     name: string;
     id: string;
     imagePath: string;
-    qty: number;
     price: number;
     cost: number;
     productCategories: {
         name: string
     } | null;
+    purchaseOrder: {
+        purchase: {
+            purchaseReturns: {
+                qty: number;
+            }[];
+        };
+        qty: number;
+    }[]
+    saleOrder: {
+        qty: number;
+        sale: {
+            saleReturns: {
+                qty: number;
+            }[];
+        };
+    }[]
 }
 
 const Tablelist = async ({ searchParams }: {
     searchParams: SearchParams
 }) => {
-    const allProduct: Array<AllProduct> = await getAllProduct({
-        search: searchParams.search,
-        show: searchParams.show,
-        page: searchParams.page ? parseInt(searchParams.page) : undefined
-    })
+    const allProduct = await getAllProduct(searchParams)
 
-    return (
+    return <>
         <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900">
             <table className="table">
                 <thead className=" text-gray-900">
                     <tr>
-                        <th><CheckAll data={allProduct} /></th>
+                        <th><CheckAll data={allProduct.result} /></th>
                         <th>Foto</th>
                         <th>Nama</th>
                         <th>Kode</th>
@@ -49,7 +61,7 @@ const Tablelist = async ({ searchParams }: {
                 </thead>
                 <tbody>
                     {
-                        allProduct.map(e => <tr key={e.id}>
+                        allProduct.result.map(e => <tr key={e.id}>
                             <td><Check data={e} /></td>
                             <td>
                                 <div className="avatar">
@@ -68,7 +80,10 @@ const Tablelist = async ({ searchParams }: {
                             <td>{e.name}</td>
                             <td>{`${e.id.split("_")[1]}`}</td>
                             <td>{e.productCategories ? e.productCategories.name : 'N/A'}</td>
-                            <td>{e.qty}</td>
+                            <td>{ 
+                                (e.purchaseOrder.length > 0 ? e.purchaseOrder.map(a => a.qty - (a.purchase.purchaseReturns.length > 0 ? a.purchase.purchaseReturns.map(b => b.qty).reduce((val, prev) => val + prev) : 0)).reduce((val, prev) => val + prev) : 0) -
+                                (e.saleOrder.length > 0 ? e.saleOrder.map(a => a.qty + (a.sale.saleReturns.length > 0 ? a.sale.saleReturns.map(b => b.qty).reduce((val, prev) => val + prev) : 0)).reduce((val, prev) => val + prev) : 0)
+                            }</td>
                             <td>{currencyFormat(e.price)}</td>
                             <td>{currencyFormat(e.cost)}</td>
                             <td>{currencyFormat(e.price - e.cost)}</td>
@@ -86,6 +101,11 @@ const Tablelist = async ({ searchParams }: {
                 </tbody>
             </table>
         </div>
-    )
+
+        <Pagination
+            hasNextPage={allProduct.hasNextPage}
+            hasPrevPage={allProduct.hasPrevPage}
+            page={allProduct.page} />
+    </>
 }
 export default Tablelist

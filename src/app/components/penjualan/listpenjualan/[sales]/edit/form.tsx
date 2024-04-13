@@ -2,7 +2,7 @@
 
 import { getCountDataById, updateData } from "@/app/(public)/(main)/penjualan/listpenjualan/[sales]/edit/action"
 import { Sales } from "@/app/(public)/(main)/penjualan/listpenjualan/[sales]/edit/page"
-import { Customer, Product } from "@/app/(public)/(main)/penjualan/tambahpenjualan/page"
+import { Customer, Product, SavingAccounts } from "@/app/(public)/(main)/penjualan/tambahpenjualan/page"
 import { $Enums } from "@prisma/client"
 import { useFormik } from "formik"
 import dynamic from "next/dynamic"
@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
 import { array, mixed, object, ref, string } from "yup"
 
-const Tabletambahpenjualan = dynamic(() => import("@/app/components/penjualan/tambahpenjualan/tabletambahpenjualan"))
+const Tabletambahpenjualan = dynamic(() => import("@/app/components/penjualan/listpenjualan/[sales]/edit/tabletambahpenjualan"))
 const TableTotal = dynamic(() => import("@/app/components/penjualan/tambahpenjualan/tabletotal"))
 const Comboboxcostomer = dynamic(() => import("@/app/components/comboBoxInput"))
 const Comboboxproduk = dynamic(() => import("@/app/components/comboBoxInput"))
@@ -24,10 +24,10 @@ export interface Order {
 
 export interface Form {
     order: Array<Order>,
-    orderDeleted: Array<Order>,
     document: File | undefined,
     ref: string | undefined,
     customer: Customer | undefined,
+    savingAccount: string,
     saleStatus: string | undefined,
     salePurchaseStatus: string | undefined,
     discount: string | undefined,
@@ -37,10 +37,11 @@ export interface Form {
 }
 
 export type FormWithoutDocument = Omit<Form, 'document'>
-const Form = ({ product, customer, sales }: {
+const Form = ({ product, customer, sales, savingAccounts }: {
     product: Array<Product>,
     customer: Array<Customer>,
-    sales: Sales
+    sales: Sales,
+    savingAccounts: Array<SavingAccounts>
 }) => {
     const router = useRouter()
     const formSchema = object().shape({
@@ -48,7 +49,8 @@ const Form = ({ product, customer, sales }: {
         ref: string().required("Nomor referensi tidak boleh kosong!"),
         customer: mixed().required('Kustomer tidak boleh kosong!'),
         saleStatus: string().required("Status penjualan tidak boleh kosong!"),
-        salePurchaseStatus: string().required("Status pembayaran tidak boleh kosong!")
+        salePurchaseStatus: string().required("Status pembayaran tidak boleh kosong!"),
+        savingAccount: string().required('Rekening tidak boleh kosong!')
     })
 
     const form = useFormik<Form>({
@@ -59,7 +61,6 @@ const Form = ({ product, customer, sales }: {
                 name: e.product.name,
                 qty: e.qty.toString(),
             })),
-            orderDeleted: [],
             document: undefined,
             ref: sales.id.split("_")[1],
             customer: sales.idCustomerUser ? customer.find(e => e.id == sales.idCustomerUser) : undefined,
@@ -68,7 +69,8 @@ const Form = ({ product, customer, sales }: {
             discount: sales.discount.toString(),
             shippingCost: sales.shippingCost.toString(),
             saleNotes: sales.saleNotes ?? undefined,
-            staffNotes: sales.staffNotes ?? undefined
+            staffNotes: sales.staffNotes ?? undefined,
+            savingAccount: sales.idSavingAccount ?? ''
         },
         validationSchema: formSchema,
         onSubmit: async e => {
@@ -107,7 +109,6 @@ const Form = ({ product, customer, sales }: {
     }
     const handleChangeProduct = (e: Product) => setFieldValue("order", [...values.order, { ...e, qty: 1, action: "add" }])
     const handleDeleteItemProuct = (val: number) => {
-        setFieldValue('orderDeleted', [...values.orderDeleted, values.order.find((_, index) => index == val)])
         setFieldValue('order', [...values.order].filter((_, index) => index != val))
     }
     const handleChangeQtyItemProduct = (index: number, qty: string) => setFieldValue(`order[${index}].qty`, qty)
@@ -152,6 +153,17 @@ const Form = ({ product, customer, sales }: {
                         selected={values.customer}
                         setSelected={(e: Customer) => setFieldValue("customer", e)} />
                     {errors.customer && touched.customer ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.customer}</span></label> : null}
+                </label>
+
+                <label className="form-control w-full max-w-xs">
+                    <div className="label">
+                        <span className="label-text">Rekening*(Wajib)</span>
+                    </div>
+                    <select className="bg-gray-50 border input input-bordered w-full max-w-xs" name="savingAccount" value={values.savingAccount} onChange={handleChange}>
+                        <option value="" className="text-gray-200">Status</option>
+                        { savingAccounts.map((e, index) => <option key={index} value={e.id}>{ e.name }</option>) }
+                    </select>
+                    {errors.savingAccount && touched.savingAccount ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.savingAccount}</span></label> : null}
                 </label>
 
                 <label className="form-control w-full max-w-xs">

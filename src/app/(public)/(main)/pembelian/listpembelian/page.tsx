@@ -7,9 +7,9 @@ import { Suspense } from "react"
 const PrintButton = dynamic(() => import('@/app/components/pembelian/listpembelian/printButton'))
 const DeleteButton = dynamic(() => import('@/app/components/pembelian/listpembelian/deleteButton'))
 const TableLoadingSkeleton = dynamic(() => import('@/app/components/tableLoadingSkeleton'))
-const Perpage = dynamic(() => import("@/app/components/pembelian/listpembelian/perpage"))
+const Perpage = dynamic(() => import("@/app/components/perpage"))
 const Datepicker = dynamic(() => import("@/app/components/datePicker"))
-const SearchForm = dynamic(() => import('@/app/components/pembelian/listpembelian/searchForm'))
+const SearchForm = dynamic(() => import('@/app/components/searchForm'))
 
 export interface SearchParams {
     show?: string,

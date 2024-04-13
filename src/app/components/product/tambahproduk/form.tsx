@@ -16,7 +16,6 @@ export interface ProductCategories {
 export interface Form {
     image: File | null,
     name: string,
-    code: string,
     category: string,
     price: string,
     cost: string
@@ -41,7 +40,6 @@ const Form = ({
                 }
             }),
         name: string().required('Nama produk tidak boleh kosong!'),
-        code: string().required('Kode produk tidak boleh kosong!'),
         category: string().required('Kategori tidak boleh kosong!'),
         price: string().required('Harga produk tidak boleh kosong!'),
         cost: string().required('Biaya produk tidak boleh kosong!')
@@ -51,29 +49,23 @@ const Form = ({
         initialValues: {
             image: null,
             name: '',
-            code: '',
             category: '',
             price: '',
-            cost: ''
+            cost: '',
         },
         validationSchema: formSchema,
         onSubmit: async e => {
             try{
-                if(await checkProductCode(e.code) == 0){
-                    const formData = new FormData()
-                    if(e.image != null){
-                        formData.append("image", e.image)
-                        formData.append("id", e.code)
-                        formData.append("name", e.name)
-                        formData.append("category", e.category)
-                        formData.append("price", e.price)
-                        formData.append("cost", e.cost)
-    
-                        await addProduct(formData)
-                        router.replace("listproduk")
-                    }
-                }else{
-                    form.setFieldError("code", "Kode produk sudah tersedia!")
+                const formData = new FormData()
+                if(e.image != null){
+                    formData.append("image", e.image)
+                    formData.append("name", e.name)
+                    formData.append("category", e.category)
+                    formData.append("price", e.price)
+                    formData.append("cost", e.cost)
+
+                    await addProduct(formData)
+                    router.replace("listproduk")
                 }
             }catch{
                 Swal.fire({
@@ -120,15 +112,6 @@ const Form = ({
                         <span className="label-text-alt text-error">{errors.name}</span>
                     </label> : null}
                 </div>
-                <label className="form-control w-full">
-                    <div className="label">
-                        <span className="label-text">Kode Produk*(Wajib)</span>
-                    </div>
-                    <input type="text" placeholder="Kode Produk" className="input input-bordered w-full" name="code" value={values.code} onChange={handleChange} />
-                    {errors.code && touched.code ? <label htmlFor="" className="label">
-                        <span className="label-text-alt text-error">{errors.code}</span>
-                    </label> : null}
-                </label>
                 <label className="form-control w-full">
                     <div className="label">
                         <span className="label-text">Kategori Produk*(Wajib)</span>

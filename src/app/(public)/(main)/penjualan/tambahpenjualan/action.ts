@@ -15,8 +15,35 @@ export const getProduct = async () => await prisma.product.findMany({
     select: {
         id: true,
         name: true,
-        qty: true,
-        price: true
+        price: true,
+        saleOrder: {
+            select: {
+                qty: true,
+                sale: {
+                    select: {
+                        saleReturns: {
+                            select: {
+                                qty: true
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        purchaseOrder: {
+            select: {
+                qty: true,
+                purchase: {
+                    select: {
+                        purchaseReturns: {
+                            select: {
+                                qty: true
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 })
 
@@ -37,6 +64,16 @@ export const getCountDataById = async (id: string) => await prisma.sales.count({
     }
 })
 
+export const getSavingAccounts = async () => await prisma.savingAccounts.findMany({
+    where: {
+        idStore: cookies().get('store')?.value
+    },
+    select: {
+        id: true,
+        name: true
+    }
+})
+
 export const addData = async (form: FormWithoutDocument, file: string | null) => {
     try{
         await prisma.$transaction(async e => {
@@ -44,6 +81,7 @@ export const addData = async (form: FormWithoutDocument, file: string | null) =>
                 data: {
                     id: `SLS_${form.ref ?? Date.now()}`,
                     idStore: cookies().get('store')!.value,
+                    idSavingAccount: form.savingAccount,
                     idCustomerUser: form.customer ? form.customer.id : undefined,
                     saleStatus: form.saleStatus as keyof typeof $Enums.SaleStatus,
                     purchaseStatus: form.salePurchaseStatus as keyof typeof $Enums.SalePurchaseStatus,
@@ -65,28 +103,6 @@ export const addData = async (form: FormWithoutDocument, file: string | null) =>
                     id: true
                 }
             })
-
-            for(let i of form.order){
-                const getQtyProduct = await e.product.findUnique({
-                    where: {
-                        idStore: cookies().get('store')?.value,
-                        id: i.id
-                    },
-                    select: {
-                        qty: true
-                    }
-                })
-
-                await e.product.update({
-                    where: {
-                        idStore: cookies().get('store')?.value,
-                        id: i.id
-                    },
-                    data: {
-                        qty: getQtyProduct!.qty - parseInt(i.qty)
-                    }
-                })
-            }
 
             if(file){
                 const uploadResult = await Cloudinary.uploader.upload(file, {

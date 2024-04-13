@@ -1,6 +1,6 @@
 "use client"
 
-import { checkProductCode, updateProduct } from "@/app/(public)/(main)/produk/[product]/edit/action";
+import { updateProduct } from "@/app/(public)/(main)/produk/[product]/edit/action";
 import { ProductData } from "@/app/(public)/(main)/produk/[product]/edit/page";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
@@ -17,7 +17,6 @@ export interface ProductCategories {
 export interface Form {
     image: File | null | string,
     name: string,
-    code: string,
     category: string,
     price: string,
     cost: string
@@ -48,9 +47,7 @@ const Form = ({
                 }
             }),
         name: string().required('Nama produk tidak boleh kosong!'),
-        code: string().required('Kode produk tidak boleh kosong!'),
         category: string().required('Kategori tidak boleh kosong!'),
-        qty: string().required('Kuantitas produk tidak boleh kosong!'),
         price: string().required('Harga produk tidak boleh kosong!'),
         cost: string().required('Biaya produk tidak boleh kosong!')
     })
@@ -59,28 +56,18 @@ const Form = ({
         initialValues: {
             image: productData.imagePath,
             name: productData.name,
-            code: productData.id.split("_")[1],
             category: productData.idProductCategories || '',
             price: productData.price.toString(),
             cost: productData.cost.toString()
         },
         validationSchema: formSchema,
         onSubmit: async e => {
-            console.log(e)
-            if (e.code != productData.id.split("_")[1]) {
-                if (await checkProductCode(e.code)) {
-                    form.setFieldError("code", "Kode produk sudah tersedia!")
-                    return false
-                }
-            }
-
             try {
                 const formData = new FormData()
                 if (e.image instanceof File) {
                     formData.append("image", e.image)
                 }
                 formData.append("id", productData.id)
-                formData.append('code', e.code)
                 formData.append("name", e.name)
                 formData.append("category", e.category)
                 formData.append("price", e.price)
@@ -132,15 +119,6 @@ const Form = ({
                         <span className="label-text-alt text-error">{errors.name}</span>
                     </label> : null}
                 </div>
-                <label className="form-control w-full">
-                    <div className="label">
-                        <span className="label-text">Kode Produk*(Wajib)</span>
-                    </div>
-                    <input type="text" placeholder="Kode Produk" className="input input-bordered w-full" name="code" value={values.code} onChange={handleChange} />
-                    {errors.code && touched.code ? <label htmlFor="" className="label">
-                        <span className="label-text-alt text-error">{errors.code}</span>
-                    </label> : null}
-                </label>
                 <label className="form-control w-full">
                     <div className="label">
                         <span className="label-text">Kategori Produk*(Wajib)</span>

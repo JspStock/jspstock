@@ -1,7 +1,7 @@
 "use client"
 
 import { addPurchase } from "@/app/(public)/(main)/pembelian/tambahpembelian/action"
-import { Product, Supplier } from "@/app/(public)/(main)/pembelian/tambahpembelian/page"
+import { Product, SavingAccounts, Supplier } from "@/app/(public)/(main)/pembelian/tambahpembelian/page"
 import { Order } from "@/app/components/pembelian/tambahpembelian/tabletambahpembelian"
 import { $Enums } from "@prisma/client"
 import { useFormik } from "formik"
@@ -20,20 +20,23 @@ export interface Form {
     product: Product | null,
     document: File | null,
     supplier: Supplier | null,
+    savingAccount: string,
     purchaseStatus: string,
     discount: string,
     shippingCost: string,
     note: string
 }
 
-const Form = ({ product, supplier }: {
+const Form = ({ product, supplier, savingAccounts }: {
     product: Array<Product>,
-    supplier: Array<Supplier>
+    supplier: Array<Supplier>,
+    savingAccounts: Array<SavingAccounts>
 }) => {
     const router = useRouter()
     const formSchema = object().shape({
         order: array().min(1, 'Order produk harus terisi!'),
-        purchaseStatus: string().required('Status pembelian harus diisi!')
+        purchaseStatus: string().required('Status pembelian harus diisi!'),
+        savingAccount: string().required('Rekening harus diisi!')
     })
 
     const form = useFormik<Form>({
@@ -42,6 +45,7 @@ const Form = ({ product, supplier }: {
             product: null,
             document: null,
             supplier: null,
+            savingAccount: '',
             purchaseStatus: '',
             discount: '',
             shippingCost: '',
@@ -55,13 +59,13 @@ const Form = ({ product, supplier }: {
                 e.document != null ? formData.append("document", e.document) : null
                 e.supplier != null ? formData.append("supplier", e.supplier.id) : null
                 formData.append('purchaseStatus', e.purchaseStatus)
+                formData.append('savingAccount', e.savingAccount)
                 e.discount != '' ? formData.append('discount', e.discount) : null
                 e.shippingCost != '' ? formData.append('shippingCost', e.shippingCost) : null
                 e.note.trim() != '' ? formData.append('note', e.note) : null
                 await addPurchase(formData)
                 router.push("/pembelian/listpembelian")
-            } catch(e) {
-            console.log(e)
+            } catch {
                 Swal.fire({
                     icon: 'error',
                     title: 'Terjadi kesalahan!',
@@ -112,6 +116,16 @@ const Form = ({ product, supplier }: {
                         setSelected={e => setFieldValue("supplier", e)}
                         selected={values.supplier} />
                 </div>
+                <label className="form-control w-full max-w-xs">
+                    <div className="label">
+                        <span className="label-text">Rekening</span>
+                    </div>
+                    <select className="bg-gray-50 border input input-bordered w-full max-w-xs capitalize" name="savingAccount" defaultValue="" onChange={handleChange}>
+                        <option value="" disabled>Pilih rekening</option>
+                        { savingAccounts.map((e, index) => <option value={e.id} key={index}>{ e.name }</option>) }
+                    </select>
+                    {touched.savingAccount && errors.savingAccount ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.savingAccount}</span></label> : null}
+                </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
                         <span className="label-text">Status Pembelian</span>

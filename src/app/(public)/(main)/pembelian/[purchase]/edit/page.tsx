@@ -1,6 +1,6 @@
 import { Metadata } from "next"
 import dynamic from "next/dynamic"
-import { getProductData, getPurchaseData, getSupplierData } from "./action"
+import { getProductData, getPurchaseData, getSavingAccounts, getSupplierData } from "./action"
 import { redirect } from "next/navigation"
 import { $Enums } from "@prisma/client"
 
@@ -18,7 +18,6 @@ export interface Params{
 export interface Product{
     id: string;
     name: string;
-    qty: number;
     price: number;
 }
 
@@ -28,22 +27,22 @@ export interface Supplier{
 }
 
 export interface PurchaseData{
+    supplier: {
+        id: string;
+        name: string;
+    } | null;
     id: string;
+    idSavingAccount: string | null;
     purchaseOrder: {
         product: {
             id: string;
             name: string;
             price: number;
-            qty: number;
-        } | null;
+        };
         id: string;
+        idProduct: string;
         qty: number;
-        idProduct: string | null;
     }[];
-    supplier: {
-        id: string;
-        name: string;
-    } | null;
     documentPath: string | null;
     discount: number;
     shippingCost: number;
@@ -51,9 +50,15 @@ export interface PurchaseData{
     purchaseStatus: $Enums.PurchaseStatus;
 }
 
+export interface SavingAccounts{
+    id: string;
+    name: string;
+}
+
 const TambahPembelian = async ({ params }: { params: Params }) => {
     const productData: Array<Product> = await getProductData()
     const supplierData: Array<Supplier> = await getSupplierData()
+    const savingAccounts: Array<SavingAccounts> = await getSavingAccounts()
     const purchaseData: PurchaseData | null = await getPurchaseData(params.purchase)
 
     if(purchaseData){
@@ -67,7 +72,8 @@ const TambahPembelian = async ({ params }: { params: Params }) => {
                     <Form 
                         product={productData}
                         supplier={supplierData}
-                        data={purchaseData} />
+                        data={purchaseData}
+                        savingAccounts={savingAccounts} />
                 </div>
             </main>
         )

@@ -15,7 +15,6 @@ export interface ProductData{
     idProductCategories: string | null;
     imagePath: string;
     name: string;
-    qty: number;
     price: number;
     cost: number;
 }

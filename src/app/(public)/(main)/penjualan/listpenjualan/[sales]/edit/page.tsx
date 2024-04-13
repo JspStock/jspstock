@@ -1,6 +1,6 @@
 import { Metadata } from "next"
 import dynamic from "next/dynamic"
-import { getProduct, getCustomerUser, getData } from "./action"
+import { getProduct, getCustomerUser, getData, getSavingAccounts } from "./action"
 import { $Enums } from "@prisma/client"
 import { redirect } from "next/navigation"
 
@@ -13,9 +13,24 @@ export const metadata: Metadata = {
 
 export interface Product {
     id: string;
-    name: string
-    qty: number;
+    name: string;
     price: number;
+    purchaseOrder: {
+        qty: number;
+        purchase: {
+            purchaseReturns: {
+                qty: number;
+            }[];
+        };
+    }[];
+    saleOrder: {
+        qty: number;
+        sale: {
+            saleReturns: {
+                qty: number;
+            }[];
+        };
+    }[];
 }
 
 export interface Customer {
@@ -37,6 +52,7 @@ export interface Sales {
     shippingCost: number;
     saleNotes: string | null;
     staffNotes: string | null;
+    idSavingAccount: string | null;
     saleOrder: {
         id: string,
         qty: number,
@@ -47,10 +63,16 @@ export interface Sales {
     }[]
 }
 
+export interface SavingAccounts{
+    id: string;
+    name: string;
+}
+
 const page = async ({ params }: { params: Params }) => {
     const data: Sales | null = await getData(params.sales)
     const productData: Array<Product> = await getProduct()
     const supplierData: Array<Customer> = await getCustomerUser()
+    const savingAccounts: Array<SavingAccounts> = await getSavingAccounts()
 
     if (data) {
         return (
@@ -63,7 +85,8 @@ const page = async ({ params }: { params: Params }) => {
                     <Form
                         product={productData}
                         customer={supplierData}
-                        sales={data} />
+                        sales={data}
+                        savingAccounts={savingAccounts} />
                 </div>
             </main>
         )

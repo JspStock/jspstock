@@ -29,13 +29,7 @@ const TableTambahpembelian = ({ order, product, onDeleteItem, onChangeQtyItem }:
                         order.map((e, index) => <tr key={index}>
                             <td>{e.name}</td>
                             <td>{e.id.split("_")[1]}</td>
-                            <td>
-                                <select className="select select-bordered" value={e.qty} onChange={val => onChangeQtyItem(index, val.target.value)}>
-                                    {
-                                        Array.from({ length: product.find(val => val.id == e.id)?.qty ?? 0 }).map((_, index) => <option key={index} value={index + 1}>{index + 1} Pcs</option>)
-                                    }
-                                </select>
-                            </td>
+                            <td><input type="number" name="" id="" className="input input-bordered"  value={e.qty} onChange={val => onChangeQtyItem(index, val.target.value)} /></td>
                             <td>{currencyFormat((product.find(val => val.id == e.id)?.price ?? 0) * parseInt(e.qty))}</td>
                             <td> <button className="btn text-red-400 btn-ghost" onClick={() => onDeleteItem(index)}>Hapus</button></td>
                         </tr>)

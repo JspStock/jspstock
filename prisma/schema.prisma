@@ -144,6 +144,10 @@ model SavingAccounts{
   expenditures Expenditures[]
   sender MoneyTransfer[] @relation("FromSavingAccounts")
   recipient MoneyTransfer[] @relation("ToSavingAccounts")
+  purchase Purchase[]
+  sales Sales[]
+  saleReturns SaleReturns[]
+  purchaseReturns PurchaseReturns[]
 }
 
 model ProductCategories{
@@ -166,7 +170,6 @@ model Product{
   idProductCategories String?
   imagePath String
   name String
-  qty Int
   price Int
   cost Int
   createdAt DateTime @default(now())
@@ -176,7 +179,6 @@ model Product{
   productCategories ProductCategories? @relation(fields: [idProductCategories], references: [id], onDelete: SetNull, onUpdate: Cascade)
   purchaseOrder PurchaseOrder[]
   saleOrder SaleOrder[]
-  saleReturns SaleReturns[]
   packaging Packaging[]
   packagingOrder PackagingOrder[]
 }
@@ -184,6 +186,7 @@ model Product{
 model Purchase{
   id String @id
   idStore String
+  idSavingAccount String?
   idSupplier String?
   documentPath String?
   discount Int @default(0)
@@ -194,6 +197,8 @@ model Purchase{
 
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
   supplier Supplier? @relation(fields: [idSupplier], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  savingAccount SavingAccounts? @relation(fields: [idSavingAccount], references: [id], onUpdate: Cascade, onDelete: SetNull)
+
   purchaseOrder PurchaseOrder[]
   purchaseReturns PurchaseReturns[]
 }
@@ -215,6 +220,7 @@ model Sales{
   id String @id
   idStore String
   idCustomerUser String?
+  idSavingAccount String?
   documentPath String?
   saleStatus SaleStatus
   purchaseStatus SalePurchaseStatus
@@ -226,7 +232,9 @@ model Sales{
 
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
   customerUser CustomerUser? @relation(fields: [idCustomerUser], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  savingAccount SavingAccounts? @relation(fields: [idSavingAccount], references: [id], onDelete: SetNull, onUpdate: Cascade)
   saleOrder SaleOrder[]
+  saleReturns SaleReturns[]
 }
 
 model SaleOrder{
@@ -270,26 +278,32 @@ model SaleReturns{
   id String @id
   idStore String
   idCustomerUser String?
-  idProduct String?
+  idSavingAccount String?
+  idSales String
+  qty Int
   notes String?
   createdAt DateTime @default(now())
 
+  savingAccount SavingAccounts? @relation(fields: [idSavingAccount], references: [id], onDelete: SetNull, onUpdate: Cascade)
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
   customerUser CustomerUser? @relation(fields: [idCustomerUser], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  product Product? @relation(fields: [idProduct], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  sales Sales @relation(fields: [idSales], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model PurchaseReturns{
   id String @id
   idStore String
+  idSavingAccount String?
   idSupplier String?
-  idPurchase String?
+  idPurchase String
+  qty Int
   notes String?
   createdAt DateTime @default(now())
 
+  savingAccount SavingAccounts? @relation(fields: [idSavingAccount], references: [id], onDelete: SetNull, onUpdate: Cascade)
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
   supplier Supplier? @relation(fields: [idSupplier], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  purchase Purchase? @relation(fields: [idPurchase], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  purchase Purchase? @relation(fields: [idPurchase], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Packaging{

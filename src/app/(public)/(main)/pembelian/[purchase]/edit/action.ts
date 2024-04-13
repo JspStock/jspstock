@@ -15,7 +15,6 @@ export const getProductData = async () => await prisma.product.findMany({
     select: {
         id: true,
         name: true,
-        qty: true,
         price: true
     }
 })
@@ -30,6 +29,16 @@ export const getSupplierData = async () => await prisma.supplier.findMany({
     }
 })
 
+export const getSavingAccounts = async () => await prisma.savingAccounts.findMany({
+    where: {
+        idStore: cookies().get('store')?.value
+    },
+    select: {
+        id: true,
+        name: true
+    }
+})
+
 export const getPurchaseData = async (id: string) => await prisma.purchase.findUnique({
     where: {
         idStore: cookies().get('store')?.value,
@@ -37,6 +46,7 @@ export const getPurchaseData = async (id: string) => await prisma.purchase.findU
     },
     select: {
         id: true,
+        idSavingAccount: true,
         purchaseOrder: {
             select: {
                 id: true,
@@ -47,7 +57,6 @@ export const getPurchaseData = async (id: string) => await prisma.purchase.findU
                         id: true,
                         name: true,
                         price: true,
-                        qty: true
                     }
                 }
             }
@@ -93,7 +102,7 @@ export const updatePurchase = async (form: FormData) => {
                     purchaseOrder: {
                         deleteMany: {},
                         createMany: {
-                            data: parseOrder.filter(e => e.isDelete == false).map(e => ({
+                            data: parseOrder.map(e => ({
                                 idProduct: e.id,
                                 idStore: cookies().get('store')!.value,
                                 qty: e.selectQty,
@@ -105,44 +114,6 @@ export const updatePurchase = async (form: FormData) => {
                     id: true,
                 },
             })
-
-            for(let i of parseOrder){
-                const qtyProduct = await e.product.findUnique({
-                    where: {
-                        idStore: cookies().get('store')?.value,
-                        id: i.id
-                    },
-                    select: {
-                        qty: true
-                    }
-                })
-
-                const updateProduct = () => {
-                    let qty = qtyProduct!.qty
-
-                    if(i.isDelete == true && i.isNewAdded == false ){
-                        qty -= i.selectQtyOld
-                    }else if(i.selectQty > i.selectQtyOld){
-                        qty += (i.selectQty - i.selectQtyOld)
-                    }else if(i.selectQty < i.selectQtyOld){
-                        qty -= (i.selectQtyOld - i.selectQty)
-                    }else if(i.isNewAdded == true && i.isDelete == false){
-                        qty += i.selectQty
-                    }
-
-                    return qty
-                }
-
-                await e.product.update({
-                    where: {
-                        idStore: cookies().get('store')?.value,
-                        id: i.id
-                    },
-                    data: {
-                        qty: updateProduct()
-                    }
-                })
-            }
 
             if (document != null) {
                 const buffer = Buffer.from(await document.arrayBuffer()).toString("base64")

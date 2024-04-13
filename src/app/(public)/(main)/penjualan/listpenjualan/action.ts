@@ -11,43 +11,6 @@ export const deleteData = async(id: Array<string>) => {
     try{
         await prisma.$transaction(async e => {
             for(let i of id){
-                const getDataOld = await e.sales.findUnique({
-                    where: {
-                        idStore: cookies().get('store')?.value,
-                        id: i
-                    },
-                    select: {
-                        saleOrder: {
-                            select: {
-                                idProduct: true,
-                                qty: true
-                            }
-                        }
-                    }
-                })
-
-                for(let a of getDataOld!.saleOrder){
-                    const getQtyProduct = await e.product.findUnique({
-                        where: {
-                            idStore: cookies().get('store')?.value,
-                            id: a.idProduct
-                        },
-                        select: {
-                            qty: true
-                        }
-                    })
-
-                    await e.product.update({
-                        where: {
-                            idStore: cookies().get('store')?.value,
-                            id: a.idProduct
-                        },
-                        data: {
-                            qty: getQtyProduct!.qty + a.qty
-                        }
-                    })
-                }
-
                 await e.sales.delete({
                     where: {
                         idStore: cookies().get('store')?.value,
@@ -67,12 +30,6 @@ export const deleteData = async(id: Array<string>) => {
 
 export const getData = async (searchParams: SearchParams) => {
     try{
-        const getCountData  = await prisma.sales.count({
-            where: {
-                idStore: cookies().get('store')?.value
-            }
-        })
-
         const gte = () => {
             if (searchParams.date) {
                 const from = searchParams.date.split("to")[0]
@@ -102,6 +59,12 @@ export const getData = async (searchParams: SearchParams) => {
         }
 
         const extend = prisma.$extends(extension)
+        const getCountData  = await extend.sales.count({
+            where: {
+                idStore: cookies().get('store')?.value
+            }
+        })
+        
         return await extend.sales.paginate({
             where: {
                 idStore: cookies().get('store')?.value,
@@ -156,7 +119,8 @@ export const getData = async (searchParams: SearchParams) => {
             limit: searchParams.show ? searchParams.show == 'all' ? getCountData : parseInt(searchParams.show) : 10,
             page: searchParams.page ? parseInt(searchParams.page) : 1
         })
-    }catch{
+    }catch(e){
+        console.log(e)
         throw new Error("Kesalahan sata mengambil data!")
     }
 }

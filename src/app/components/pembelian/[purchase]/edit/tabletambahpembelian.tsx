@@ -6,9 +6,6 @@ import { currencyFormat } from "@/utils/utils"
 export interface Order extends Product{
     selectQty: number,
     subTotal: number,
-    selectQtyOld: number
-    isDelete: boolean,
-    isNewAdded: boolean
 }
 
 const TableTambahpembelian = ({ data, changeQty, onDelete }: {
@@ -32,23 +29,23 @@ const TableTambahpembelian = ({ data, changeQty, onDelete }: {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((e, index) => !e.isDelete ? <tr key={index}>
+                    {data.map((e, index) => <tr key={index}>
                         <td>{ e.name }</td>
                         <td>{ e.id.split("_")[1] }</td>
                         <td><input type="number" className="input input-bordered max-w-20" value={e.selectQty} onChange={e => changeQty(index, e.target.value)} /></td>
                         <td>{ currencyFormat(e.price) }</td>
                         <td>{ currencyFormat(e.subTotal) }</td>
                         <td><button type="button" className="btn btn-ghost text-red-400" onClick={() => onDelete(index)}>Hapus</button></td>
-                    </tr> : null)}
+                    </tr>)}
 
                 </tbody>
                 <tfoot>
                     <tr>
                         <th>Total</th>
                         <th></th>
-                        <th>{ data.filter(e => e.isDelete == false).length > 0 ? data.filter(e => e.isDelete == false).map(e => e.selectQty).reduce((e, prev) => e + prev) : 0 }</th>
+                        <th>{ data.length > 0 ? data.map(e => e.selectQty).reduce((e, prev) => e + prev) : 0 }</th>
                         <th></th>
-                        <th>{ currencyFormat(data.filter(e => e.isDelete == false).length > 0 ? (data.filter(e => e.isDelete == false).map(e => e.subTotal).reduce((e, prev) => e + prev)) : 0) }</th>
+                        <th>{ currencyFormat(data.length > 0 ? (data.map(e => e.subTotal).reduce((e, prev) => e + prev)) : 0) }</th>
                     </tr>
                 </tfoot>
             </table>

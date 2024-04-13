@@ -1,6 +1,6 @@
 "use client"
 
-import { Product, PurchaseData, Supplier } from "@/app/(public)/(main)/pembelian/[purchase]/edit/page"
+import { Product, PurchaseData, SavingAccounts, Supplier } from "@/app/(public)/(main)/pembelian/[purchase]/edit/page"
 import { useFormik } from "formik"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
@@ -20,49 +20,49 @@ export interface Form {
     product: Product | null,
     document: File | null,
     supplier: Supplier | null,
+    savingAccount: string,
     purchaseStatus: string,
     discount: string,
     shippingCost: string,
     note: string
 }
 
-const Form = ({ product, supplier, data }: {
+const Form = ({ product, supplier, data, savingAccounts }: {
     product: Array<Product>,
     supplier: Array<Supplier>,
-    data: PurchaseData
+    data: PurchaseData,
+    savingAccounts: Array<SavingAccounts>
 }) => {
     const reset = useStore(state => state.reset)
     const router = useRouter()
     const formSchema = object().shape({
         order: array().min(1, 'Order produk harus terisi!'),
-        purchaseStatus: string().required('Status pembelian harus diisi!')
+        purchaseStatus: string().required('Status pembelian harus diisi!'),
+        savingAccount: string().required('Rekening harus diisi!')
     })
 
     const form = useFormik<Form>({
         initialValues: {
-            order: data.purchaseOrder.map(e => ({ 
+            order: data.purchaseOrder.map(e => ({
                 id: e.product!.id,
                 name: e.product!.name,
                 price: e.product!.price,
-                qty: e.product!.qty,
                 selectQty: e.qty,
                 subTotal: e.qty * e.product!.price,
-                selectQtyOld: e.qty,
-                isDelete: false,
-                isNewAdded: false
-             })),
+            })),
             product: null,
             document: null,
             supplier: data.supplier,
             purchaseStatus: data.purchaseStatus,
             discount: data.discount.toString(),
             shippingCost: data.shippingCost.toString(),
-            note: data.notes ?? ''
+            note: data.notes ?? '',
+            savingAccount: data.idSavingAccount ?? ''
         },
         validationSchema: formSchema,
         onSubmit: async e => {
             try {
-                if(e.order.filter(e => e.isDelete == false).length == 0){
+                if(e.order.length == 0){
                     form.setFieldError("order", "Order produk harus diisi!")
                     return false
                 }
@@ -89,14 +89,12 @@ const Form = ({ product, supplier, data }: {
         }
     })
     const { touched, errors, values, isSubmitting, handleSubmit, handleChange, setFieldValue } = form
-    const handleProductInput = (e: Product) => setFieldValue("order", [...values.order, { ...product.filter(val => val.id == e.id)[0], selectQty: 1, isDelete: false, isNewAdded: true, subTotal: product.filter(val => val.id == e.id)[0].price }])
+    const handleProductInput = (e: Product) => setFieldValue("order", [...values.order, { ...product.filter(val => val.id == e.id)[0], selectQty: 1, subTotal: product.filter(val => val.id == e.id)[0].price }])
     const changeQtyOrder = (id: number, qty: string) => {
         setFieldValue(`order[${id}].selectQty`, parseInt(qty))
         setFieldValue(`order[${id}].subTotal`, values.order[id].price * parseInt(qty))
     }
-    const onDeleteOrder = (val: number) => {
-        setFieldValue(`order[${val}].isDelete`, true)
-    }
+    const onDeleteOrder = (val: number) => setFieldValue('order', [...values.order].filter((_, index) => index != val))
 
     return (
         <form className="mt-10 relative" onSubmit={handleSubmit}>
@@ -132,6 +130,16 @@ const Form = ({ product, supplier, data }: {
                         setSelected={e => setFieldValue("supplier", e)}
                         selected={values.supplier} />
                 </div>
+                <label className="form-control w-full max-w-xs">
+                    <div className="label">
+                        <span className="label-text">Rekening</span>
+                    </div>
+                    <select className="bg-gray-50 border input input-bordered w-full max-w-xs capitalize" name="savingAccount" defaultValue={values.savingAccount} onChange={handleChange}>
+                        <option value="" disabled>Pilih rekening</option>
+                        { savingAccounts.map((e, index) => <option key={index} value={e.id}>{e.name}</option>) }
+                    </select>
+                    {touched.savingAccount && errors.savingAccount ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.savingAccount}</span></label> : null}
+                </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
                         <span className="label-text">Status Pembelian</span>

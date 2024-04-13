@@ -15,8 +15,7 @@ export const getProductData = async () => await prisma.product.findMany({
     select: {
         id: true,
         name: true,
-        qty: true,
-        price: true
+        price: true,
     }
 })
 
@@ -30,12 +29,23 @@ export const getSupplierData = async () => await prisma.supplier.findMany({
     }
 })
 
+export const getSavingAccounts = async () => await prisma.savingAccounts.findMany({
+    where: {
+        idStore: cookies().get('store')?.value
+    },
+    select: {
+        id: true,
+        name: true
+    }
+})
+
 export const addPurchase = async (form: FormData) => {
     try {
         const order = form.get('order') as string
         const document = form.get('document') as File
         const supplier = form.get('supplier') as string | null
         const purchaseStatus = form.get('purchaseStatus') as $Enums.PurchaseStatus
+        const savingAccount = form.get('savingAccount') as string
         const discount = form.get('discount') as string | null
         const shippingCost = form.get('shippingCost') as string | null
         const note = form.get('note') as string | null
@@ -46,6 +56,7 @@ export const addPurchase = async (form: FormData) => {
                 data: {
                     id: `PUR_${Date.now()}`,
                     idStore: cookies().get('store')!.value,
+                    idSavingAccount: savingAccount,
                     idSupplier: supplier,
                     discount: discount ? parseInt(discount) : undefined,
                     shippingCost: shippingCost ? parseInt(shippingCost) : undefined,
@@ -66,18 +77,6 @@ export const addPurchase = async (form: FormData) => {
                 },
             })
 
-            for(let i of parseOrder){
-                await e.product.updateMany({
-                    where: {
-                        idStore: cookies().get('store')?.value,
-                        id: i.id
-                    },
-                    data: {
-                        qty: i.qty + i.selectQty
-                    }
-                })
-            }
-
             if (document != null) {
                 const buffer = Buffer.from(await document.arrayBuffer()).toString("base64")
                 const resultUpload = await Cloudinary.uploader.upload(`data:${document.type};base64,${buffer}`, {
@@ -97,7 +96,7 @@ export const addPurchase = async (form: FormData) => {
         })
 
         revalidatePath("/", "layout")
-    } catch(e) {
+    } catch {
         throw new Error("Kesalahan saat menambahkan data!")
     }
 }

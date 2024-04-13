@@ -43,7 +43,6 @@ export const getProductData = async (id: string) => await prisma.product.findFir
         imagePath: true,
         name: true,
         idProductCategories: true,
-        qty: true,
         price: true,
         cost: true
     }
@@ -52,7 +51,6 @@ export const getProductData = async (id: string) => await prisma.product.findFir
 export const updateProduct = async (form: FormData) => {
     try{
         const id = form.get('id') as string
-        const code = form.get('code') as string
         const photo = form.get('image') as File
         const name = form.get('name') as string
         const category = form.get('category') as string
@@ -67,7 +65,6 @@ export const updateProduct = async (form: FormData) => {
                 },
                 data: {
                     name: name,
-                    id: `PROD_${code}`,
                     idProductCategories: category ?? null,
                     price: parseInt(price),
                     cost: parseInt(cost)

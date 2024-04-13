@@ -1,7 +1,7 @@
 "use client"
 
 import { addData, getCountDataById } from "@/app/(public)/(main)/penjualan/tambahpenjualan/action"
-import { Customer, Product } from "@/app/(public)/(main)/penjualan/tambahpenjualan/page"
+import { Customer, Product, SavingAccounts } from "@/app/(public)/(main)/penjualan/tambahpenjualan/page"
 import { $Enums } from "@prisma/client"
 import { useFormik } from "formik"
 import dynamic from "next/dynamic"
@@ -27,6 +27,7 @@ export interface Form {
     customer: Customer | undefined,
     saleStatus: string | undefined,
     salePurchaseStatus: string | undefined,
+    savingAccount: string,
     discount: string | undefined,
     shippingCost: string | undefined,
     saleNotes: string | undefined,
@@ -34,9 +35,10 @@ export interface Form {
 }
 
 export type FormWithoutDocument = Omit<Form, 'document'>
-const Form = ({ product, customer }: {
+const Form = ({ product, customer, savingAccounts }: {
     product: Array<Product>,
-    customer: Array<Customer>
+    customer: Array<Customer>,
+    savingAccounts: Array<SavingAccounts>
 }) => {
     const router = useRouter()
     const formSchema = object().shape({
@@ -44,7 +46,8 @@ const Form = ({ product, customer }: {
         ref: string(),
         customer: mixed().required('Kustomer tidak boleh kosong!'),
         saleStatus: string().required("Status penjualan tidak boleh kosong!"),
-        salePurchaseStatus: string().required("Status pembayaran tidak boleh kosong!")
+        salePurchaseStatus: string().required("Status pembayaran tidak boleh kosong!"),
+        savingAccount: string().required("Rekening harus diisi!")
     })
 
     const form = useFormik<Form>({
@@ -58,7 +61,8 @@ const Form = ({ product, customer }: {
             discount: undefined,
             shippingCost: undefined,
             saleNotes: undefined,
-            staffNotes: undefined
+            staffNotes: undefined,
+            savingAccount: ""
         },
         validationSchema: formSchema,
         onSubmit: async e => {
@@ -139,6 +143,17 @@ const Form = ({ product, customer }: {
                         selected={values.customer}
                         setSelected={(e: Customer) => setFieldValue("customer", e)} />
                     {errors.customer && touched.customer ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.customer}</span></label> : null}
+                </label>
+
+                <label className="form-control w-full max-w-xs">
+                    <div className="label">
+                        <span className="label-text">Rekening*(Wajib)</span>
+                    </div>
+                    <select className="bg-gray-50 border input input-bordered w-full max-w-xs" name="savingAccount" value={values.savingAccount} onChange={handleChange}>
+                        <option value="" className="text-gray-200">Status</option>
+                        { savingAccounts.map((e, index) => <option key={index} value={e.id}>{ e.name }</option>) }
+                    </select>
+                    {errors.savingAccount && touched.savingAccount ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.savingAccount}</span></label> : null}
                 </label>
 
                 <label className="form-control w-full max-w-xs">

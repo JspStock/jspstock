@@ -55,7 +55,10 @@ const PrintButton = () => {
                                 <td>{e.name}</td>
                                 <td>{e.id.split("_")[1]}</td>
                                 <td>{e.productCategories ? e.productCategories.name : 'N/A'}</td>
-                                <td>{e.qty}</td>
+                                <td>{
+                                    (e.purchaseOrder.length > 0 ? e.purchaseOrder.map(a => a.qty - (a.purchase.purchaseReturns.length > 0 ? a.purchase.purchaseReturns.map(b => b.qty).reduce((val, prev) => val + prev) : 0)).reduce((val, prev) => val + prev) : 0) -
+                                    (e.saleOrder.length > 0 ? e.saleOrder.map(a => a.qty + (a.sale.saleReturns.length > 0 ? a.sale.saleReturns.map(b => b.qty).reduce((val, prev) => val + prev) : 0)).reduce((val, prev) => val + prev) : 0)
+                                }</td>
                                 <td>{currencyFormat(e.price)}</td>
                                 <td>{currencyFormat(e.cost)}</td>
                                 <td>{currencyFormat(e.price - e.cost)}</td>

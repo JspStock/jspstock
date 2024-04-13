@@ -15,8 +15,35 @@ export const getProduct = async () => await prisma.product.findMany({
     select: {
         id: true,
         name: true,
-        qty: true,
-        price: true
+        price: true,
+        saleOrder: {
+            select: {
+                qty: true,
+                sale: {
+                    select: {
+                        saleReturns: {
+                            select: {
+                                qty: true
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        purchaseOrder: {
+            select: {
+                qty: true,
+                purchase: {
+                    select: {
+                        purchaseReturns: {
+                            select: {
+                                qty: true
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 })
 
@@ -34,6 +61,16 @@ export const getCountDataById = async (id: string) => await prisma.sales.count({
     where: {
         id: `SLS_${id}`,
         idStore: cookies().get('store')?.value
+    }
+})
+
+export const getSavingAccounts = async () => await prisma.savingAccounts.findMany({
+    where: {
+        idStore: cookies().get('store')?.value
+    },
+    select: {
+        id: true,
+        name: true
     }
 })
 
@@ -63,7 +100,8 @@ export const getData = async (id: string) => await prisma.sales.findUnique({
         discount: true,
         shippingCost: true,
         saleNotes: true,
-        staffNotes: true
+        staffNotes: true,
+        idSavingAccount: true
     }
 })
 
@@ -96,68 +134,6 @@ export const updateData = async (id: string, form: FormWithoutDocument, file: st
                     }
                 }
             })
-
-            for(let i of form.orderDeleted){
-                const getItemOld = updateResult.saleOrder.find(e => e.id == i.idOrder)?.qty
-                const getQtyProduct = await e.product.findUnique({
-                    where: {
-                        idStore: cookies().get('store')?.value,
-                        id: i.id
-                    },
-                    select: {
-                        qty: true
-                    }
-                })
-
-                await e.product.update({
-                    where: {
-                        idStore: cookies().get('store')?.value,
-                        id: i.id
-                    },
-                    data: {
-                        qty: getQtyProduct!.qty + getItemOld!
-                    }
-                })
-            }
-
-            for(let i of form.order){
-                const getQtyProduct = await e.product.findUnique({
-                    where: {
-                        idStore: cookies().get('store')?.value,
-                        id: i.id
-                    },
-                    select: {
-                        qty: true
-                    }
-                })
-
-                const detemineNegativeOrPositiveQty = () => {
-                    let result: number = getQtyProduct!.qty
-                    let qtyOld: number | undefined = updateResult.saleOrder.find(e => e.id == i.idOrder)?.qty
-
-                    if(qtyOld != undefined){
-                        if(parseInt(i.qty) > qtyOld){
-                            result -= (parseInt(i.qty) - qtyOld)
-                        }else if(parseInt(i.qty) < qtyOld){
-                            result += (qtyOld - parseInt(i.qty))
-                        }
-                    }else{
-                        result -= parseInt(i.qty)
-                    } 
-
-                    return result
-                }
-
-                await e.product.update({
-                    where: {
-                        idStore: cookies().get('store')?.value,
-                        id: i.id
-                    },
-                    data: {
-                        qty: detemineNegativeOrPositiveQty()
-                    }
-                })
-            }
 
             await e.sales.update({
                 where: {

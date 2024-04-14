@@ -1,7 +1,7 @@
 "use client"
 
-import { addData } from "@/app/(public)/(main)/pengembalian/pembelian/tambah/action"
-import { Supplier, Product, SavingAccount } from "@/app/(public)/(main)/pengembalian/pembelian/tambah/page"
+import { updateData } from "@/app/(public)/(main)/pengembalian/pembelian/[purchaseReturn]/edit/action"
+import { Supplier, Product, SavingAccount, PurchaseReturn } from "@/app/(public)/(main)/pengembalian/pembelian/[purchaseReturn]/edit/page"
 import { useFormik } from "formik"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
@@ -9,7 +9,7 @@ import Swal from "sweetalert2"
 import { array, object, string } from "yup"
 
 const Combobox = dynamic(() => import('@/app/components/comboBoxInput'))
-const OrderTable = dynamic(() => import('@/app/components/pengembalian/penjualan/tambah/orderTable'))
+const OrderTable = dynamic(() => import('@/app/components/pengembalian/pembelian/[purchaseReturn]/edit/orderTable'))
 
 export interface Order {
     id: string,
@@ -25,10 +25,11 @@ export interface Form {
     notes: string
 }
 
-const Form = ({ supplier, product, savingAccount }: {
+const Form = ({ supplier, product, savingAccount, purchaseReturn }: {
     supplier: Array<Supplier>,
     product: Array<Product>,
-    savingAccount: Array<SavingAccount>
+    savingAccount: Array<SavingAccount>,
+    purchaseReturn: PurchaseReturn
 }) => {
     const router = useRouter()
     const formSchema = object().shape({
@@ -39,15 +40,20 @@ const Form = ({ supplier, product, savingAccount }: {
 
     const form = useFormik<Form>({
         initialValues: {
-            order: [],
-            savingAccounts: '',
-            supplier: '',
-            notes: ''
+            order: purchaseReturn.purchaseReturnOrders.map(e => ({
+                id: e.product!.id,
+                qty: e.qty,
+                name: e.product!.name,
+                price: e.product!.price
+            })),
+            savingAccounts: purchaseReturn.idSavingAccount ?? '',
+            supplier: purchaseReturn.idSupplier ?? '',
+            notes: purchaseReturn.notes ?? ''
         },
         validationSchema: formSchema,
         onSubmit: async e => {
             try{
-                await addData(e)
+                await updateData(purchaseReturn.id, e)
                 router.push('/pengembalian/penjualan')
             }catch{
                 Swal.fire({

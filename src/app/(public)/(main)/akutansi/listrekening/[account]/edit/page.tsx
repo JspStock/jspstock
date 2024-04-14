@@ -43,4 +43,5 @@ const Tambahlistrek = async ({ params }: { params: Params }) => {
         redirect("/akutansi/listrekening")
     }
 }
+
 export default Tambahlistrek

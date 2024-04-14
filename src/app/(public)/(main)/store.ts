@@ -11,6 +11,7 @@ import expenditureCategoryStore from '@/app/(public)/(main)/pengeluaran/kategori
 import savingAccountStore from '@/app/(public)/(main)/akutansi/listrekening/store'
 import ExpenditureStore from '@/app/(public)/(main)/pengeluaran/listpengeluaran/store'
 import SaleReturnStore from '@/app/(public)/(main)/pengembalian/penjualan/store'
+import PurchaseReturnStore from '@/app/(public)/(main)/pengembalian/pembelian/store'
 import { create } from "zustand"
 
 interface Action{
@@ -29,7 +30,8 @@ const useStore = create<Action>()(_ => ({
         expenditureCategoryStore.getState().reset(),
         savingAccountStore.getState().reset(),
         ExpenditureStore.getState().reset(),
-        SaleReturnStore.getState().reset()
+        SaleReturnStore.getState().reset(),
+        PurchaseReturnStore.getState().reset()
     }
 }))
 

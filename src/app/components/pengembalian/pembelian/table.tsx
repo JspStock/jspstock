@@ -1,51 +1,66 @@
-const Tablelist = () => {
-    return (
+import { getPurchaseReturn } from "@/app/(public)/(main)/pengembalian/pembelian/action"
+import { SearchParams } from "@/app/(public)/(main)/pengembalian/pembelian/page"
+import { currencyFormat } from "@/utils/utils"
+import moment from "moment"
+import dynamic from "next/dynamic"
+import Link from "next/link"
+
+export interface PurchaseReturn{
+    id: string;
+    supplier: {
+        name: string;
+    } | null;
+    purchaseReturnOrders: {
+        product: {
+            price: number;
+        } | null;
+        qty: number;
+    }[];
+    createdAt: Date;
+}
+
+const Pagination = dynamic(() => import('@/app/components/pagination'))
+const CheckAll = dynamic(() => import('@/app/components/pengembalian/pembelian/(table)/checkAll'))
+const Check = dynamic(() => import('@/app/components/pengembalian/pembelian/(table)/check'))
+const DeleteButton = dynamic(() => import('@/app/components/pengembalian/pembelian/(table)/deleteButton'))
+
+const Tablelist = async ({ searchParams }: {
+    searchParams: SearchParams
+}) => {
+    const purchaseReturn = await getPurchaseReturn(searchParams)
+
+    return <>
         <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900">
             <table className="table">
-                {/* head */}
                 <thead className=" text-gray-900">
                     <tr>
-                        <th>
-                            <label>
-                                <input type="checkbox" className="checkbox" />
-                            </label>
-                        </th>
+                        <th><CheckAll data={purchaseReturn.result} /></th>
                         <th>Tanggal</th>
                         <th>Referensi</th>
                         <th>Supplier</th>
-                        <th>Toko</th>
                         <th>Total</th>
-                        <th>Action</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {/* row 1 */}
-                    <tr>
-                        <td>
-                            <label>
-                                <input type="checkbox" className="checkbox" />
-                            </label>
-                        </td>
-                        <td>
-                            10-04-2023
-                        </td>
-                        <td>
-                            rpp-28134812-827263
-                        </td>
-                        <td>Julian</td>
-                        <td>JSP DEPOK</td>
-                        <td>Rp.10000</td>
-                        <td>0.00</td>
-                        <td>
-                            <details className="dropdown dropdown-top dropdown-end">
-                                <summary className="m-1 bg-blue-900 text-white btn">Action</summary>
-                                <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
-                                    <li><a>Edit</a></li>
-                                    <li><a>Hapus</a></li>
-                                </ul>
-                            </details>
-                        </td>
-                    </tr>
+                    {
+                        purchaseReturn.result.map((e, index) => <tr key={index}>
+                            <td><Check data={e} /></td>
+                            <td>{moment(e.createdAt).format('DD-MM-YYYY')}</td>
+                            <td>{e.id}</td>
+                            <td>{e.supplier?.name}</td>
+                            <td>{currencyFormat(e.purchaseReturnOrders.length > 0 ? e.purchaseReturnOrders.map(a => a.qty * a.product!.price).reduce((val, prev) => val + prev) : 0)}</td>
+                            <td>
+                                <div className="dropdown dropdown-left">
+                                    <div tabIndex={0} role="button" className="btn btn-ghost">Lainnya</div>
+                                    <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                                        <li><Link href={`/pengembalian/pembelian/${e.id}/edit`}>Edit</Link></li>
+                                        <li><DeleteButton id={e.id} /></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>)
+                    }
                 </tbody>
                 <tfoot>
                     <tr>
@@ -53,13 +68,16 @@ const Tablelist = () => {
                         <th>Total</th>
                         <th></th>
                         <th></th>
-                        <th></th>
-                        <th>Rp.100000</th>
-                        <th></th>
+                        <th>{currencyFormat(purchaseReturn.result.length > 0 ? purchaseReturn.result.map(e => e.purchaseReturnOrders.map(a => a.qty * a.product!.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0)}</th>
                     </tr>
                 </tfoot>
             </table>
         </div>
-    )
+
+        <Pagination
+            hasNextPage={purchaseReturn.hasNextPage}
+            hasPrevPage={purchaseReturn.hasPrevPage}
+            page={purchaseReturn.page} />
+    </>
 }
 export default Tablelist

@@ -1,51 +1,64 @@
-const Tablelist = () => {
-    return (
+import { getSaleReturns } from "@/app/(public)/(main)/pengembalian/penjualan/action"
+import { SearchParams } from "@/app/(public)/(main)/pengembalian/penjualan/page"
+import { currencyFormat } from "@/utils/utils"
+import moment from "moment"
+import dynamic from "next/dynamic"
+import Link from "next/link"
+
+export interface SaleReturns{
+    customerUser: {
+        name: string;
+    } | null;
+    saleReturnOrders: {
+        product: {
+            price: number;
+        } | null;
+        qty: number;
+    }[];
+    id: string;
+    createdAt: Date;
+}
+
+const Pagination = dynamic(() => import('@/app/components/pagination'))
+const CheckAll = dynamic(() => import('@/app/components/pengembalian/penjualan/(table)/checkAll'))
+const Check = dynamic(() => import('@/app/components/pengembalian/penjualan/(table)/check'))
+const DeleteButton = dynamic(() => import('@/app/components/pengembalian/penjualan/(table)/deleteButton'))
+
+const Tablelist = async ({ searchParams }: {
+    searchParams: SearchParams
+}) => {
+    const saleReturns = await getSaleReturns(searchParams)
+
+    return <>
         <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900">
             <table className="table">
-                {/* head */}
                 <thead className=" text-gray-900">
                     <tr>
-                        <th>
-                            <label>
-                                <input type="checkbox" className="checkbox" />
-                            </label>
-                        </th>
+                        <th><CheckAll data={saleReturns.result} /></th>
                         <th>Tanggal</th>
                         <th>Referensi</th>
                         <th>Costomer</th>
-                        <th>Toko</th>
                         <th>Total</th>
-                        <th>Action</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {/* row 1 */}
-                    <tr>
+                    {saleReturns.result.map((e, index) => <tr key={index}>
+                        <td><Check data={e} /></td>
+                        <td>{moment(e.createdAt).format('DD-MM-YYYY')}</td>
+                        <td>{e.id}</td>
+                        <td>{e.customerUser?.name}</td>
+                        <td>{currencyFormat(e.saleReturnOrders.length > 0 ? e.saleReturnOrders.map(a => a.qty * a.product!.price).reduce((val, prev) => val + prev) : 0)}</td>
                         <td>
-                            <label>
-                                <input type="checkbox" className="checkbox" />
-                            </label>
-                        </td>
-                        <td>
-                            10-04-2023
-                        </td>
-                        <td>
-                            rpp-28134812-827263
-                        </td>
-                        <td>Julian</td>
-                        <td>JSP DEPOK</td>
-                        <td>Rp.10000</td>
-                        <td>0.00</td>
-                        <td>
-                            <details className="dropdown dropdown-top dropdown-end">
-                                <summary className="m-1 bg-blue-900 text-white btn">Action</summary>
-                                <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
-                                    <li><a>Edit</a></li>
-                                    <li><a>Hapus</a></li>
+                            <div className="dropdown dropdown-left">
+                                <div tabIndex={0} role="button" className="btn btn-ghost">Lainnya</div>
+                                <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box">
+                                    <li><Link href={`/pengembalian/penjualan/${e.id}/edit`}>Edit</Link></li>
+                                    <li><DeleteButton id={e.id} /></li>
                                 </ul>
-                            </details>
+                            </div>
                         </td>
-                    </tr>
+                    </tr>)}
                 </tbody>
                 <tfoot>
                     <tr>
@@ -53,13 +66,17 @@ const Tablelist = () => {
                         <th>Total</th>
                         <th></th>
                         <th></th>
-                        <th></th>
-                        <th>Rp.100000</th>
+                        <th>{currencyFormat(saleReturns.result.length > 0 ? saleReturns.result.map(e => e.saleReturnOrders.map(a => a.qty * a.product!.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0)}</th>
                         <th></th>
                     </tr>
                 </tfoot>
             </table>
         </div>
-    )
+
+        <Pagination
+            hasNextPage={saleReturns.hasNextPage}
+            hasPrevPage={saleReturns.hasPrevPage}
+            page={saleReturns.page} />
+    </>
 }
 export default Tablelist

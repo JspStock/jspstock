@@ -19,29 +19,11 @@ export const getProduct = async () => await prisma.product.findMany({
         saleOrder: {
             select: {
                 qty: true,
-                sale: {
-                    select: {
-                        saleReturns: {
-                            select: {
-                                qty: true
-                            }
-                        }
-                    }
-                }
             }
         },
         purchaseOrder: {
             select: {
                 qty: true,
-                purchase: {
-                    select: {
-                        purchaseReturns: {
-                            select: {
-                                qty: true
-                            }
-                        }
-                    }
-                }
             }
         }
     }

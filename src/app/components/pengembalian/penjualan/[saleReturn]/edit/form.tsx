@@ -1,7 +1,7 @@
 "use client"
 
-import { addData } from "@/app/(public)/(main)/pengembalian/penjualan/tambah/actions"
-import { CustomerUser, Product, SavingAccounts } from "@/app/(public)/(main)/pengembalian/penjualan/tambah/page"
+import { updateData } from "@/app/(public)/(main)/pengembalian/penjualan/[saleReturn]/edit/actions"
+import { CustomerUser, Product, SaleReturn, SavingAccounts } from "@/app/(public)/(main)/pengembalian/penjualan/[saleReturn]/edit/page"
 import { useFormik } from "formik"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
@@ -10,7 +10,7 @@ import { array, object, string } from "yup"
 
 const ComboboxCustomer = dynamic(() => import('@/app/components/comboBoxInput'))
 const ComboboxProduct = dynamic(() => import('@/app/components/comboBoxInput'))
-const OrderTable = dynamic(() => import('@/app/components/pengembalian/penjualan/tambah/orderTable'))
+const OrderTable = dynamic(() => import('@/app/components/pengembalian/penjualan/[saleReturn]/edit/orderTable'))
 
 export interface Order {
     id: string,
@@ -26,10 +26,11 @@ export interface Form {
     notes: string
 }
 
-const Form = ({ customerUser, product, savingAccounts }: {
+const Form = ({ customerUser, product, savingAccounts, saleReturn }: {
     customerUser: Array<CustomerUser>,
     product: Array<Product>,
-    savingAccounts: Array<SavingAccounts>
+    savingAccounts: Array<SavingAccounts>,
+    saleReturn: SaleReturn
 }) => {
     const router = useRouter()
     const formSchema = object().shape({
@@ -40,15 +41,20 @@ const Form = ({ customerUser, product, savingAccounts }: {
 
     const form = useFormik<Form>({
         initialValues: {
-            order: [],
-            savingAccounts: '',
-            customer: '',
+            order: saleReturn.saleReturnOrders.map(e => ({
+                id: e.idProduct!,
+                name: product.find(a => a.id == e.idProduct)!.name,
+                price: product.find(a => a.id == e.idProduct)!.price,
+                qty: e.qty
+            })),
+            savingAccounts: saleReturn.idSavingAccount ?? '',
+            customer: saleReturn.idCustomerUser ?? '',
             notes: ''
         },
         validationSchema: formSchema,
         onSubmit: async e => {
             try{
-                await addData(e)
+                await updateData(saleReturn.id, e)
                 router.push('/pengembalian/penjualan')
             }catch{
                 Swal.fire({

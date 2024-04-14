@@ -2,7 +2,7 @@
 
 import { getCountDataById, updateData } from "@/app/(public)/(main)/penjualan/listpenjualan/[sales]/edit/action"
 import { Sales } from "@/app/(public)/(main)/penjualan/listpenjualan/[sales]/edit/page"
-import { Customer, Product, SavingAccounts } from "@/app/(public)/(main)/penjualan/tambahpenjualan/page"
+import { Customer, Product, SavingAccounts } from "@/app/(public)/(main)/penjualan/listpenjualan/[sales]/edit/page"
 import { $Enums } from "@prisma/client"
 import { useFormik } from "formik"
 import dynamic from "next/dynamic"

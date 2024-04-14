@@ -36,37 +36,15 @@ export const getSavingAccounts = async () => await prisma.savingAccounts.findMan
 
 export const addData = async (form: FormState) => {
     try{
-        await prisma.$transaction(async e => {
-            const getBalanceAccount = await e.savingAccounts.findUnique({
-                where: {
-                    id: form.account,
-                    idStore: cookies().get('store')?.value
-                },
-                select: {
-                    startingBalance: true
-                }
-            })
-
-            await e.expenditures.create({
-                data: {
-                    id: `EXP_${Date.now()}`,
-                    idStore: cookies().get('store')!.value,
-                    idSavingAccount: form.account,
-                    idExpenditureCategory: form.expenditureCategory,
-                    total: form.totalExpenditure,
-                    notes: form.note,
-                }
-            })
-
-            await e.savingAccounts.update({
-                where: {
-                    id: form.account,
-                    idStore: cookies().get('store')?.value
-                },
-                data: {
-                    startingBalance: getBalanceAccount!.startingBalance - form.totalExpenditure
-                }
-            })
+        await prisma.expenditures.create({
+            data: {
+                id: `EXP_${Date.now()}`,
+                idStore: cookies().get('store')!.value,
+                idSavingAccount: form.account,
+                idExpenditureCategory: form.expenditureCategory,
+                total: form.totalExpenditure,
+                notes: form.note,
+            }
         })
 
         revalidatePath("/", "layout")

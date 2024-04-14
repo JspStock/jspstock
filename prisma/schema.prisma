@@ -68,6 +68,8 @@ model Store{
   purchaseReturns PurchaseReturns[]
   packaging Packaging[]
   packagingOrder PackagingOrder[]
+  saleReturnOrders SaleReturnOrders[]
+  purchaseReturnOrders PurchaseReturnOrders[]
 }
 
 model User{
@@ -181,6 +183,8 @@ model Product{
   saleOrder SaleOrder[]
   packaging Packaging[]
   packagingOrder PackagingOrder[]
+  saleReturnOrders SaleReturnOrders[]
+  purchaseReturnOrders PurchaseReturnOrders[]
 }
 
 model Purchase{
@@ -200,7 +204,6 @@ model Purchase{
   savingAccount SavingAccounts? @relation(fields: [idSavingAccount], references: [id], onUpdate: Cascade, onDelete: SetNull)
 
   purchaseOrder PurchaseOrder[]
-  purchaseReturns PurchaseReturns[]
 }
 
 model PurchaseOrder{
@@ -234,7 +237,6 @@ model Sales{
   customerUser CustomerUser? @relation(fields: [idCustomerUser], references: [id], onDelete: SetNull, onUpdate: Cascade)
   savingAccount SavingAccounts? @relation(fields: [idSavingAccount], references: [id], onDelete: SetNull, onUpdate: Cascade)
   saleOrder SaleOrder[]
-  saleReturns SaleReturns[]
 }
 
 model SaleOrder{
@@ -279,15 +281,26 @@ model SaleReturns{
   idStore String
   idCustomerUser String?
   idSavingAccount String?
-  idSales String
-  qty Int
   notes String?
   createdAt DateTime @default(now())
 
   savingAccount SavingAccounts? @relation(fields: [idSavingAccount], references: [id], onDelete: SetNull, onUpdate: Cascade)
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
   customerUser CustomerUser? @relation(fields: [idCustomerUser], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  sales Sales @relation(fields: [idSales], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  saleReturnOrders SaleReturnOrders[]
+}
+
+model SaleReturnOrders{
+  id String @id @default(uuid())
+  idStore String
+  idProduct String?
+  idSaleReturn String
+  qty Int
+  createdAt DateTime @default(now())
+
+  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  product Product? @relation(fields: [idProduct], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  saleReturn SaleReturns @relation(fields: [idSaleReturn], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model PurchaseReturns{
@@ -295,15 +308,26 @@ model PurchaseReturns{
   idStore String
   idSavingAccount String?
   idSupplier String?
-  idPurchase String
-  qty Int
   notes String?
   createdAt DateTime @default(now())
 
   savingAccount SavingAccounts? @relation(fields: [idSavingAccount], references: [id], onDelete: SetNull, onUpdate: Cascade)
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
   supplier Supplier? @relation(fields: [idSupplier], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  purchase Purchase? @relation(fields: [idPurchase], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  purchaseReturnOrders PurchaseReturnOrders[]
+}
+
+model PurchaseReturnOrders{
+  id String @id @default(uuid())
+  idStore String
+  idProduct String?
+  idPurchaseReturn String
+  qty Int
+  createdAt DateTime @default(now())
+
+  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  product Product? @relation(fields: [idProduct], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  purchaseReturn PurchaseReturns @relation(fields: [idPurchaseReturn], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Packaging{

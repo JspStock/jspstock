@@ -57,7 +57,7 @@ export default function ProductComboBox({
             leaveTo="opacity-0"
             afterLeave={() => setQuery('')}
           >
-            <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
+            <Combobox.Options className="absolute mt-1 z-10 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
               {filteredData.length === 0 && query !== '' ? (
                 <div className="relative cursor-default select-none px-4 py-2 text-gray-700">
                   Data tidak ditemukan.

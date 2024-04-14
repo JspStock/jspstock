@@ -22,14 +22,7 @@ const Form = ({ expenditureCategory, savingAccounts }: {
     const formSchema = object().shape({
         expenditureCategory: string().required("Kategori pengeluaran tidak boleh kosong!"),
         account: string().required("Nomor rekening tidak boleh kosong!"),
-        totalExpenditure: number().when("account", {
-            is: (val: string) => string().required().isValidSync(val),
-            then: () => number().required("Jumlah pengeluaran tidak boleh kosong!").min(1, "Total pengeluaran tidak boleh kosong!"),
-            otherwise: () => string().test({
-                message: "Harap isikan nomor rekening terlebih dahulu!",
-                test: () => false
-            })
-        })
+        totalExpenditure: number().required("Jumlah pengeluaran tidak boleh kosong!").min(1, "Total pengeluaran tidak boleh kosong!")
     })
 
     const form = useFormik<FormState>({

@@ -48,31 +48,23 @@ export const getAllProduct = async (searchParams: SearchParams) => {
             purchaseOrder: {
                 select: {
                     qty: true,
-                    purchase: {
-                        select: {
-                            purchaseReturns: {
-                                select: {
-                                    qty: true
-                                }
-                            }
-                        }
-                    }
                 }
             },
             saleOrder: {
                 select: {
                     qty: true,
-                    sale: {
-                        select: {
-                            saleReturns: {
-                                select: {
-                                    qty: true
-                                }
-                            }
-                        }
-                    }
                 }
             },
+            saleReturnOrders: {
+                select: {
+                    qty: true
+                }
+            },
+            purchaseReturnOrders: {
+                select: {
+                    qty: true
+                }
+            }
         }
     }, {
         limit: searchParams.show ? searchParams.show == 'all' ? getCountData : parseInt(searchParams.show) : 10,

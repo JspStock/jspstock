@@ -11,25 +11,15 @@ export const metadata: Metadata = {
     title: 'Edit penjualan'
 }
 
-export interface Product {
+export interface Product{
     id: string;
+    saleOrder: {
+        qty: number;
+    }[];
     name: string;
     price: number;
     purchaseOrder: {
         qty: number;
-        purchase: {
-            purchaseReturns: {
-                qty: number;
-            }[];
-        };
-    }[];
-    saleOrder: {
-        qty: number;
-        sale: {
-            saleReturns: {
-                qty: number;
-            }[];
-        };
     }[];
 }
 

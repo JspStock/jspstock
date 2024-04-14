@@ -101,32 +101,6 @@ export const deleteData = async (id: Array<string>) => {
     try {
         await prisma.$transaction(async e => {
             for (let i of id) {
-                const getData = await e.expenditures.findUnique({
-                    where: {
-                        id: i,
-                        idStore: cookies().get('store')?.value
-                    },
-                    select: {
-                        total: true,
-                        savingAccount: {
-                            select: {
-                                id: true,
-                                startingBalance: true
-                            }
-                        }
-                    }
-                })
-
-                await e.savingAccounts.update({
-                    where: {
-                        id: getData!.savingAccount!.id,
-                        idStore: cookies().get('store')?.value
-                    },
-                    data: {
-                        startingBalance: getData!.savingAccount!.startingBalance + getData!.total
-                    }
-                })
-
                 await e.expenditures.delete({
                     where: {
                         id: i,

@@ -20,20 +20,16 @@ export interface AllProduct {
         name: string
     } | null;
     purchaseOrder: {
-        purchase: {
-            purchaseReturns: {
-                qty: number;
-            }[];
-        };
         qty: number;
     }[]
     saleOrder: {
         qty: number;
-        sale: {
-            saleReturns: {
-                qty: number;
-            }[];
-        };
+    }[]
+    saleReturnOrders: {
+        qty: number
+    }[]
+    purchaseReturnOrders: {
+        qty: number
     }[]
 }
 
@@ -81,8 +77,10 @@ const Tablelist = async ({ searchParams }: {
                             <td>{`${e.id.split("_")[1]}`}</td>
                             <td>{e.productCategories ? e.productCategories.name : 'N/A'}</td>
                             <td>{ 
-                                (e.purchaseOrder.length > 0 ? e.purchaseOrder.map(a => a.qty - (a.purchase.purchaseReturns.length > 0 ? a.purchase.purchaseReturns.map(b => b.qty).reduce((val, prev) => val + prev) : 0)).reduce((val, prev) => val + prev) : 0) -
-                                (e.saleOrder.length > 0 ? e.saleOrder.map(a => a.qty + (a.sale.saleReturns.length > 0 ? a.sale.saleReturns.map(b => b.qty).reduce((val, prev) => val + prev) : 0)).reduce((val, prev) => val + prev) : 0)
+                                (e.purchaseOrder.length > 0 ? e.purchaseOrder.map(a => a.qty).reduce((val, prev) => val + prev) : 0) -
+                                (e.saleOrder.length > 0 ? e.saleOrder.map(a => a.qty).reduce((val, prev) => val + prev) : 0) +
+                                (e.saleReturnOrders.length > 0 ? e.saleReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev) : 0) -
+                                (e.purchaseReturnOrders.length > 0 ? e.purchaseReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev) : 0)
                             }</td>
                             <td>{currencyFormat(e.price)}</td>
                             <td>{currencyFormat(e.cost)}</td>

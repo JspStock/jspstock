@@ -1,6 +1,6 @@
 "use client"
 
-import { Product } from "@/app/(public)/(main)/penjualan/tambahpenjualan/page"
+import { Product } from "@/app/(public)/(main)/penjualan/listpenjualan/[sales]/edit/page"
 import { currencyFormat } from "@/utils/utils"
 import { Order } from "./form"
 

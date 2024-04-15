@@ -102,10 +102,6 @@ export const linkNav = ({ role }: { role: string }) => {
                 {
                     text: "Daftar Pemaketan",
                     link: "/listpemaketan"
-                },
-                {
-                    text: "Reset",
-                    link: "/reset"
                 }
             ]
         },

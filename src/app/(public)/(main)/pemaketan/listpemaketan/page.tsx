@@ -32,8 +32,8 @@ export default function page({ searchParams }: { searchParams: SearchParams }) {
             <div className="flex max-lg:grid max-lg:space-y-2 lg:space-x-2">
                 <Link href="/pemaketan/listpemaketan/input" className="text-white w-64 border-0 bg-green-500 btn">+ Tambah List Pemaketan</Link>
                 <div className="max-lg:flex max-lg:space-x-2 lg:space-x-2">
-                    <PrintLabelButton />
-                    <PrintButton />
+                    <PrintLabelButton BASE_URL={process.env.BASE_URL ?? ''} />
+                    <PrintButton BASE_URL={process.env.BASE_URL ?? ''} />
                     <DeleteButton />
                 </div>
             </div>

@@ -1,7 +1,7 @@
 "use client"
 
-import { addData } from "@/app/(public)/(main)/akutansi/transferuang/tambah/action"
-import { SavingAccount } from "@/app/(public)/(main)/akutansi/transferuang/tambah/page"
+import { updateData } from "@/app/(public)/(main)/akutansi/transferuang/[moneyTransfer]/edit/action"
+import { MoneyTransfer, SavingAccount } from "@/app/(public)/(main)/akutansi/transferuang/[moneyTransfer]/edit/page"
 import { useFormik } from "formik"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
@@ -16,8 +16,9 @@ export interface Form {
     total: number
 }
 
-const Form = ({ savingAccount }: {
-    savingAccount: Array<SavingAccount>
+const Form = ({ savingAccount, moneyTransfer }: {
+    savingAccount: Array<SavingAccount>,
+    moneyTransfer: MoneyTransfer
 }) => {
     const router = useRouter()
     const formSchema = object().shape({
@@ -28,14 +29,14 @@ const Form = ({ savingAccount }: {
 
     const form = useFormik<Form>({
         initialValues: {
-            from: '',
-            to: '',
-            total: 0
+            from: moneyTransfer.fromSavingAccount ?? '',
+            to: moneyTransfer.toSavingAccount ?? '',
+            total: moneyTransfer.total
         },
         validationSchema: formSchema,
         onSubmit: async e => {
             try{
-                await addData(e)
+                await updateData(moneyTransfer.id, e)
                 router.push("/akutansi/transferuang")
             }catch{
                 Swal.fire({

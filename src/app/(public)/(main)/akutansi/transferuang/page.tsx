@@ -1,24 +1,41 @@
 import dynamic from "next/dynamic"
 import Link from "next/link"
+import TableList from "@/app/components/akutansi/transfer/table"
+import { Suspense } from "react"
+import { Metadata } from "next"
 
-const TableList = dynamic(() => import("@/app/components/akutansi/transfer/table"))
-const Pagination = dynamic(() => import("@/app/components/akutansi/transfer/pagination"))
-const Perpage = dynamic(() => import("@/app/components/akutansi/transfer/perpage"))
+const TableLoaderSkeleton = dynamic(() => import('@/app/components/tableLoadingSkeleton'))
+const PerPage = dynamic(() => import('@/app/components/perpage'))
+const SearchForm = dynamic(() => import('@/app/components/searchForm'))
+const DeleteButton = dynamic(() => import('@/app/components/akutansi/transfer/deleteButton'))
+const PrintButton = dynamic(() => import('@/app/components/akutansi/transfer/printButton'))
 
-export default function Transferuang() {
+export interface SearchParams {
+    show?: string,
+    page?: string,
+    search?: string
+}
+
+export const metadata: Metadata = {
+    title: 'Transfer Uang'
+}
+
+export default function page({ searchParams }: { searchParams: SearchParams }) {
     return (
         <>
             <div className="flex max-lg:grid max-lg:space-y-2 lg:space-x-2">
                 <Link href="/akutansi/transferuang/tambah" className="text-white w-62 border-0 bg-green-500 btn">+ Tambah Transfer Uang</Link>
                 <div className="max-lg:flex max-lg:space-x-2 lg:space-x-2">
-                    <button className="text-white w-20 border-0 bg-gray-400 btn">Print</button>
-                    <button className="text-white w-20 border-0 bg-red-400 btn">Hapus</button>
+                    <PrintButton />
+                    <DeleteButton />
                 </div>
             </div>
-            <input type="text" placeholder="Pencarian" className="input mt-5 bg-white text-gray-900 input-bordered w-full max-w-xs" />
-            <Perpage />
-            <TableList />
-            <Pagination />
+            <SearchForm />
+            <PerPage />
+            <Suspense fallback={<TableLoaderSkeleton />} key={`${searchParams.page}_${searchParams.search}_${searchParams.show}`}>
+                <TableList
+                    searchParams={searchParams} />
+            </Suspense>
         </>
     )
 }

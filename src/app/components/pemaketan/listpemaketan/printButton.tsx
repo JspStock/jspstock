@@ -7,7 +7,9 @@ import { useRef, useState } from "react"
 import QRCode from "react-qr-code"
 import { useReactToPrint } from "react-to-print"
 
-const PrintButton = () => {
+const PrintButton = ({ BASE_URL }: {
+    BASE_URL: string
+}) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const ref = useRef(null)
     const select = useStore(state => state.select)
@@ -44,7 +46,7 @@ const PrintButton = () => {
                             select.map((e, index) => <tr key={index}>
                                 <td>
                                     <QRCode
-                                        value={`${process.env.BASE_URL}/package/${e.id}`}
+                                        value={`${BASE_URL}/package/${e.id}`}
                                         size={50} />
                                 </td>
                                 <td>{moment(e.createdAt).format("DD-MM-YYYY")}</td>

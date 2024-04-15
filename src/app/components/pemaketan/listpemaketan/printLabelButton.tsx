@@ -7,7 +7,9 @@ import { useReactToPrint } from "react-to-print"
 
 const PackageLabel = dynamic(() => import('@/app/components/packageLabel'))
 
-const PrintLabelButton = () => {
+const PrintLabelButton = ({ BASE_URL }: {
+    BASE_URL: string
+}) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const select = useStore(state => state.select)
     const ref = useRef(null)
@@ -27,7 +29,7 @@ const PrintLabelButton = () => {
         <div className="hidden">
             <div className="grid grid-cols-2 justify-center items-center" ref={ref}>
                 {
-                    select.map((e, index) => <PackageLabel key={index} content={e.address} linkQr={`${process.env.BASE_URL}/package/${e.id}`}/>)
+                    select.map((e, index) => <PackageLabel key={index} content={e.address} linkQr={`${BASE_URL}/package/${e.id}`}/>)
                 }
             </div>
         </div>

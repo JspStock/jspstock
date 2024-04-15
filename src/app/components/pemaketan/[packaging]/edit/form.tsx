@@ -1,7 +1,7 @@
 "use client"
 
-import { addData } from "@/app/(public)/(main)/pemaketan/listpemaketan/input/action"
-import { CustomerUser, Sales } from "@/app/(public)/(main)/pemaketan/listpemaketan/input/page"
+import { updateData } from "@/app/(public)/(main)/pemaketan/[packaging]/edit/action"
+import { CustomerUser, Packaging, Sales } from "@/app/(public)/(main)/pemaketan/[packaging]/edit/page"
 import { useFormik } from "formik"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
@@ -26,9 +26,10 @@ export interface FormWithoutFile{
     notes: string
 }
 
-const Form = ({ customerUser, sales }: {
+const Form = ({ customerUser, sales, packaging }: {
     customerUser: Array<CustomerUser>,
-    sales: Array<Sales>
+    sales: Array<Sales>,
+    packaging: Packaging
 }) => {
     const router = useRouter()
     const formSchema = object().shape({
@@ -40,10 +41,10 @@ const Form = ({ customerUser, sales }: {
     const form = useFormik<Form>({
         initialValues: {
             file: null,
-            idSale: '',
-            idCustomerUser: '',
-            address: '',
-            notes: ''
+            idSale: packaging.idSales ?? '',
+            idCustomerUser: packaging.idCustomerUser ?? '',
+            address: packaging.address,
+            notes: packaging.notes ?? ''
         },
         validationSchema: formSchema,
         onSubmit: async e => {
@@ -53,7 +54,7 @@ const Form = ({ customerUser, sales }: {
                     document = `data:${e.file.type};base64,${Buffer.from(await e.file.arrayBuffer()).toString("base64")}`
                 }
 
-                await addData({
+                await updateData(packaging.id, {
                     idSale: e.idSale,
                     address: e.address,
                     idCustomerUser: e.idCustomerUser,

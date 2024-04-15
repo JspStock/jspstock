@@ -43,6 +43,11 @@ enum PaymentMethods{
   LAINNYA
 }
 
+enum PackagingStatus{
+  SEDANG_MENGIRIM
+  TERKIRIM
+}
+
 model Store{
   id String @id
   name String
@@ -67,7 +72,6 @@ model Store{
   saleReturns SaleReturns[]
   purchaseReturns PurchaseReturns[]
   packaging Packaging[]
-  packagingOrder PackagingOrder[]
   saleReturnOrders SaleReturnOrders[]
   purchaseReturnOrders PurchaseReturnOrders[]
 }
@@ -181,8 +185,6 @@ model Product{
   productCategories ProductCategories? @relation(fields: [idProductCategories], references: [id], onDelete: SetNull, onUpdate: Cascade)
   purchaseOrder PurchaseOrder[]
   saleOrder SaleOrder[]
-  packaging Packaging[]
-  packagingOrder PackagingOrder[]
   saleReturnOrders SaleReturnOrders[]
   purchaseReturnOrders PurchaseReturnOrders[]
 }
@@ -237,6 +239,7 @@ model Sales{
   customerUser CustomerUser? @relation(fields: [idCustomerUser], references: [id], onDelete: SetNull, onUpdate: Cascade)
   savingAccount SavingAccounts? @relation(fields: [idSavingAccount], references: [id], onDelete: SetNull, onUpdate: Cascade)
   saleOrder SaleOrder[]
+  packaging Packaging[]
 }
 
 model SaleOrder{
@@ -333,30 +336,17 @@ model PurchaseReturnOrders{
 model Packaging{
   id String @id
   idStore String
-  idCustomerUser String
-  idProduct String
-  costShiping Int?
-  discount Int?
+  idCustomerUser String?
+  idSales String?
+  filePath String?
+  notes String?
+  status PackagingStatus
+  address String
   createdAt DateTime @default(now())
 
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  customerUser CustomerUser @relation(fields: [idCustomerUser], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  product Product @relation(fields: [idProduct], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  packagingOrder PackagingOrder[]
-}
-
-model PackagingOrder{
-  id String @id @default(uuid())
-  idStore String
-  idPackaging String
-  idProduct String
-  qty Int
-  total Int
-  createdAt DateTime @default(now())
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  packaging Packaging @relation(fields: [idPackaging], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  product Product @relation(fields: [idProduct], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  customerUser CustomerUser? @relation(fields: [idCustomerUser], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  sales Sales? @relation(fields: [idSales], references: [id], onDelete: SetNull, onUpdate: Cascade)
 }
 
 model MoneyTransfer{

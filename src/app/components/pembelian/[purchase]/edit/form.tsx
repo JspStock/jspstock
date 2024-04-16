@@ -22,8 +22,19 @@ export interface Form {
     supplier: Supplier | null,
     savingAccount: string,
     purchaseStatus: string,
-    discount: string,
-    shippingCost: string,
+    discount: number,
+    shippingCost: number,
+    note: string
+}
+
+export interface FormWithoutFile{
+    order: Array<Order>,
+    product: Product | null,
+    supplier: Supplier | null,
+    savingAccount: string,
+    purchaseStatus: string,
+    discount: number,
+    shippingCost: number,
     note: string
 }
 
@@ -54,8 +65,8 @@ const Form = ({ product, supplier, data, savingAccounts }: {
             document: null,
             supplier: data.supplier,
             purchaseStatus: data.purchaseStatus,
-            discount: data.discount.toString(),
-            shippingCost: data.shippingCost.toString(),
+            discount: data.discount,
+            shippingCost: data.shippingCost,
             note: data.notes ?? '',
             savingAccount: data.idSavingAccount ?? ''
         },
@@ -67,16 +78,25 @@ const Form = ({ product, supplier, data, savingAccounts }: {
                     return false
                 }
 
-                const formData = new FormData()
-                formData.append('id', data.id)
-                formData.append("order", JSON.stringify(e.order))
-                e.document != null ? formData.append("document", e.document) : null
-                e.supplier != null ? formData.append("supplier", e.supplier.id) : null
-                formData.append('purchaseStatus', e.purchaseStatus)
-                e.discount != '' ? formData.append('discount', e.discount) : null
-                e.shippingCost != '' ? formData.append('shippingCost', e.shippingCost) : null
-                e.note.trim() != '' ? formData.append('note', e.note) : null
-                await updatePurchase(formData)
+                let file: string | null = null
+                if(e.document){
+                    file = `data:${e.document.type};base64,${Buffer.from(await e.document.arrayBuffer()).toString('base64')}`
+                }
+
+                await updatePurchase(
+                    data.id,
+                    {
+                        discount: e.discount,
+                        note: e.note,
+                        order: e.order,
+                        product: e.product,
+                        purchaseStatus: e.purchaseStatus,
+                        savingAccount: e.savingAccount,
+                        shippingCost: e.shippingCost,
+                        supplier: e.supplier
+                    },
+                    file
+                )
                 router.push("/pembelian/listpembelian")
                 reset()
             } catch(e) {

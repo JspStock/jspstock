@@ -67,7 +67,7 @@ const TambahPembelian = async ({ params }: { params: Params }) => {
                 <BackButton />
     
                 <div className="mt-5">
-                    <h1 className="text-gray-900 font-semibold text-xl">Tambah Pembelian</h1>
+                    <h1 className="text-gray-900 font-semibold text-xl">Edit Pembelian</h1>
                     <h1 className="text-gray-400 text-sm">Label pada kotak yang ditandai dengan * adalah Wajib di input.</h1>
                     <Form 
                         product={productData}

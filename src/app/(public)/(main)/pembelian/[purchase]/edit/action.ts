@@ -6,6 +6,7 @@ import { $Enums } from "@prisma/client"
 import { Order } from "@/app/components/pembelian/[purchase]/edit/tabletambahpembelian"
 import Cloudinary from "@/utils/cloudinary"
 import { revalidatePath } from "next/cache"
+import { FormWithoutFile } from "@/app/components/pembelian/[purchase]/edit/form"
 
 export const getProductData = async () => await prisma.product.findMany({
     where: {
@@ -75,18 +76,8 @@ export const getPurchaseData = async (id: string) => await prisma.purchase.findU
     }
 })
 
-export const updatePurchase = async (form: FormData) => {
+export const updatePurchase = async (id: string, form: FormWithoutFile, file: string | null) => {
     try {
-        const id = form.get('id') as string
-        const order = form.get('order') as string
-        const document = form.get('document') as File
-        const supplier = form.get('supplier') as string | null
-        const purchaseStatus = form.get('purchaseStatus') as $Enums.PurchaseStatus
-        const discount = form.get('discount') as string | null
-        const shippingCost = form.get('shippingCost') as string | null
-        const note = form.get('note') as string | null
-        const parseOrder = JSON.parse(order) as Array<Order>
-
         await prisma.$transaction(async e => {
             const purchase = await e.purchase.update({
                 where: {
@@ -94,15 +85,15 @@ export const updatePurchase = async (form: FormData) => {
                     id: id
                 },
                 data: {
-                    idSupplier: supplier,
-                    discount: discount ? parseInt(discount) : undefined,
-                    shippingCost: shippingCost ? parseInt(shippingCost) : undefined,
-                    notes: note,
-                    purchaseStatus: $Enums.PurchaseStatus[purchaseStatus],
+                    idSupplier: form.supplier ? form.supplier.id : undefined,
+                    discount: form.discount,
+                    shippingCost: form.shippingCost,
+                    notes: form.note,
+                    purchaseStatus: form.purchaseStatus as $Enums.PurchaseStatus,
                     purchaseOrder: {
                         deleteMany: {},
                         createMany: {
-                            data: parseOrder.map(e => ({
+                            data: form.order.map(e => ({
                                 idProduct: e.id,
                                 idStore: cookies().get('store')!.value,
                                 qty: e.selectQty,
@@ -115,9 +106,8 @@ export const updatePurchase = async (form: FormData) => {
                 },
             })
 
-            if (document != null) {
-                const buffer = Buffer.from(await document.arrayBuffer()).toString("base64")
-                const resultUpload = await Cloudinary.uploader.upload(`data:${document.type};base64,${buffer}`, {
+            if (file != null) {
+                const resultUpload = await Cloudinary.uploader.upload(file, {
                     public_id: `${cookies().get('store')?.value}/purchase/${purchase.id}`,
                 })
 
@@ -134,8 +124,7 @@ export const updatePurchase = async (form: FormData) => {
         })
 
         revalidatePath("/", "layout")
-    } catch(e) {
-        console.log(e)
+    } catch {
         throw new Error("Kesalahan saat menambahkan data!")
     }
 }

@@ -12,6 +12,8 @@ export type GetSavingAccounts = Prisma.SavingAccountsGetPayload<{
         name: true,
         sales: {
             select: {
+                discount: true,
+                shippingCost: true,
                 saleOrder: {
                     select: {
                         qty: true,
@@ -40,6 +42,8 @@ export type GetSavingAccounts = Prisma.SavingAccountsGetPayload<{
         },
         purchase: {
             select: {
+                discount: true,
+                shippingCost: true,
                 purchaseOrder: {
                     select: {
                         qty: true,
@@ -116,6 +120,8 @@ export const getSavingAccounts = async (searchParams: SearchParams) => {
             name: true,
             sales: {
                 select: {
+                    discount: true,
+                    shippingCost: true,
                     saleOrder: {
                         select: {
                             qty: true,
@@ -144,6 +150,8 @@ export const getSavingAccounts = async (searchParams: SearchParams) => {
             },
             purchase: {
                 select: {
+                    discount: true,
+                    shippingCost: true,
                     purchaseOrder: {
                         select: {
                             qty: true,

@@ -4,8 +4,8 @@ import { Form } from "./form"
 const TableTotal = ({ form }: {
     form: Form
 }) => {
-    const discount = isNaN(parseInt(form.discount)) ? 0 : parseInt(form.discount)
-    const shippingCost = isNaN(parseInt(form.shippingCost)) ? 0 : parseInt(form.shippingCost)
+    const discount = isNaN(form.discount) ? 0 : form.discount
+    const shippingCost = isNaN(form.shippingCost) ? 0 : form.shippingCost
     const subTotal = form.order.length > 0 ? form.order.map(e => e.subTotal).reduce((val, prev) => val + prev) : 0
 
     return(

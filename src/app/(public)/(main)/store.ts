@@ -15,6 +15,7 @@ import PurchaseReturnStore from '@/app/(public)/(main)/pengembalian/pembelian/st
 import PackagingStore from '@/app/(public)/(main)/pemaketan/listpemaketan/store'
 import MoneyTransferStore from '@/app/(public)/(main)/akutansi/transferuang/store'
 import FinancialBalanceStore from '@/app/(public)/(main)/akutansi/neraca/store'
+import SavingAccountStore from '@/app/(public)/(main)/akutansi/rekeningnasabah/store'
 import { create } from "zustand"
 
 interface Action{
@@ -38,6 +39,7 @@ const useStore = create<Action>()(_ => ({
         PackagingStore.getState().reset()
         MoneyTransferStore.getState().reset(),
         FinancialBalanceStore.getState().reset()
+        SavingAccountStore.getState().reset()
     }
 }))
 

@@ -4,7 +4,11 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import DatePicker, { DateValueType } from 'react-tailwindcss-datepicker'
 import useStore from '../(public)/(main)/store'
 
-const Datepickers = () => {
+const Datepickers = ({ autoGenerateParams = true, onChange, value }: {
+    autoGenerateParams?: boolean,
+    value?: DateValueType,
+    onChange?: (val: DateValueType) => void
+}) => {
     const router = useRouter()
     const pathName = usePathname()
     const searchParams = useSearchParams()
@@ -28,8 +32,8 @@ const Datepickers = () => {
             </div>
             
             <DatePicker
-                value={{startDate: params.get("date")?.split("to")[0] ?? null, endDate: params.get("date")?.split("to")[1] ?? null}}
-                onChange={handleValueChange}
+                value={autoGenerateParams ? {startDate: params.get("date")?.split("to")[0] ?? null, endDate: params.get("date")?.split("to")[1] ?? null} : value ?? null}
+                onChange={e => autoGenerateParams ? handleValueChange(e) : onChange!(e)}
                 showShortcuts={true}
                 inputClassName="input input-bordered w-full" />
         </label>

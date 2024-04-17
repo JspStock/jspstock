@@ -168,7 +168,7 @@ export const getMutation = async (searchParams: SearchParams) => {
                                 }
                             }
                         }
-                    }
+                    },
                 },
                 orderBy: {
                     createdAt: 'desc'

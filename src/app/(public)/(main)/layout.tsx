@@ -21,7 +21,7 @@ export default function AllLayout({
             <div className="drawer-content justify-center relative">
                 <NextTopLoader color="#1e3a8a" />
                 <Navbar />
-                <div className="w-full flex flex-col justify-center px-5 md:px-10 mt-10 max-lg:mt-24">
+                <div className="w-full flex flex-col justify-center px-5 pb-10 md:px-10 mt-10 max-lg:mt-24">
                     {children}
                 </div>
             </div>

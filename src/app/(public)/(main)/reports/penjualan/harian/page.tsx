@@ -20,7 +20,7 @@ export default async function page({ searchParams }: { searchParams: SearchParam
         month: searchParams.month ? !isNaN(parseInt(searchParams.month)) ? parseInt(searchParams.month) : undefined : undefined,
     })
 
-    return <div className="bg-white p-10 rounded-box">
+    return <div className="bg-white p-10 rounded-box overflow-x-auto">
         <Calendar
             data={data.map(e => ({
                 year: e.createdAt.getFullYear(),

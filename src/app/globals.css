@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .react-calendar{
-    @apply !border-0 !w-full font-sans !bg-transparent
+    @apply !border-0 !max-w-none !w-max font-sans !bg-transparent !flex-nowrap !overflow-x-auto md:!w-full
 }
 
 .react-calendar__tile--now{

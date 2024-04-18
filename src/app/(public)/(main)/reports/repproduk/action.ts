@@ -47,6 +47,7 @@ export const getProduct = async (searchParams: SearchParams) => {
     return await extend.product.paginate({
         where: {
             idStore: cookies().get('store')?.value,
+            deletedAt: null,
             createdAt: {
                 lte: lte(searchParams),
                 gte: gte(searchParams)

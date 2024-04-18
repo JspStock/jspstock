@@ -1,4 +1,4 @@
-import { getProduct } from "@/app/(public)/(main)/reports/repproduk/action"
+import { GetProductPayload, getProduct } from "@/app/(public)/(main)/reports/repproduk/action"
 import { SearchParams } from "@/app/(public)/(main)/reports/repproduk/page"
 import { currencyFormat } from "@/utils/utils"
 import dynamic from "next/dynamic"
@@ -11,6 +11,15 @@ const Tablelist = async ({ searchParams }: {
     searchParams: SearchParams
 }) => {
     const product = await getProduct(searchParams)
+    const purchaseQty = (e: GetProductPayload) => e.purchaseOrder.length > 0 ? e.purchaseOrder.map(a => a.qty).reduce((val, prev) => val + prev) : 0
+    const purchaseTotal = (e: GetProductPayload) => e.purchaseOrder.length > 0 ? e.price * e.purchaseOrder.map(a => a.qty).reduce((val, prev) => val + prev) : 0
+    const saleQty = (e: GetProductPayload) => e.saleOrder.length > 0 ? e.saleOrder.map(a => a.qty).reduce((val, prev) => val + prev) : 0
+    const saleTotal = (e: GetProductPayload) => e.saleOrder.length > 0 ? e.price * e.saleOrder.map(a => a.qty).reduce((val, prev) => val + prev) : 0
+    const saleReturnQty = (e: GetProductPayload) => e.saleReturnOrders.length > 0 ? e.saleReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev) : 0
+    const saleReturnTotal = (e: GetProductPayload) => e.saleReturnOrders.length > 0 ? e.price + e.saleReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev) : 0
+    const purchaseReturnQty = (e: GetProductPayload) => e.purchaseReturnOrders.length > 0 ? e.purchaseReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev) : 0
+    const purchaseReturnTotal = (e: GetProductPayload) => e.purchaseReturnOrders.length > 0 ? e.price * e.purchaseReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev) : 0
+
 
     return <>
         <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900">
@@ -36,25 +45,25 @@ const Tablelist = async ({ searchParams }: {
                         product.result.map((e, index) => <tr key={index}>
                             <th><Check data={e} /></th>
                             <td>{e.name}</td>
-                            <td>{e.purchaseOrder.map(e => e.qty).reduce((val, prev) => val + prev)}</td>
-                            <td>{currencyFormat(e.price * e.purchaseOrder.map(e => e.qty).reduce((val, prev) => val + prev))}</td>
-                            <td>{e.saleOrder.map(e => e.qty).reduce((val, prev) => val + prev)}</td>
-                            <td>{currencyFormat(e.price * e.saleOrder.map(a => a.qty).reduce((val, prev) => val + prev))}</td>
-                            <td>{e.saleReturnOrders.map(e => e.qty).reduce((val, prev) => val + prev)}</td>
-                            <td>{currencyFormat(e.price * e.saleReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev))}</td>
-                            <td>{e.purchaseReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev)}</td>
-                            <td>{currencyFormat(e.price * e.purchaseReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev))}</td>
+                            <td>{purchaseQty(e)}</td>
+                            <td>{currencyFormat(purchaseTotal(e))}</td>
+                            <td>{saleQty(e)}</td>
+                            <td>{currencyFormat(saleTotal(e))}</td>
+                            <td>{saleReturnQty(e)}</td>
+                            <td>{currencyFormat(saleReturnTotal(e))}</td>
+                            <td>{saleReturnQty(e)}</td>
+                            <td>{currencyFormat(saleReturnTotal(e))}</td>
                             <td>{currencyFormat(
-                                (e.price * e.saleOrder.map(e => e.qty).reduce((val, prev) => val + prev)) -
-                                (e.price * e.purchaseOrder.map(e => e.qty).reduce((val, prev) => val + prev)) +
-                                (e.price * e.purchaseReturnOrders.map(e => e.qty).reduce((val, prev) => val + prev)) -
-                                (e.price * e.saleReturnOrders.map(e => e.qty).reduce((val, prev) => val + prev))
+                                saleTotal(e) -
+                                purchaseTotal(e) +
+                                purchaseReturnTotal(e) -
+                                saleReturnTotal(e)
                             )}</td>
                             <td>{
-                                (e.purchaseOrder.map(e => e.qty).reduce((val, prev) => val + prev)) -
-                                (e.saleOrder.map(e => e.qty).reduce((val, prev) => val + prev)) -
-                                (e.purchaseReturnOrders.map(e => e.qty).reduce((val, prev) => val + prev)) +
-                                (e.saleReturnOrders.map(e => e.qty).reduce((val, prev) => val + prev))
+                                purchaseQty(e) -
+                                saleQty(e) -
+                                purchaseReturnQty(e) +
+                                saleReturnQty(e)
                             }</td>
                         </tr>)
                     }
@@ -63,25 +72,25 @@ const Tablelist = async ({ searchParams }: {
                     <tr>
                         <th></th>
                         <th>Total</th>
-                        <th>{product.result.length > 0 ? product.result.map(e => e.purchaseOrder.map(a => a.qty).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0}</th>
-                        <th>{product.result.length > 0 ? currencyFormat(product.result.map(e => e.price * e.purchaseOrder.map(e => e.qty).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev)) : 0}</th>
-                        <th>{product.result.length > 0 ? product.result.map(e => e.saleOrder.map(e => e.qty).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0}</th>
-                        <th>{product.result.length > 0 ? currencyFormat(product.result.map(e => e.price * e.saleOrder.map(a => a.qty).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev)) : 0}</th>
-                        <th>{product.result.length > 0 ? product.result.map(e => e.saleReturnOrders.map(e => e.qty).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0}</th>
-                        <th>{product.result.length > 0 ? currencyFormat(product.result.map(e => e.price * e.saleReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev)) : 0}</th>
-                        <th>{product.result.length > 0 ? product.result.map(e => e.purchaseReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0}</th>
-                        <th>{product.result.length > 0 ? currencyFormat(product.result.map(e => e.price * e.purchaseReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev)) : 0}</th>
+                        <th>{product.result.length > 0 ? product.result.map(e => purchaseQty(e)).reduce((val, prev) => val + prev) : 0}</th>
+                        <th>{product.result.length > 0 ? currencyFormat(product.result.map(e => purchaseTotal(e)).reduce((val, prev) => val + prev)) : 0}</th>
+                        <th>{product.result.length > 0 ? product.result.map(e => saleQty(e)).reduce((val, prev) => val + prev) : 0}</th>
+                        <th>{product.result.length > 0 ? currencyFormat(product.result.map(e => saleTotal(e)).reduce((val, prev) => val + prev)) : 0}</th>
+                        <th>{product.result.length > 0 ? product.result.map(e => saleReturnQty(e)).reduce((val, prev) => val + prev) : 0}</th>
+                        <th>{product.result.length > 0 ? currencyFormat(product.result.map(e => saleReturnTotal(e)).reduce((val, prev) => val + prev)) : 0}</th>
+                        <th>{product.result.length > 0 ? product.result.map(e => purchaseReturnQty(e)).reduce((val, prev) => val + prev) : 0}</th>
+                        <th>{product.result.length > 0 ? currencyFormat(product.result.map(e => purchaseReturnTotal(e)).reduce((val, prev) => val + prev)) : 0}</th>
                         <th>{product.result.length > 0 ? currencyFormat(product.result.map(e =>
-                            (e.price * e.saleOrder.map(e => e.qty).reduce((val, prev) => val + prev)) -
-                            (e.price * e.purchaseOrder.map(e => e.qty).reduce((val, prev) => val + prev)) +
-                            (e.price * e.purchaseReturnOrders.map(e => e.qty).reduce((val, prev) => val + prev)) -
-                            (e.price * e.saleReturnOrders.map(e => e.qty).reduce((val, prev) => val + prev))
+                            saleTotal(e) -
+                            purchaseTotal(e) +
+                            purchaseReturnTotal(e) -
+                            saleReturnTotal(e)
                         ).reduce((val, prev) => val + prev)) : 0}</th>
                         <th>{product.result.length > 0 ? product.result.map(e =>
-                            (e.purchaseOrder.map(e => e.qty).reduce((val, prev) => val + prev)) -
-                            (e.saleOrder.map(e => e.qty).reduce((val, prev) => val + prev)) -
-                            (e.purchaseReturnOrders.map(e => e.qty).reduce((val, prev) => val + prev)) +
-                            (e.saleReturnOrders.map(e => e.qty).reduce((val, prev) => val + prev))
+                            purchaseQty(e) -
+                            saleQty(e) -
+                            purchaseReturnQty(e) +
+                            saleReturnQty(e)
                         ).reduce((val, prev) => val + prev) : 0}</th>
                     </tr>
                 </tfoot>

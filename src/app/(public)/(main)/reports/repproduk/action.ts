@@ -39,7 +39,8 @@ export const getProduct = async (searchParams: SearchParams) => {
     const extend = prisma.$extends(extension)
     const getCountData = await extend.product.count({
         where: {
-            idStore: cookies().get('store')?.value
+            idStore: cookies().get('store')?.value,
+            deletedAt: null
         }
     })
 

@@ -146,10 +146,6 @@ export const linkNav = ({ role }: { role: string }) => {
                     link: '/repproduk'
                 },
                 {
-                    text: 'Laporan Penjualan',
-                    link: '/reports'
-                },
-                {
                     text: 'Laporan Pembayaran',
                     link: '/reppembayaran'
                 },

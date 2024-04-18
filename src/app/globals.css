@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.react-calendar{
+    @apply !border-0 !w-full font-sans !bg-transparent
+}
+
+.react-calendar__tile--now{
+    @apply !bg-blue-900 text-white
+}
+
+.react-calendar__tile{
+    @apply !rounded-box
+}
+
+.react-calendar__month-view__weekdays__weekday > abbr{
+    @apply !no-underline
+}
+
+.react-calendar__tile--active{
+    @apply !bg-transparent !text-black !font-normal
+}

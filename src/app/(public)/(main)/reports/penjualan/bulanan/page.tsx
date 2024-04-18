@@ -1,23 +1,60 @@
 import dynamic from "next/dynamic"
+import { getSales } from "./action"
+import { currencyFormat } from "@/utils/utils"
+import { Metadata } from "next"
 
-const TableList = dynamic(() => import("@/app/components/reports/penjualan/bulanan/table"))
-const Pagination = dynamic(() => import("@/app/components/reports/penjualan/bulanan/pagination"))
+const Calender = dynamic(() => import('@/app/components/calendar'))
 
-export default function Penjualanbulanan() {
-    return (
-        <>
-            <div className="flex max-lg:grid max-lg:space-y-2 lg:space-x-2">
-                <div className="max-lg:flex max-lg:space-x-2 lg:space-x-2">
-                    <button className="text-white w-20 border-0 bg-gray-400 btn">Print</button>
-                    <button className="text-white w-20 border-0 bg-red-400 btn">Hapus</button>
+interface SearchParams{
+    year?: string,
+    month?: string
+}
+
+export const metadata: Metadata = {
+    title: 'Laporan penjualan bulanan'
+}
+
+export default async function page({ searchParams }: { searchParams: SearchParams }) {
+    const sales = await getSales({
+        year: searchParams.year ? !isNaN(parseInt(searchParams.year)) ? parseInt(searchParams.year) : undefined : undefined,
+    })
+
+    return <div className="bg-white p-10 overflow-auto">
+        <Calender
+            data={sales.map(e => ({
+                year: e.createdAt.getFullYear(),
+                day: e.createdAt.getDate(),
+                month: e.createdAt.getMonth() + 1,
+                content: <div className="space-y-2 text-start">
+                    <article>
+                        <h1 className="font-semibold">Diskon</h1>
+                        <p>{currencyFormat(
+                            sales.filter(a => a.createdAt.getMonth() == e.createdAt.getMonth() && a.createdAt.getFullYear() == e.createdAt.getFullYear()).map(a => a.discount).reduce((val, prev) => val + prev)
+                        )}</p>
+                    </article>
+
+                    <article>
+                        <h1 className="font-semibold">Biaya Pengiriman</h1>
+                        <p>{currencyFormat(
+                            sales.filter(a => a.createdAt.getMonth() == e.createdAt.getMonth() && a.createdAt.getFullYear() == e.createdAt.getFullYear()).map(a => a.shippingCost).reduce((val, prev) => val + prev)
+                        )}</p>
+                    </article>
+
+                    <article>
+                        <h1 className="font-semibold">Sub Total</h1>
+                        <h1>{currencyFormat(
+                            sales.filter(a => a.createdAt.getMonth() == e.createdAt.getMonth() && a.createdAt.getFullYear() == e.createdAt.getFullYear()).map(a => a.saleOrder.map(b => b.qty * b.product.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev)
+                        )}</h1>
+                    </article>
+
+                    <article>
+                        <h1 className="font-semibold">Total</h1>
+                        <h1>{currencyFormat(
+                            sales.filter(a => a.createdAt.getMonth() == e.createdAt.getMonth() && a.createdAt.getFullYear() == e.createdAt.getFullYear()).map(a => (a.shippingCost + a.saleOrder.map(b => b.qty * b.product.price).reduce((val, prev) => val + prev)) - a.discount).reduce((val, prev) => val + prev)
+                        )}</h1>
+                    </article>
                 </div>
-            </div>
-            <input type="text" placeholder="Pencarian" className="input mt-5 bg-white text-gray-900 input-bordered w-full max-w-xs" />
-            <Pagination />
-            <div className="lg:flex w-full items-center mt-5 justify-center p-5 bg-white rounded-lg space-x-2">
-                <h1 className="text-xl font-semibold">Tahun 2024</h1>
-            </div>
-            <TableList />
-        </>
-    )
+            }))}
+            views="year" />
+    </div>
 }

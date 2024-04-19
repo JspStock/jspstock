@@ -18,6 +18,7 @@ import FinancialBalanceStore from '@/app/(public)/(main)/akutansi/neraca/store'
 import SavingAccountStore from '@/app/(public)/(main)/akutansi/rekeningnasabah/store'
 import ReportProductStore from '@/app/(public)/(main)/reports/repproduk/store'
 import UserStore from '@/app/(public)/(main)/pengguna/store'
+import Store from '@/app/(public)/(main)/toko/store'
 import { create } from "zustand"
 
 interface Action{
@@ -44,6 +45,7 @@ const useStore = create<Action>()(_ => ({
         SavingAccountStore.getState().reset()
         ReportProductStore.getState().reset(),
         UserStore.getState().reset()
+        Store.getState().reset()
     }
 }))
 

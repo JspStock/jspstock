@@ -4,6 +4,7 @@ import { $Enums } from "@prisma/client"
 import { genSalt, hash } from 'bcrypt-ts'
 import { cookies } from "next/headers"
 import prisma from "../../../../../../prisma/database"
+import { revalidatePath } from "next/cache"
 
 export const checkUsername = async (username: string) => await prisma.user.count({
     where: {
@@ -41,6 +42,8 @@ export const createUser = async (name: string, username: string, email: string, 
                 status: $Enums.UserStatus.AKTIF
             }
         })
+
+        revalidatePath("/", "layout")
     }catch{
         throw new Error("Kesalahan pada server!")
     }

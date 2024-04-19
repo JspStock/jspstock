@@ -1,6 +1,6 @@
 "use client"
 
-import { addData, checkCountDataByEmail, checkCountDataByNoWa } from "@/app/(public)/(main)/toko/tambah/action"
+import { GetStoreDataPayload, checkCountDataByEmail, checkCountDataByNoWa, updateData } from "@/app/(public)/(main)/toko/[store]/edit/action"
 import { useFormik } from "formik"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
@@ -13,7 +13,9 @@ export interface Form {
     address: string
 }
 
-const Form = () => {
+const Form = ({ data }: {
+    data: GetStoreDataPayload
+}) => {
     const router = useRouter()
     const formSchema = object().shape({
         name: string().required('Nama toko tidak boleh kosong!'),
@@ -23,30 +25,39 @@ const Form = () => {
 
     const form = useFormik<Form>({
         initialValues: {
-            name: '',
-            email: '',
-            noWa: '',
-            address: ''
+            name: data.name,
+            email: data.email,
+            noWa: data.noWa,
+            address: data.address
         },
         validationSchema: formSchema,
         onSubmit: async (e, { setFieldError }) => {
             try {
-                const checkEmail = await checkCountDataByEmail(e.email)
                 const checkNoWa = await checkCountDataByNoWa(e.noWa)
+                const checkEmail = await checkCountDataByEmail(e.email)
 
-                if (checkEmail > 0) {
-                    setFieldError('email', 'Email sudah terdaftar!')
+                if (e.email != data.email) {
+                    if (checkEmail > 0) {
+                        setFieldError('email', 'Email sudah terdaftar!')
+                    }
                 }
 
-                if (checkNoWa > 0) {
-                    setFieldError('noWa', 'Nomor WhatsApp sudah terdaftar!')
+                if (e.noWa != data.noWa) {
+                    if (checkNoWa > 0) {
+                        setFieldError('noWa', 'Nomor WhatsApp sudah terdaftar!')
+                    }
                 }
 
-                if (checkEmail == 0 && checkNoWa == 0) {
-                    await addData(e)
+                if (e.email != data.email && e.noWa != e.noWa) {
+                    if (checkEmail == 0 && checkNoWa == 0) {
+                        await updateData(data.id, e)
+                        router.push('/toko')
+                    }
+                } else {
+                    await updateData(data.id, e)
                     router.push('/toko')
                 }
-            }catch{
+            } catch {
                 Swal.fire({
                     icon: 'error',
                     title: 'Terjadi kesalahan!',
@@ -90,7 +101,7 @@ const Form = () => {
                 </label>
             </div>
             <button className="btn bg-blue-900 my-5 text-white" disabled={isSubmitting}>
-                { isSubmitting ? <div className="loading"></div> : null }
+                {isSubmitting ? <div className="loading"></div> : null}
                 <span>Simpan</span>
             </button>
         </form>

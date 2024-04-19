@@ -1,10 +1,15 @@
 import dynamic from "next/dynamic"
 import { getAllStore } from "./action"
 import { cookies } from "next/headers"
+import { Metadata } from "next"
 
 const AllowedRoleWrapper = dynamic(() => import('@/app/components/allowedRoleWrapper'))
 const BackButton = dynamic(() => import('@/app/components/backButton'))
 const Form = dynamic(() => import("@/app/components/beralihtoko/form"))
+
+export const metadata: Metadata = {
+    title: 'Beralih toko'
+}
 
 const Beralihtoko = async () => {
     return <AllowedRoleWrapper allowed={['owner']}>

@@ -1,6 +1,9 @@
 "use client"
 
+import { switchStore } from "@/app/(public)/(main)/beralihtoko/action";
 import { useFormik } from "formik";
+import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 import { object, string } from "yup";
 
 export interface Form {
@@ -14,6 +17,7 @@ const Form = ({ currentStore, data }: {
         name: string;
     }>
 }) => {
+    const router = useRouter()
     const formSchema = object().shape({
         store: string().required('Harus memilih salah satu toko!')
     })
@@ -23,8 +27,17 @@ const Form = ({ currentStore, data }: {
             store: undefined
         },
         validationSchema: formSchema,
-        onSubmit: () => {
-
+        onSubmit: async e => {
+            try{
+                await switchStore(e)
+                router.push('/dashboard')
+            }catch{
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi kesalahan!',
+                    text: 'Kesalahan pada server, silahkan coba kembali beberapa saat.'
+                })
+            }
         }
     })
 
@@ -49,7 +62,7 @@ const Form = ({ currentStore, data }: {
                 </div>
             </div>
 
-            <button type="submit" className="btn bg-blue-900 my-5 text-white" disabled={isSubmitting || data.find(e => e.id == currentStore) != undefined ? true : false}>
+            <button type="submit" className="btn bg-blue-900 my-5 text-white" disabled={isSubmitting}>
                 {isSubmitting ? <div className="loading"></div> : null}
                 <span>Beralih Toko</span>
             </button>

@@ -4,7 +4,6 @@ export default withAuth(
     {
     pages: {
         signIn: "/auth/signin",
-        signOut: "/auth/signout"
     },
 })
 

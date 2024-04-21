@@ -30,11 +30,10 @@ const Form = () => {
         const username = await checkUsername(form.values.username)
         const email = await checkEmail(form.values.email)
         const noWa = await checkNoWa(form.values.noWa)
-        console.log(username)
 
         username > 0 ? form.setFieldError('username', 'Nama pengguna sudah tersedia!') : null
-        email > 0 ? form.setFieldValue('email', 'Email sudah tersedia!') : null
-        noWa > 0 ? form.setFieldValue('noWa', 'Nomor WhatsApp sudah tersedia!') : null
+        email > 0 ? form.setFieldError('email', 'Email sudah tersedia!') : null
+        noWa > 0 ? form.setFieldError('noWa', 'Nomor WhatsApp sudah tersedia!') : null
     }
 
     const form = useFormik<Form>({

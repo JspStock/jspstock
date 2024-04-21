@@ -12,7 +12,6 @@ export const metadata: Metadata = {
     template: '%s - JSP'
   },
   description: 'Jelajahi Dunia Digital dengan Web Manajemen Produk Berbasis JSP yang Inovatif',
-  manifest: "/manifest.json"
 };
 
 export default function RootLayout({

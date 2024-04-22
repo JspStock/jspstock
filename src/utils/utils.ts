@@ -11,6 +11,7 @@ export const lte = (searchParams: {date?: string}) => {
         const to = searchParams.date.split("to")[1]
 
         const date = new Date(to)
+        date.setDate(date.getDate() + 1)
         return date
     }
 

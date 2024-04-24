@@ -152,6 +152,7 @@ STR_1713963374757	Default	default@gmail.com	-		2024-04-24 12:56:14.731
 --
 
 COPY "public"."CustomerGroup" ("id", "idStore", "name", "createdAt") FROM stdin;
+CGS_1713964027827	STR_1713963374757	Instagram	2024-04-24 13:07:09.34
 \.
 
 
@@ -160,6 +161,7 @@ COPY "public"."CustomerGroup" ("id", "idStore", "name", "createdAt") FROM stdin;
 --
 
 COPY "public"."CustomerUser" ("id", "idStore", "idCustomerGroup", "name", "email", "noWa", "address", "city", "zipCode", "region", "createdAt") FROM stdin;
+CUS_1713964052153	STR_1713963374757	CGS_1713964027827	Eugene Feilian Putra Rangga	eugenefeilianputrarangga@gmail.com	088223755564	Jl. Batu raya rt. 03/07 no. 04	Kota Jakarta Selatan	12960	Jakarta	2024-04-24 13:07:32.154
 \.
 
 
@@ -176,6 +178,7 @@ COPY "public"."ExpenditureCategory" ("id", "idStore", "name", "createdAt") FROM 
 --
 
 COPY "public"."SavingAccounts" ("id", "idStore", "name", "startingBalance", "notes", "createdAt") FROM stdin;
+939301	STR_1713963374757	Eugene Feilian Putra Rangga	500000000		2024-04-24 13:05:40.443
 \.
 
 
@@ -216,6 +219,7 @@ COPY "public"."Packaging" ("id", "idStore", "idCustomerUser", "createdAt", "addr
 --
 
 COPY "public"."ProductCategories" ("id", "idStore", "idProductCategories", "imagePath", "name", "createdAt") FROM stdin;
+KTG_1713963873888	STR_1713963374757	\N	http://res.cloudinary.com/dg77fmoc2/image/upload/v1713963874/STR_1713963374757/product-categories/KTG_1713963873888.png	Laptop	2024-04-24 13:04:33.889
 \.
 
 
@@ -224,6 +228,7 @@ COPY "public"."ProductCategories" ("id", "idStore", "idProductCategories", "imag
 --
 
 COPY "public"."Product" ("id", "idStore", "idProductCategories", "imagePath", "name", "price", "cost", "createdAt", "deletedAt") FROM stdin;
+PROD_1713963907117	STR_1713963374757	KTG_1713963873888	http://res.cloudinary.com/dg77fmoc2/image/upload/v1713963907/STR_1713963374757/product/PROD_1713963907117.png	Laptop Advan i5	6000000	5000000	2024-04-24 13:05:06.877	\N
 \.
 
 
@@ -240,6 +245,7 @@ COPY "public"."Supplier" ("id", "idStore", "name", "email", "noWa", "address", "
 --
 
 COPY "public"."Purchase" ("id", "idStore", "idSupplier", "discount", "shippingCost", "notes", "createdAt", "documentPath", "purchaseStatus", "idSavingAccount") FROM stdin;
+PUR_1713963969435	STR_1713963374757	\N	0	0	\N	2024-04-24 13:06:09.184	\N	DITERIMA	939301
 \.
 
 
@@ -248,6 +254,7 @@ COPY "public"."Purchase" ("id", "idStore", "idSupplier", "discount", "shippingCo
 --
 
 COPY "public"."PurchaseOrder" ("id", "idStore", "idPurchase", "idProduct", "qty", "createdAt") FROM stdin;
+61fe0163-f286-4554-bd2e-d6fb969b9216	STR_1713963374757	PUR_1713963969435	PROD_1713963907117	50	2024-04-24 13:06:09.184
 \.
 
 
@@ -297,6 +304,7 @@ COPY "public"."SaleReturnOrders" ("id", "idStore", "idProduct", "idSaleReturn", 
 
 COPY "public"."User" ("id", "idStore", "username", "name", "email", "password", "noWa", "role", "status", "createdAt") FROM stdin;
 USR_1713963374810	\N	default	Default		$2b$05$KSwhlaHkn900Yh81.W6xI.maP/SX2UAt.IpqTsjVijSCqY6sQBzzy		OWNER	AKTIF	2024-04-24 12:56:14.731
+USR_1713964987992	\N	eugene702	Eugene Feilian Putra Rangga	eugenefeilianputrarangga@gmail.com	$2a$05$MeMl/WPnawGne8l6rWQKu.9sa.3X81Iuc0B0rj7kWVn6JCnIZZ07i	088223755564	OWNER	AKTIF	2024-04-24 13:23:07.993
 \.
 
 

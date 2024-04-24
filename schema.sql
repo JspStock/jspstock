@@ -407,22 +407,6 @@ ALTER TABLE ONLY "public"."User"
 ALTER TABLE ONLY "public"."_prisma_migrations"
     ADD CONSTRAINT "_prisma_migrations_pkey" PRIMARY KEY ("id");
 
-CREATE UNIQUE INDEX "CustomerUser_email_key" ON "public"."CustomerUser" USING "btree" ("email");
-
-CREATE UNIQUE INDEX "CustomerUser_noWa_key" ON "public"."CustomerUser" USING "btree" ("noWa");
-
-CREATE UNIQUE INDEX "Store_email_key" ON "public"."Store" USING "btree" ("email");
-
-CREATE UNIQUE INDEX "Store_noWa_key" ON "public"."Store" USING "btree" ("noWa");
-
-CREATE UNIQUE INDEX "Supplier_email_key" ON "public"."Supplier" USING "btree" ("email");
-
-CREATE UNIQUE INDEX "Supplier_noWa_key" ON "public"."Supplier" USING "btree" ("noWa");
-
-CREATE UNIQUE INDEX "User_email_key" ON "public"."User" USING "btree" ("email");
-
-CREATE UNIQUE INDEX "User_noWa_key" ON "public"."User" USING "btree" ("noWa");
-
 CREATE UNIQUE INDEX "User_username_key" ON "public"."User" USING "btree" ("username");
 
 ALTER TABLE ONLY "public"."CustomerGroup"

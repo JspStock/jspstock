@@ -26,14 +26,28 @@ const Form = () => {
         noWa: string().required('Nomor WhatsApp tidak boleh kosong!'),
     })
 
-    const validateForm = async () => {
+    const validateForm = async (): Promise<boolean> => {
+        let isValid = true
         const username = await checkUsername(form.values.username)
         const email = await checkEmail(form.values.email)
         const noWa = await checkNoWa(form.values.noWa)
 
-        username > 0 ? form.setFieldError('username', 'Nama pengguna sudah tersedia!') : null
-        email > 0 ? form.setFieldError('email', 'Email sudah tersedia!') : null
-        noWa > 0 ? form.setFieldError('noWa', 'Nomor WhatsApp sudah tersedia!') : null
+        if(username > 0){
+            form.setFieldError('username', 'Nama pengguna sudah tersedia!')
+            isValid = false
+        }
+
+        if(email > 0){
+            form.setFieldError('email', 'Email sudah tersedia!')
+            isValid = false
+        }
+
+        if(noWa > 0){
+            form.setFieldError('noWa', 'Nomor WhatsApp sudah tersedia!')
+            isValid = false
+        }
+        
+        return isValid
     }
 
     const form = useFormik<Form>({
@@ -47,19 +61,21 @@ const Form = () => {
         },
         validationSchema: formSchema,
         onSubmit: async (e) => {
-            await validateForm()
             try{
-                await createUser(
-                    e.name,
-                    e.username,
-                    e.email,
-                    e.password,
-                    e.noWa,
-                    e.role
-                )
-
-                form.resetForm()
-                router.back()
+                const checkUser = await validateForm()
+                if(checkUser == true){
+                    await createUser(
+                        e.name,
+                        e.username,
+                        e.email,
+                        e.password,
+                        e.noWa,
+                        e.role
+                    )
+    
+                    form.resetForm()
+                    router.back()
+                }
             }catch{
                 Swal.fire({
                     title: 'Kesalahan!',

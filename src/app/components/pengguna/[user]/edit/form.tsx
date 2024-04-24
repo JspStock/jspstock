@@ -26,17 +26,6 @@ const Form = ({ user }: {
         noWa: string().required('Nomor WhatsApp tidak boleh kosong!'),
     })
 
-    const validateForm = async () => {
-        const username = await checkUsername(form.values.username)
-        const email = await checkEmail(form.values.email)
-        const noWa = await checkNoWa(form.values.noWa)
-        console.log(username)
-
-        username > 0 ? form.setFieldError('username', 'Nama pengguna sudah tersedia!') : null
-        email > 0 ? form.setFieldValue('email', 'Email sudah tersedia!') : null
-        noWa > 0 ? form.setFieldValue('noWa', 'Nomor WhatsApp sudah tersedia!') : null
-    }
-
     const form = useFormik<Form>({
         initialValues: {
             name: user.name,
@@ -47,19 +36,43 @@ const Form = ({ user }: {
         },
         validationSchema: formSchema,
         onSubmit: async (e) => {
-            await validateForm()
             try{
-                await updateUser(
-                    user.id,
-                    e.name,
-                    e.username,
-                    e.email,
-                    e.noWa,
-                    e.role
-                )
+                let isValid = true
+                if(e.email != user.email){
+                    if(await checkEmail(form.values.username) > 0){
+                        form.setFieldValue('email', 'Email sudah tersedia!')
+                        isValid = false
+                    }
+                }
 
-                form.resetForm()
-                router.back()
+                if(e.email != user.email){
+                    if(await checkUsername(form.values.username) > 0){
+                        form.setFieldError('username', 'Nama pengguna sudah tersedia!')
+                        isValid = false
+                    }
+                }
+
+                if(e.noWa != user.noWa){
+                    if(await checkUsername(form.values.username) > 0){
+                        form.setFieldValue('noWa', 'Nomor WhatsApp sudah tersedia!')
+                        isValid = false
+                    }
+                }
+
+
+                if(isValid){
+                    await updateUser(
+                        user.id,
+                        e.name,
+                        e.username,
+                        e.email,
+                        e.noWa,
+                        e.role
+                    )
+    
+                    form.resetForm()
+                    router.back()
+                }
             }catch{
                 Swal.fire({
                     title: 'Kesalahan!',

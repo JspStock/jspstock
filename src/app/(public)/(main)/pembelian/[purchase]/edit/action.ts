@@ -3,7 +3,6 @@
 import { cookies } from "next/headers"
 import prisma from "../../../../../../../prisma/database"
 import { $Enums } from "@prisma/client"
-import { Order } from "@/app/components/pembelian/[purchase]/edit/tabletambahpembelian"
 import Cloudinary from "@/utils/cloudinary"
 import { revalidatePath } from "next/cache"
 import { FormWithoutFile } from "@/app/components/pembelian/[purchase]/edit/form"
@@ -16,7 +15,7 @@ export const getProductData = async () => await prisma.product.findMany({
     select: {
         id: true,
         name: true,
-        price: true
+        cost: true
     }
 })
 
@@ -57,7 +56,7 @@ export const getPurchaseData = async (id: string) => await prisma.purchase.findU
                     select: {
                         id: true,
                         name: true,
-                        price: true,
+                        cost: true,
                     }
                 }
             }

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export interface Product{
     id: string;
     name: string;
-    price: number;
+    cost: number;
 }
 
 export interface Supplier{

@@ -18,7 +18,7 @@ export interface Params{
 export interface Product{
     id: string;
     name: string;
-    price: number;
+    cost: number;
 }
 
 export interface Supplier{
@@ -37,7 +37,7 @@ export interface PurchaseData{
         product: {
             id: string;
             name: string;
-            price: number;
+            cost: number;
         };
         id: string;
         idProduct: string;

@@ -38,10 +38,18 @@ export type GetProfileDataPayload = Prisma.UserGetPayload<{
 
 export const getProfileData = async () => {
     const session = await getServerSession()
+    const userId = await prisma.user.findFirst({
+        where: {
+            email: session!.user!.email!
+        },
+        select: {
+            id: true
+        }
+    })
 
     return await prisma.user.findUnique({
         where: {
-            email: session!.user!.email!
+            id: userId?.id
         },
         select: {
             id: true,

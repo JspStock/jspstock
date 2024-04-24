@@ -4,6 +4,82 @@ import { cookies } from "next/headers"
 import prisma from "../../../../../prisma/database"
 import { SearchParams } from "./page"
 import { gte, lte } from "@/utils/utils"
+import { Prisma } from "@prisma/client"
+
+export type GetDataPayload = Prisma.StoreGetPayload<{
+    select: {
+        sales: {
+            select: {
+                discount: true,
+                shippingCost: true,
+                saleOrder: {
+                    select: {
+                        qty: true,
+                        product: {
+                            select: {
+                                price: true
+                            }
+                        }
+                    }
+                },
+                createdAt: true
+            }
+        },
+        saleReturns: {
+            select: {
+                saleReturnOrders: {
+                    select: {
+                        qty: true,
+                        product: {
+                            select: {
+                                price: true
+                            }
+                        }
+                    }
+                },
+                createdAt: true
+            }
+        },
+        purchaseReturns: {
+            select: {
+                purchaseReturnOrders: {
+                    select: {
+                        qty: true,
+                        product: {
+                            select: {
+                                price: true
+                            }
+                        }
+                    }
+                },
+                createdAt: true
+            }
+        },
+        purchase: {
+            select: {
+                discount: true,
+                shippingCost: true,
+                purchaseOrder: {
+                    select: {
+                        qty: true,
+                        product: {
+                            select: {
+                                cost: true
+                            }
+                        }
+                    }
+                },
+                createdAt: true
+            }
+        },
+        expenditures: {
+            select: {
+                total: true,
+                createdAt: true
+            }
+        }
+    }
+}>
 
 export const getData = async (searchParams: SearchParams) => await prisma.store.findUnique({
     where: {
@@ -29,7 +105,8 @@ export const getData = async (searchParams: SearchParams) => await prisma.store.
                             }
                         }
                     }
-                }
+                },
+                createdAt: true
             }
         },
         saleReturns: {
@@ -49,7 +126,8 @@ export const getData = async (searchParams: SearchParams) => await prisma.store.
                             }
                         }
                     }
-                }
+                },
+                createdAt: true
             }
         },
         purchaseReturns: {
@@ -69,7 +147,8 @@ export const getData = async (searchParams: SearchParams) => await prisma.store.
                             }
                         }
                     }
-                }
+                },
+                createdAt: true
             }
         },
         purchase: {
@@ -87,11 +166,12 @@ export const getData = async (searchParams: SearchParams) => await prisma.store.
                         qty: true,
                         product: {
                             select: {
-                                price: true
+                                cost: true
                             }
                         }
                     }
-                }
+                },
+                createdAt: true
             }
         },
         expenditures: {
@@ -102,7 +182,8 @@ export const getData = async (searchParams: SearchParams) => await prisma.store.
                 }
             },
             select: {
-                total: true
+                total: true,
+                createdAt: true
             }
         }
     }

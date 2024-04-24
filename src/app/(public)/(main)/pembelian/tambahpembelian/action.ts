@@ -15,7 +15,7 @@ export const getProductData = async () => await prisma.product.findMany({
     select: {
         id: true,
         name: true,
-        price: true,
+        cost: true,
     }
 })
 

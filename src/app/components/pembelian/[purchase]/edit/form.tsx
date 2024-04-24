@@ -57,9 +57,9 @@ const Form = ({ product, supplier, data, savingAccounts }: {
             order: data.purchaseOrder.map(e => ({
                 id: e.product!.id,
                 name: e.product!.name,
-                price: e.product!.price,
+                cost: e.product!.cost,
                 selectQty: e.qty,
-                subTotal: e.qty * e.product!.price,
+                subTotal: e.qty * e.product!.cost,
             })),
             product: null,
             document: null,
@@ -109,10 +109,10 @@ const Form = ({ product, supplier, data, savingAccounts }: {
         }
     })
     const { touched, errors, values, isSubmitting, handleSubmit, handleChange, setFieldValue } = form
-    const handleProductInput = (e: Product) => setFieldValue("order", [...values.order, { ...product.filter(val => val.id == e.id)[0], selectQty: 1, subTotal: product.filter(val => val.id == e.id)[0].price }])
+    const handleProductInput = (e: Product) => setFieldValue("order", [...values.order, { ...product.filter(val => val.id == e.id)[0], selectQty: 1, subTotal: product.filter(val => val.id == e.id)[0].cost }])
     const changeQtyOrder = (id: number, qty: string) => {
         setFieldValue(`order[${id}].selectQty`, parseInt(qty))
-        setFieldValue(`order[${id}].subTotal`, values.order[id].price * parseInt(qty))
+        setFieldValue(`order[${id}].subTotal`, values.order[id].cost * parseInt(qty))
     }
     const onDeleteOrder = (val: number) => setFieldValue('order', [...values.order].filter((_, index) => index != val))
 

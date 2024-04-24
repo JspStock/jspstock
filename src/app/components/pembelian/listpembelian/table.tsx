@@ -30,7 +30,7 @@ const Tablelist = async ({ searchParams }: {
                             purchaseStatus: e.purchaseStatus,
                             supplier: e.supplier ? e.supplier.name : '',
                             total: (e.shippingCost +
-                                e.purchaseOrder.map(val => val.qty * (val.product?.price ?? 0)).reduce((val, prev) => val + prev)) -
+                                e.purchaseOrder.map(val => val.qty * (val.product?.cost ?? 0)).reduce((val, prev) => val + prev)) -
                             e.discount
                         }))} /></th>
                         <th>Tanggal</th>
@@ -49,7 +49,7 @@ const Tablelist = async ({ searchParams }: {
                             date: moment(e.createdAt).format("DD-MM-YYYY"),
                             purchaseStatus: e.purchaseStatus,
                             total: (e.shippingCost +
-                                e.purchaseOrder.map(val => val.qty * (val.product?.price ?? 0)).reduce((val, prev) => val + prev)) -
+                                e.purchaseOrder.map(val => val.qty * (val.product?.cost ?? 0)).reduce((val, prev) => val + prev)) -
                             e.discount
                         }} /></th>
                         <td> {moment(e.createdAt).format("DD-MM-YYYY")} </td>
@@ -62,7 +62,7 @@ const Tablelist = async ({ searchParams }: {
                         </td>
                         <td>{currencyFormat(
                             (e.shippingCost +
-                                e.purchaseOrder.map(val => val.qty * (val.product?.price ?? 0)).reduce((val, prev) => val + prev)) -
+                                e.purchaseOrder.map(val => val.qty * (val.product?.cost ?? 0)).reduce((val, prev) => val + prev)) -
                             e.discount
                         )}</td>
                         <td>
@@ -86,7 +86,7 @@ const Tablelist = async ({ searchParams }: {
                         <th>{currencyFormat(purchaseData.result.length > 0 ?
                             purchaseData.result.map(e => (
                                 e.shippingCost +
-                                e.purchaseOrder.map(val => val.qty * (val.product?.price ?? 0)).reduce((val, prev) => val + prev)
+                                e.purchaseOrder.map(val => val.qty * (val.product?.cost ?? 0)).reduce((val, prev) => val + prev)
                             ) - e.discount).reduce((val, prev) => val + prev) : 0
                         )}</th>
                         <th></th>

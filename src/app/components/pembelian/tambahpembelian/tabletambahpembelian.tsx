@@ -33,7 +33,7 @@ const TableTambahpembelian = ({ data, changeQty, onDelete }: {
                         <td>{ e.name }</td>
                         <td>{ e.id.split("_")[1] }</td>
                         <td><input type="number" className="input input-bordered max-w-20" value={e.selectQty} onChange={e => changeQty(index, e.target.value)} /></td>
-                        <td>{ currencyFormat(e.price) }</td>
+                        <td>{ currencyFormat(e.cost) }</td>
                         <td>{ currencyFormat(e.subTotal) }</td>
                         <td><button className="btn btn-ghost text-red-400" onClick={() => onDelete(index)}>Hapus</button></td>
                     </tr>)}

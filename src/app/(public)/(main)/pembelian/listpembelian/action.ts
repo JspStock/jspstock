@@ -74,7 +74,7 @@ export const getData = async ({ searchParams }: { searchParams: SearchParams }) 
                     qty: true,
                     product: {
                         select: {
-                            price: true,
+                            cost: true,
                             name: true
                         }
                     }

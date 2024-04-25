@@ -4,6 +4,7 @@ import { $Enums, Prisma } from "@prisma/client"
 import { genSalt, hash } from 'bcrypt-ts'
 import { cookies } from "next/headers"
 import prisma from "../../../../../../../prisma/database"
+import { revalidatePath } from "next/cache"
 
 export const checkUsername = async (username: string) => await prisma.user.count({
     where: {
@@ -25,7 +26,6 @@ export const checkNoWa = async (noWa: string) => await prisma.user.count({
 
 export const getUserName = async (id: string) => await prisma.user.findUnique({
     where: {
-        // idStore: cookies().get('store')?.value,
         id: id
     },
     select: {
@@ -75,6 +75,8 @@ export const updateUser = async (id: string, name: string, username: string, ema
                 status: $Enums.UserStatus.AKTIF
             }
         })
+
+        revalidatePath("/", 'layout')
     }catch{
         throw new Error("Kesalahan pada server!")
     }

@@ -10,7 +10,7 @@ const Chart = ({ data }: {
     data: GetDataPayload
 }) => {
     return <div className="grid grid-cols-2">
-        <article className='col-span-2'>
+        <article className='col-span'>
             <Doughnut
                 data={
                     {

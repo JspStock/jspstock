@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth"
 import { Form } from "@/app/components/pengaturan/form"
 import { revalidatePath } from "next/cache"
 import bcrypt, { genSalt, hash } from 'bcrypt'
+import { cookies } from "next/headers"
 
 
 export const getCountDataByUsername = async (val: string) => await prisma.user.count({
@@ -38,18 +39,10 @@ export type GetProfileDataPayload = Prisma.UserGetPayload<{
 
 export const getProfileData = async () => {
     const session = await getServerSession()
-    const userId = await prisma.user.findFirst({
-        where: {
-            email: session!.user!.email!
-        },
-        select: {
-            id: true
-        }
-    })
 
     return await prisma.user.findUnique({
         where: {
-            id: userId?.id
+            id: cookies().get('userId')?.value
         },
         select: {
             id: true,

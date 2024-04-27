@@ -29,10 +29,7 @@ const Tablelist = async ({ searchParams }: {
                             date: moment(e.createdAt).format("DD-MM-YYYY"),
                             purchaseStatus: e.purchaseStatus,
                             supplier: e.supplier ? e.supplier.name : '',
-                            total: (e.shippingCost +
-                                e.purchaseOrder.map(val => val.qty * (val.product?.cost ?? 0)).reduce((val, prev) => val + prev)) -
-                            e.discount
-                        }))} /></th>
+                            total: e.total }))} /></th>
                         <th>Tanggal</th>
                         <th>Referensi</th>
                         <th>Supplier</th>
@@ -48,10 +45,7 @@ const Tablelist = async ({ searchParams }: {
                             supplier: e.supplier ? e.supplier.name : '',
                             date: moment(e.createdAt).format("DD-MM-YYYY"),
                             purchaseStatus: e.purchaseStatus,
-                            total: (e.shippingCost +
-                                e.purchaseOrder.map(val => val.qty * (val.product?.cost ?? 0)).reduce((val, prev) => val + prev)) -
-                            e.discount
-                        }} /></th>
+                            total: e.total}} /></th>
                         <td> {moment(e.createdAt).format("DD-MM-YYYY")} </td>
                         <td>{e.id}</td>
                         <td>{e.supplier?.name}</td>
@@ -60,16 +54,13 @@ const Tablelist = async ({ searchParams }: {
                                 {e.purchaseStatus}
                             </div>
                         </td>
-                        <td>{currencyFormat(
-                            (e.shippingCost +
-                                e.purchaseOrder.map(val => val.qty * (val.product?.cost ?? 0)).reduce((val, prev) => val + prev)) -
-                            e.discount
-                        )}</td>
+                        <td>{currencyFormat(e.total)}</td>
                         <td>
                             <div className="dropdown dropdown-left">
                                 <div tabIndex={0} role="button" className="btn btn-ghost">Lainnya</div>
                                 <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                                     <li><Link href={`/pembelian/${e.id}/edit`}>Ubah</Link></li>
+                                    {e.documentPath ? <li><Link href={e.documentPath}>Lihat Dokumen</Link></li> : null }
                                     <li><DeleteButton id={e.id} /></li>
                                 </ul>
                             </div>
@@ -83,12 +74,7 @@ const Tablelist = async ({ searchParams }: {
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th>{currencyFormat(purchaseData.result.length > 0 ?
-                            purchaseData.result.map(e => (
-                                e.shippingCost +
-                                e.purchaseOrder.map(val => val.qty * (val.product?.cost ?? 0)).reduce((val, prev) => val + prev)
-                            ) - e.discount).reduce((val, prev) => val + prev) : 0
-                        )}</th>
+                        <th>{currencyFormat(purchaseData.result.length > 0 ? purchaseData.result.map(e => e.total).reduce((val, prev) => val + prev) : 0)}</th>
                         <th></th>
                     </tr>
                 </tfoot>

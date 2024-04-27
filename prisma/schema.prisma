@@ -25,18 +25,6 @@ enum PurchaseStatus{
   DIORDER
 }
 
-enum SalePurchaseStatus{
-  JATUH_TEMPO
-  DIBAYAR
-  SEBAGIAN
-  TERTUNDA
-}
-
-enum SaleStatus{
-  SELESAI
-  TERTUNDA
-}
-
 enum PaymentMethods{
   TUNAI
   TRANSFER
@@ -44,7 +32,8 @@ enum PaymentMethods{
 }
 
 enum PackagingStatus{
-  SEDANG_MENGIRIM
+  MENUNGGU_KURIR
+  PICKUP
   TERKIRIM
 }
 
@@ -63,7 +52,6 @@ model Store{
   productCategories ProductCategories[]
   product Product[]
   purchase Purchase[]
-  purchaseOrder PurchaseOrder[]
   savingAccounts SavingAccounts[]
   sales Sales[]
   saleOrder SaleOrder[]
@@ -73,7 +61,7 @@ model Store{
   purchaseReturns PurchaseReturns[]
   packaging Packaging[]
   saleReturnOrders SaleReturnOrders[]
-  purchaseReturnOrders PurchaseReturnOrders[]
+  permissionPassword PermissionPassword[]
 }
 
 model User{
@@ -91,6 +79,14 @@ model User{
   store Store? @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
+model PermissionPassword{
+  id String @id @default(uuid())
+  idStore String
+  password String
+
+  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
 model CustomerGroup{
   id String @id
   idStore String
@@ -106,12 +102,8 @@ model CustomerUser{
   idStore String
   idCustomerGroup String?
   name String
-  email String
   noWa String
   address String?
-  city String
-  zipCode String
-  region String
   createdAt DateTime @default(now())
 
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -154,6 +146,7 @@ model SavingAccounts{
   sales Sales[]
   saleReturns SaleReturns[]
   purchaseReturns PurchaseReturns[]
+  transactionRecords TransactionRecords[]
 }
 
 model ProductCategories{
@@ -171,22 +164,22 @@ model ProductCategories{
 }
 
 model Product{
-  id String @id
+  id String @id @default(uuid())
+  code String
   idStore String
   idProductCategories String?
   imagePath String
   name String
   price Int
   cost Int
+  qty Int
   createdAt DateTime @default(now())
   deletedAt DateTime?
 
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
   productCategories ProductCategories? @relation(fields: [idProductCategories], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  purchaseOrder PurchaseOrder[]
   saleOrder SaleOrder[]
   saleReturnOrders SaleReturnOrders[]
-  purchaseReturnOrders PurchaseReturnOrders[]
 }
 
 model Purchase{
@@ -195,8 +188,7 @@ model Purchase{
   idSavingAccount String?
   idSupplier String?
   documentPath String?
-  discount Int @default(0)
-  shippingCost Int @default(0)
+  total Int
   notes String?
   purchaseStatus PurchaseStatus
   createdAt DateTime @default(now())
@@ -204,21 +196,7 @@ model Purchase{
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
   supplier Supplier? @relation(fields: [idSupplier], references: [id], onDelete: SetNull, onUpdate: Cascade)
   savingAccount SavingAccounts? @relation(fields: [idSavingAccount], references: [id], onUpdate: Cascade, onDelete: SetNull)
-
-  purchaseOrder PurchaseOrder[]
-}
-
-model PurchaseOrder{
-  id String @id @default(uuid())
-  idStore String
-  idPurchase String
-  idProduct String
-  qty Int
-  createdAt DateTime @default(now())
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  purchase Purchase @relation(fields: [idPurchase], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  product Product @relation(fields: [idProduct], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  purchaseReturns PurchaseReturns[]
 }
 
 model Sales{
@@ -226,13 +204,9 @@ model Sales{
   idStore String
   idCustomerUser String?
   idSavingAccount String?
-  documentPath String?
-  saleStatus SaleStatus
-  purchaseStatus SalePurchaseStatus
   discount Int @default(0)
   shippingCost Int @default(0)
-  saleNotes String?
-  staffNotes String?
+  notes String?
   createdAt DateTime @default(now())
 
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -311,26 +285,14 @@ model PurchaseReturns{
   idStore String
   idSavingAccount String?
   idSupplier String?
+  idPurchase String
   notes String?
   createdAt DateTime @default(now())
 
+  purchase Purchase @relation(fields: [idPurchase], references: [id], onDelete: Cascade, onUpdate: Cascade)
   savingAccount SavingAccounts? @relation(fields: [idSavingAccount], references: [id], onDelete: SetNull, onUpdate: Cascade)
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
   supplier Supplier? @relation(fields: [idSupplier], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  purchaseReturnOrders PurchaseReturnOrders[]
-}
-
-model PurchaseReturnOrders{
-  id String @id @default(uuid())
-  idStore String
-  idProduct String?
-  idPurchaseReturn String
-  qty Int
-  createdAt DateTime @default(now())
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  product Product? @relation(fields: [idProduct], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  purchaseReturn PurchaseReturns @relation(fields: [idPurchaseReturn], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Packaging{
@@ -359,4 +321,18 @@ model MoneyTransfer{
 
   fromSavingAccountRelation SavingAccounts? @relation("FromSavingAccounts", fields: [fromSavingAccount], references: [id], onDelete: SetNull, onUpdate: Cascade)
   toSavingAccountRelation SavingAccounts? @relation("ToSavingAccounts", fields: [toSavingAccount], references: [id], onDelete: SetNull,onUpdate: Cascade)
+}
+
+model TransactionRecords{
+  id String @id @default(uuid())
+  idSavingAccount String
+  idStore String
+  reference String
+  description String
+  debit Int
+  credit Int
+  balance Int
+  createdAt DateTime @default(now())
+
+  savingAccounts SavingAccounts @relation(fields: [idSavingAccount], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

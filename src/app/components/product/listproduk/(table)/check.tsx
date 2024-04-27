@@ -1,10 +1,10 @@
 "use client"
 
+import { GetProductPayload } from "@/app/(public)/(main)/produk/listproduk/action"
 import useStore from "@/app/(public)/(main)/produk/listproduk/store"
-import { AllProduct } from "../table"
 
 const Check = ({ data }: {
-    data: AllProduct
+    data: GetProductPayload
 }) => {
     const select = useStore(state => state.select)
     const add = useStore(state => state.add)

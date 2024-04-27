@@ -1,15 +1,15 @@
 "use client"
 
-import { AllProduct } from '@/app/components/product/listproduk/table'
 import { create } from 'zustand'
+import { GetProductPayload } from './action'
 
 interface State{
-    select: Array<AllProduct>
+    select: Array<GetProductPayload>
 }
 
 interface Action{
-    add: (val: AllProduct) => void,
-    set: (val: Array<AllProduct>) => void,
+    add: (val: GetProductPayload) => void,
+    set: (val: Array<GetProductPayload>) => void,
     remove: (val: string) => void,
     reset: () => void,
 }

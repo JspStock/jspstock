@@ -2,6 +2,7 @@
 
 import { deleteProducts } from "@/app/(public)/(main)/produk/listproduk/action"
 import useStore from "@/app/(public)/(main)/produk/listproduk/store"
+import { passwordInputAlert } from "@/utils/alert/swal"
 import { useState } from "react"
 import Swal from "sweetalert2"
 
@@ -11,10 +12,14 @@ const DeleteButton = () => {
     const reset = useStore(state => state.reset)
     const handleDelete = async () => {
         try {
-            setIsLoading(true)
-            await deleteProducts(selected.map(e => e.id))
-            setIsLoading(false)
-            reset()
+            const confirmPassword = await passwordInputAlert()
+
+            if(confirmPassword){
+                setIsLoading(true)
+                await deleteProducts(selected.map(e => e.id))
+                setIsLoading(false)
+                reset()
+            }
         }catch{
             Swal.fire({
                 icon: 'error',

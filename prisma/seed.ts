@@ -8,13 +8,16 @@ const main = async () => {
             const saltPassword = genSaltSync(5)
             const hashedPassword = hashSync("defaults", saltPassword)
             
-            await e.store.create({
+            const { id } = await e.store.create({
                 data: {
                    id: `STR_${Date.now()}`,
                    name: 'Default',
                    email: 'default@gmail.com',
                    noWa: '-',
                    address: '',
+                },
+                select: {
+                    id: true
                 }
            })
 
@@ -28,6 +31,13 @@ const main = async () => {
                     noWa: '',
                     role: $Enums.Role.OWNER,
                     status: $Enums.UserStatus.AKTIF,
+                }
+           })
+
+           await e.permissionPassword.create({
+                data: {
+                    idStore: id,
+                    password: hashSync("default", saltPassword)
                 }
            })
         })

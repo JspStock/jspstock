@@ -2,16 +2,21 @@ import { getData } from "@/app/(public)/(main)/dashboard/action"
 import { SearchParams } from "@/app/(public)/(main)/dashboard/page"
 import { currencyFormat } from "@/utils/utils"
 import dynamic from "next/dynamic"
+import { redirect } from "next/navigation"
 
 const Chart = dynamic(() => import('./(stats)/chart'))
 const Stats = async ({ searchParams }: {
     searchParams: SearchParams
 }) => {
     const data = await getData(searchParams)
-    const sales = data!.sales.length > 0 ? data!.sales.map(e => (e.saleOrder.map(a => a.qty * a.product.price).reduce((val, prev) => val + prev))).reduce((val, prev) => val + prev) : 0
-    const purchase = data!.purchase.length > 0 ? data!.purchase.map(e => (e.purchaseOrder.map(a => a.qty * a.product.cost).reduce((val, prev) => val + prev))).reduce((val, prev) => val + prev) : 0
-    const returnSales = data!.saleReturns.length > 0 ? data!.saleReturns.map(e => e.saleReturnOrders.map(a => a.qty * a.product!.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0
-    const returnPurchase = data!.purchaseReturns.length > 0 ? data!.purchaseReturns.map(e => e.purchaseReturnOrders.map(a => a.qty * a.product!.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0
+    if(data == null){
+        return redirect("/auth/signin")
+    }
+
+    const sales = data.sales.length > 0 ? data.sales.map(e => (e.saleOrder.map(a => a.qty * a.product.price).reduce((val, prev) => val + prev))).reduce((val, prev) => val + prev) : 0
+    const purchase = data.purchase.length > 0 ? data.purchase.map(e => e.total).reduce((val, prev) => val + prev) : 0
+    const returnSales = data.saleReturns.length > 0 ? data.saleReturns.map(e => e.saleReturnOrders.map(a => a.qty * a.product!.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0
+    const returnPurchase = data.purchaseReturns.length > 0 ? data.purchaseReturns.map(e => e.purchase.total).reduce((val, prev) => val + prev) : 0
 
     return <>
         <div className="stats stats-vertical mt-5 gap-3 w-full">
@@ -23,7 +28,7 @@ const Stats = async ({ searchParams }: {
 
                 </div>
                 <div className="stat-title">Pendapatan</div>
-                <div className="stat-value">{currencyFormat(data!.sales.length > 0 ? sales : 0)}</div>
+                <div className="stat-value">{currencyFormat(data.sales.length > 0 ? sales : 0)}</div>
                 <div className="stat-desc">Total pemasukan dari penjualan.</div>
             </div>
 
@@ -35,8 +40,7 @@ const Stats = async ({ searchParams }: {
                 </div>
                 <div className="stat-title">Profit</div>
                 <div className="stat-value">{currencyFormat(
-                    (sales + returnPurchase) -
-                    (purchase + returnSales)
+                    (sales + returnPurchase) - (returnSales + purchase)
                 )}</div>
                 <div className="stat-desc">Keuntungan setelah dikurangi biaya.</div>
             </div>

@@ -1,5 +1,5 @@
 import { SearchParams } from "@/app/(public)/(main)/produk/kategori/page"
-import { getAllProduct } from "@/app/(public)/(main)/produk/listproduk/action"
+import { getAllProduct, getSumAllProductQty } from "@/app/(public)/(main)/produk/listproduk/action"
 import { currencyFormat } from "@/utils/utils"
 import dynamic from "next/dynamic"
 import Image from "next/image"
@@ -10,33 +10,10 @@ const CheckAll = dynamic(() => import('./(table)/checkAll'))
 const DeleteButton = dynamic(() => import('./(table)/deleteButton'))
 const Pagination = dynamic(() => import('@/app/components/pagination'))
 
-export interface AllProduct {
-    name: string;
-    id: string;
-    imagePath: string;
-    price: number;
-    cost: number;
-    productCategories: {
-        name: string
-    } | null;
-    purchaseOrder: {
-        qty: number;
-    }[]
-    saleOrder: {
-        qty: number;
-    }[]
-    saleReturnOrders: {
-        qty: number
-    }[]
-    purchaseReturnOrders: {
-        qty: number
-    }[]
-}
-
 const Tablelist = async ({ searchParams }: {
     searchParams: SearchParams
 }) => {
-    const allProduct = await getAllProduct(searchParams)
+    const [allProduct, sumAllProductQty] = await Promise.all([getAllProduct(searchParams), getSumAllProductQty()])
 
     return <>
         <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900">
@@ -74,14 +51,9 @@ const Tablelist = async ({ searchParams }: {
                                 </div>
                             </td>
                             <td>{e.name}</td>
-                            <td>{`${e.id.split("_")[1]}`}</td>
+                            <td>{e.code}</td>
                             <td>{e.productCategories ? e.productCategories.name : 'N/A'}</td>
-                            <td>{ 
-                                (e.purchaseOrder.length > 0 ? e.purchaseOrder.map(a => a.qty).reduce((val, prev) => val + prev) : 0) -
-                                (e.saleOrder.length > 0 ? e.saleOrder.map(a => a.qty).reduce((val, prev) => val + prev) : 0) +
-                                (e.saleReturnOrders.length > 0 ? e.saleReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev) : 0) -
-                                (e.purchaseReturnOrders.length > 0 ? e.purchaseReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev) : 0)
-                            }</td>
+                            <td>{ e.qty }</td>
                             <td>{currencyFormat(e.price)}</td>
                             <td>{currencyFormat(e.cost)}</td>
                             <td>{currencyFormat(e.price - e.cost)}</td>
@@ -98,6 +70,10 @@ const Tablelist = async ({ searchParams }: {
                     }
                 </tbody>
             </table>
+        </div>
+
+        <div className="flex justify-end bg-white rounded-box p-6">
+            <span>Jumlah kuantitas dari semua produk : <b>{ sumAllProductQty.length > 0 ? sumAllProductQty.map(e => e.qty).reduce((val, prev) => val + prev) : 0 }</b></span>
         </div>
 
         <Pagination

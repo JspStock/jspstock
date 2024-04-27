@@ -1,12 +1,12 @@
 "use client"
 
-import { updateProduct } from "@/app/(public)/(main)/produk/[product]/edit/action";
-import { ProductData } from "@/app/(public)/(main)/produk/[product]/edit/page";
+import { GetProductDataPayload, updateProduct, checkProductCode } from "@/app/(public)/(main)/produk/[product]/edit/action";
+import { passwordInputAlert } from "@/utils/alert/swal";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { mixed, object, string } from "yup";
+import { mixed, number, object, string } from "yup";
 
 export interface ProductCategories {
     id: string;
@@ -15,11 +15,23 @@ export interface ProductCategories {
 }
 
 export interface Form {
-    image: File | null | string,
+    code: string,
+    image: File | null,
     name: string,
     category: string,
-    price: string,
-    cost: string
+    price: number,
+    cost: number,
+    qty: number
+}
+
+export interface FormWithoutImage {
+    image?: File | null,
+    code: string,
+    name: string,
+    category: string,
+    price: number,
+    cost: number,
+    qty: number
 }
 
 const Form = ({
@@ -27,58 +39,66 @@ const Form = ({
     productData
 }: {
     productCategories: Array<ProductCategories>,
-    productData: ProductData
+    productData: GetProductDataPayload
 }) => {
     const router = useRouter()
     const validImageExtension = ['jpg', 'png', 'jpeg']
     const [category, setCategory] = useState<Array<ProductCategories>>([])
     const formSchema = object().shape({
-        image: mixed()
-            .test({
-                name: 'isValidType',
-                message: 'Format gambar tidak benar!',
-                test: e => {
-                    if (typeof e != "string") {
-                        const file = e as File
-                        return validImageExtension.includes(file.type.split('/')[1])
-                    } else {
-                        return true
-                    }
-                }
-            }),
+        code: string().required('Kode produk tidak boleh kosong!'),
         name: string().required('Nama produk tidak boleh kosong!'),
         category: string().required('Kategori tidak boleh kosong!'),
-        price: string().required('Harga produk tidak boleh kosong!'),
-        cost: string().required('Biaya produk tidak boleh kosong!')
+        price: number().required('Harga produk tidak boleh kosong!'),
+        cost: number().required('Biaya produk tidak boleh kosong!'),
+        qty: number().required("Kuantitas produk tidak boleh kosong!")
     })
 
     const form = useFormik<Form>({
         initialValues: {
-            image: productData.imagePath,
+            code: productData.code,
+            image: null,
             name: productData.name,
-            category: productData.idProductCategories || '',
-            price: productData.price.toString(),
-            cost: productData.cost.toString()
+            category: productData.idProductCategories ?? '',
+            price: productData.price,
+            cost: productData.cost,
+            qty: productData.qty
         },
         validationSchema: formSchema,
-        onSubmit: async e => {
+        onSubmit: async (e, { setFieldError }) => {
             try {
-                const formData = new FormData()
-                if (e.image instanceof File) {
-                    formData.append("image", e.image)
+                const validatePassword = await passwordInputAlert()
+
+                if(validatePassword){
+                    if (e.code != productData.code) {
+                        const countProductCode = await checkProductCode(e.code)
+                        if (countProductCode > 0) {
+                            setFieldError("code", "Kode produk sudah tersedia!")
+                            return
+                        }
+                    }
+    
+                    if (e.image) {
+                        if (!validImageExtension.includes(e.image.type.split('/')[1])) {
+                            setFieldError('image', 'Format gambar tidak benar!')
+                            return
+                        }
+                    }
+    
+                    let image = null
+                    if(e.image){
+                        const buffer = Buffer.from(await e.image.arrayBuffer()).toString("base64")
+                        image = `data:${e.image.type};base64,${buffer}`
+                    }
+                    const formWithoutImage: FormWithoutImage = { ...e }
+                    delete formWithoutImage.image
+                    await updateProduct(productData.id, formWithoutImage, image)
+                    router.push("/produk/listproduk")
                 }
-                formData.append("id", productData.id)
-                formData.append("name", e.name)
-                formData.append("category", e.category)
-                formData.append("price", e.price)
-                formData.append("cost", e.cost)
-                await updateProduct(formData)
-                router.push("/produk/listproduk")
-            }catch{
+            } catch {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Gagal menghapus!',
-                    text: 'Kesalahan saat menghapus produk, coba lagi nanti!',
+                    title: 'Terjadi kesalahan!',
+                    text: 'Kesalahan saat menambahkan produk, coba kembali beberapa saat dan pastikan koneksi jaringan stabil',
                 })
             }
         }
@@ -112,6 +132,15 @@ const Form = ({
             <div className="grid lg:grid-cols-2 gap-5 mt-5">
                 <div className="form-control w-full">
                     <div className="label">
+                        <span className="label-text">Kode Produk*(Wajib)</span>
+                    </div>
+                    <input type="text" placeholder="Kode Produk" className="input input-bordered w-full" name="code" value={values.code} onChange={handleChange} />
+                    {errors.code && touched.code ? <label htmlFor="" className="label">
+                        <span className="label-text-alt text-error">{errors.code}</span>
+                    </label> : null}
+                </div>
+                <div className="form-control w-full">
+                    <div className="label">
                         <span className="label-text">Nama Produk*(Wajib)</span>
                     </div>
                     <input type="text" placeholder="Nama Produk" className="input input-bordered w-full" name="name" value={values.name} onChange={handleChange} />
@@ -135,6 +164,15 @@ const Form = ({
                 </label>
                 <label className="form-control w-full">
                     <div className="label">
+                        <span className="label-text">Biaya*(Wajib)</span>
+                    </div>
+                    <input type="number" placeholder="Biaya" className="input input-bordered w-full" name="cost" onChange={handleChange} value={values.cost} />
+                    {errors.cost && touched.cost ? <label htmlFor="" className="label">
+                        <span className="label-text-alt text-error">{errors.cost}</span>
+                    </label> : null}
+                </label>
+                <label className="form-control w-full">
+                    <div className="label">
                         <span className="label-text">Harga*(Wajib)</span>
                     </div>
                     <input type="number" placeholder="Harga" className="input input-bordered w-full" name="price" onChange={handleChange} value={values.price} />
@@ -142,13 +180,14 @@ const Form = ({
                         <span className="label-text-alt text-error">{errors.price}</span>
                     </label> : null}
                 </label>
+
                 <label className="form-control w-full">
                     <div className="label">
-                        <span className="label-text">Biaya*(Wajib)</span>
+                        <span className="label-text">Kuantitas*(Wajib)</span>
                     </div>
-                    <input type="number" placeholder="Biaya" className="input input-bordered w-full" name="cost" onChange={handleChange} value={values.cost} />
-                    {errors.cost && touched.cost ? <label htmlFor="" className="label">
-                        <span className="label-text-alt text-error">{errors.cost}</span>
+                    <input type="number" placeholder="Kuantitas" className="input input-bordered w-full" name="qty" onChange={handleChange} value={values.qty} />
+                    {errors.qty && touched.qty ? <label htmlFor="" className="label">
+                        <span className="label-text-alt text-error">{errors.qty}</span>
                     </label> : null}
                 </label>
             </div>

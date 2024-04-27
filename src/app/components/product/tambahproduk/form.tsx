@@ -5,7 +5,7 @@ import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { mixed, object, string } from "yup";
+import { mixed, number, object, string } from "yup";
 
 export interface ProductCategories {
     id: string;
@@ -14,15 +14,27 @@ export interface ProductCategories {
 }
 
 export interface Form {
+    code: string,
     image: File | null,
     name: string,
     category: string,
-    price: string,
-    cost: string
+    price: number,
+    cost: number,
+    qty: number
+}
+
+export interface FormWithoutImage{
+    image?: File | null,
+    code: string,
+    name: string,
+    category: string,
+    price: number,
+    cost: number,
+    qty: number
 }
 
 const Form = ({
-    productCategories
+    productCategories,
 }: {
     productCategories: Array<ProductCategories>
 }) => {
@@ -30,6 +42,7 @@ const Form = ({
     const validImageExtension = ['jpg', 'png', 'jpeg']
     const [category, setCategory] = useState<Array<ProductCategories>>([])
     const formSchema = object().shape({
+        code: string().required('Kode produk tidak boleh kosong!'),
         image: mixed().required('Foto produk harus diisi!')
             .test({
                 name: 'isValidType',
@@ -41,31 +54,41 @@ const Form = ({
             }),
         name: string().required('Nama produk tidak boleh kosong!'),
         category: string().required('Kategori tidak boleh kosong!'),
-        price: string().required('Harga produk tidak boleh kosong!'),
-        cost: string().required('Biaya produk tidak boleh kosong!')
+        price: number().required('Harga produk tidak boleh kosong!'),
+        cost: number().required('Biaya produk tidak boleh kosong!'),
+        qty: number().required("Kuantitas produk tidak boleh kosong!")
     })
 
     const form = useFormik<Form>({
         initialValues: {
+            code: '',
             image: null,
             name: '',
             category: '',
-            price: '',
-            cost: '',
+            price: 0,
+            cost: 0,
+            qty: 0
         },
         validationSchema: formSchema,
-        onSubmit: async e => {
+        onSubmit: async (e, {setFieldError}) => {
             try{
-                const formData = new FormData()
                 if(e.image != null){
-                    formData.append("image", e.image)
-                    formData.append("name", e.name)
-                    formData.append("category", e.category)
-                    formData.append("price", e.price)
-                    formData.append("cost", e.cost)
+                    const countProductCode = await checkProductCode(e.code)
 
-                    await addProduct(formData)
-                    router.replace("listproduk")
+                    if(countProductCode == 0){
+                        const reader = new FileReader()
+                        reader.readAsDataURL(e.image)
+                        reader.onload = async () => {
+                            if(reader.result){
+                                const formWithoutImage: FormWithoutImage = {...e}
+                                delete formWithoutImage.image
+                                await addProduct(formWithoutImage, reader.result as string)
+                                router.push("listproduk")
+                            }
+                        }
+                    }else{
+                        setFieldError("code", "Kode produk sudah tersedia!")
+                    }
                 }
             }catch{
                 Swal.fire({
@@ -105,6 +128,15 @@ const Form = ({
             <div className="grid lg:grid-cols-2 gap-5 mt-5">
                 <div className="form-control w-full">
                     <div className="label">
+                        <span className="label-text">Kode Produk*(Wajib)</span>
+                    </div>
+                    <input type="text" placeholder="Kode Produk" className="input input-bordered w-full" name="code" value={values.code} onChange={handleChange} />
+                    {errors.code && touched.code ? <label htmlFor="" className="label">
+                        <span className="label-text-alt text-error">{errors.code}</span>
+                    </label> : null}
+                </div>
+                <div className="form-control w-full">
+                    <div className="label">
                         <span className="label-text">Nama Produk*(Wajib)</span>
                     </div>
                     <input type="text" placeholder="Nama Produk" className="input input-bordered w-full" name="name" value={values.name} onChange={handleChange} />
@@ -128,6 +160,15 @@ const Form = ({
                 </label>
                 <label className="form-control w-full">
                     <div className="label">
+                        <span className="label-text">Biaya*(Wajib)</span>
+                    </div>
+                    <input type="number" placeholder="Biaya" className="input input-bordered w-full" name="cost" onChange={handleChange} value={values.cost} />
+                    {errors.cost && touched.cost ? <label htmlFor="" className="label">
+                        <span className="label-text-alt text-error">{errors.cost}</span>
+                    </label> : null}
+                </label>
+                <label className="form-control w-full">
+                    <div className="label">
                         <span className="label-text">Harga*(Wajib)</span>
                     </div>
                     <input type="number" placeholder="Harga" className="input input-bordered w-full" name="price" onChange={handleChange} value={values.price} />
@@ -135,13 +176,14 @@ const Form = ({
                         <span className="label-text-alt text-error">{errors.price}</span>
                     </label> : null}
                 </label>
+
                 <label className="form-control w-full">
                     <div className="label">
-                        <span className="label-text">Biaya*(Wajib)</span>
+                        <span className="label-text">Kuantitas*(Wajib)</span>
                     </div>
-                    <input type="number" placeholder="Biaya" className="input input-bordered w-full" name="cost" onChange={handleChange} value={values.cost} />
-                    {errors.cost && touched.cost ? <label htmlFor="" className="label">
-                        <span className="label-text-alt text-error">{errors.cost}</span>
+                    <input type="number" placeholder="Kuantitas" className="input input-bordered w-full" name="qty" onChange={handleChange} value={values.qty} />
+                    {errors.qty && touched.qty ? <label htmlFor="" className="label">
+                        <span className="label-text-alt text-error">{errors.qty}</span>
                     </label> : null}
                 </label>
             </div>

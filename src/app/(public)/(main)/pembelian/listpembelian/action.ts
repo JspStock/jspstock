@@ -6,19 +6,29 @@ import { SearchParams } from "./page"
 import extensions from 'prisma-paginate'
 import { revalidatePath } from "next/cache"
 import Cloudinary from "@/utils/cloudinary"
+import { gte, lte } from "@/utils/utils"
 
 export const deleteData = async ({ data }: { data: Array<string> }) => {
     try{
         await prisma.$transaction(async e => {
+            const storeId = cookies().get('store')!.value
+
             for(let i of data){
-                await e.purchase.delete({
+                await e.transactionRecords.deleteMany({
                     where: {
-                        idStore: cookies().get('store')?.value,
-                        id: i
+                        idStore: storeId,
+                        reference: i
                     }
                 })
 
-                await Cloudinary.uploader.destroy(`${cookies().get('store')?.value}/purchase/${i}`)
+                await e.purchase.delete({
+                    where: {
+                        id: i,
+                        idStore: storeId
+                    }
+                })
+
+                await Cloudinary.uploader.destroy(`${storeId}/purchase/${i}`)
             }
         })
 
@@ -32,56 +42,17 @@ export const getData = async ({ searchParams }: { searchParams: SearchParams }) 
     const installExt = prisma.$extends(extensions)
     const getCount = await prisma.purchase.count()
 
-    const gte = () => {
-        if (searchParams.date) {
-            const from = searchParams.date.split("to")[0]
-            const to = searchParams.date.split("to")[1]
-
-            if (from != to) {
-                const date = new Date(from)
-                date.setDate(date.getDate() - 1)
-                return date
-            } else {
-                return undefined
-            }
-        }
-
-        return undefined
-    }
-
-    const lte = () => {
-        if (searchParams.date) {
-            const to = searchParams.date.split("to")[1]
-
-            const date = new Date(to)
-            return date
-        }
-
-        return undefined
-    }
-
     return await installExt.purchase.paginate({
         select: {
             id: true,
+            documentPath: true,
             supplier: {
                 select: {
                     name: true,
                 }
             },
             purchaseStatus: true,
-            purchaseOrder: {
-                select: {
-                    qty: true,
-                    product: {
-                        select: {
-                            cost: true,
-                            name: true
-                        }
-                    }
-                }
-            },
-            shippingCost: true,
-            discount: true,
+            total: true,
             createdAt: true
         },
         where: {
@@ -102,21 +73,14 @@ export const getData = async ({ searchParams }: { searchParams: SearchParams }) 
                     }
                 },
                 {
-                    purchaseOrder: {
-                        some: {
-                            product: {
-                                name: {
-                                    contains: searchParams.search ?? '',
-                                    mode: 'insensitive'
-                                }
-                            }
-                        }
+                    total: {
+                        lte: searchParams.search ? parseInt(searchParams.search) != null ? parseInt(searchParams.search) : undefined : undefined
                     }
-                },
+                }
             ],
             createdAt: {
-                gte: gte(),
-                lte: lte(),
+                gte: gte(searchParams),
+                lte: lte(searchParams),
             },
         },
         orderBy: {

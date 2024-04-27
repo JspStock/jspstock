@@ -42,14 +42,9 @@ export type GetDataPayload = Prisma.StoreGetPayload<{
         },
         purchaseReturns: {
             select: {
-                purchaseReturnOrders: {
+                purchase: {
                     select: {
-                        qty: true,
-                        product: {
-                            select: {
-                                price: true
-                            }
-                        }
+                        total: true
                     }
                 },
                 createdAt: true
@@ -57,18 +52,7 @@ export type GetDataPayload = Prisma.StoreGetPayload<{
         },
         purchase: {
             select: {
-                discount: true,
-                shippingCost: true,
-                purchaseOrder: {
-                    select: {
-                        qty: true,
-                        product: {
-                            select: {
-                                cost: true
-                            }
-                        }
-                    }
-                },
+                total: true,
                 createdAt: true
             }
         },
@@ -138,14 +122,9 @@ export const getData = async (searchParams: SearchParams) => await prisma.store.
                 }
             },
             select: {
-                purchaseReturnOrders: {
+                purchase: {
                     select: {
-                        qty: true,
-                        product: {
-                            select: {
-                                price: true
-                            }
-                        }
+                        total: true
                     }
                 },
                 createdAt: true
@@ -159,18 +138,7 @@ export const getData = async (searchParams: SearchParams) => await prisma.store.
                 }
             },
             select: {
-                discount: true,
-                shippingCost: true,
-                purchaseOrder: {
-                    select: {
-                        qty: true,
-                        product: {
-                            select: {
-                                cost: true
-                            }
-                        }
-                    }
-                },
+                total: true,
                 createdAt: true
             }
         },

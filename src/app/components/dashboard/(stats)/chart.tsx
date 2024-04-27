@@ -18,11 +18,9 @@ const Chart = ({ data }: {
                         datasets: [
                             {
                                 data: [
-                                    data.purchase.length > 0 ? data.purchase.filter(e => moment(e.createdAt).format('MM')).map(e => e.purchaseOrder.map(a => a.qty * a.product.cost).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0, 
                                     data.sales.length > 0 ? data.sales.filter(e => moment(e.createdAt).format('MM')).map(e => e.saleOrder.map(a => a.qty * a.product.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0, 
                                     data.expenditures.length > 0 ? data.expenditures.filter(e => moment(e.createdAt).format('MM')).map(e => e.total).reduce((val, prev) => val + prev) : 0],
                                 backgroundColor: [
-                                    '#1e3a8a',
                                     '#0c4a6e',
                                     '#4c1d95'
                                 ],

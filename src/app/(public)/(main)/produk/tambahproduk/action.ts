@@ -4,6 +4,7 @@ import { cookies } from "next/headers"
 import prisma from "../../../../../../prisma/database"
 import Cloudinary from "@/utils/cloudinary"
 import { revalidatePath } from "next/cache"
+import { FormWithoutImage } from "@/app/components/product/tambahproduk/form"
 
 export const getProductCategories = async() => await prisma.productCategories.findMany({
     where: {
@@ -18,47 +19,42 @@ export const getProductCategories = async() => await prisma.productCategories.fi
 
 export const checkProductCode = async (code: string) => await prisma.product.count({
     where: {
-        idStore: cookies().get('store')!.value,
-        id: `PROD_${code}`
+        idStore: cookies().get('store')?.value,
+        code: code,
+        deletedAt: null
     }
 })
 
-export const addProduct = async (form: FormData) => {
+export const addProduct = async (form: FormWithoutImage, image: string) => {
     try{
-        const image = form.get("image") as File
-        const name = form.get('name') as string
-        const categoryId = form.get('category') as string
-        const price = form.get('price') as string
-        const cost = form.get('cost') as string
-
         await prisma.$transaction(async e => {
-            const getIdProduct = await e.product.create({
+            const storeId = cookies().get('store')!.value
+            const resultProduct = await e.product.create({
                 data: {
-                    idStore: cookies().get('store')!.value,
-                    id: `PROD_${Date.now()}`,
-                    name: name,
-                    idProductCategories: categoryId,
-                    price: parseInt(price),
-                    cost: parseInt(cost),
-                    imagePath: '',
+                    code: form.code,
+                    idStore: storeId,
+                    name: form.name,
+                    idProductCategories: form.category,
+                    cost: form.cost,
+                    price: form.price,
+                    qty: form.qty,
+                    imagePath: ''
                 },
                 select: {
                     id: true
                 }
             })
-
-            const buffer = Buffer.from(await image.arrayBuffer()).toString("base64")
-            const resultUpload = await Cloudinary.uploader.upload(`data:${image.type};base64,${buffer}`, {
-                public_id: `${cookies().get('store')!.value}/product/${getIdProduct.id}`
+            
+            const { url } = await Cloudinary.uploader.upload(image, {
+                public_id: `${storeId}/product/${resultProduct.id}`
             })
 
             await e.product.update({
                 where: {
-                    idStore: cookies().get('store')!.value,
-                    id: getIdProduct.id
+                    id: resultProduct.id
                 },
                 data: {
-                    imagePath: resultUpload.url
+                    imagePath: url
                 }
             })
         })

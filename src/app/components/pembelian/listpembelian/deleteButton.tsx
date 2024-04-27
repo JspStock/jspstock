@@ -2,6 +2,7 @@
 
 import { deleteData } from "@/app/(public)/(main)/pembelian/listpembelian/action"
 import useStore from "@/app/(public)/(main)/pembelian/listpembelian/store"
+import { passwordInputAlert } from "@/utils/alert/swal"
 import { useState } from "react"
 import Swal from "sweetalert2"
 
@@ -11,10 +12,14 @@ const DeleteButton = () => {
     const select = useStore(state => state.select)
     const handleClick = async () => {
         try{
-            setIsLoading(true)
-            await deleteData({data: select.map(e => e.id)})
-            setIsLoading(false)
-            reset()
+            const confirmPassword = await passwordInputAlert()
+
+            if(confirmPassword){
+                setIsLoading(true)
+                await deleteData({data: select.map(e => e.id)})
+                setIsLoading(false)
+                reset()
+            }
         }catch{
             Swal.fire({
                 icon: 'error',

@@ -6,6 +6,34 @@ import Cloudinary from "@/utils/cloudinary"
 import { revalidatePath } from "next/cache"
 import { extension } from "prisma-paginate"
 import { SearchParams } from "./page"
+import { Prisma } from "@prisma/client"
+
+export const getSumAllProductQty = async () => await prisma.product.findMany({
+    where: {
+        idStore: cookies().get('store')?.value,
+        deletedAt: null
+    },
+    select: {
+        qty: true
+    }
+})
+
+export type GetProductPayload = Prisma.ProductGetPayload<{
+    select: {
+        id: true,
+        code: true,
+        name: true,
+        productCategories: {
+            select: {
+                name: true,
+            }
+        },
+        price: true,
+        cost: true,
+        imagePath: true,
+        qty: true
+    }
+}>
 
 export const getAllProduct = async (searchParams: SearchParams) => {
     const extend = prisma.$extends(extension)
@@ -31,12 +59,19 @@ export const getAllProduct = async (searchParams: SearchParams) => {
                         contains: searchParams.search ?? '',
                         mode: 'insensitive'
                     }
+                },
+                {
+                    code: {
+                        contains: searchParams.search ?? '',
+                        mode: 'insensitive'
+                    }
                 }
             ],
         },
         select: {
             id: true,
             name: true,
+            code: true,
             productCategories: {
                 select: {
                     name: true,
@@ -45,26 +80,7 @@ export const getAllProduct = async (searchParams: SearchParams) => {
             price: true,
             cost: true,
             imagePath: true,
-            purchaseOrder: {
-                select: {
-                    qty: true,
-                }
-            },
-            saleOrder: {
-                select: {
-                    qty: true,
-                }
-            },
-            saleReturnOrders: {
-                select: {
-                    qty: true
-                }
-            },
-            purchaseReturnOrders: {
-                select: {
-                    qty: true
-                }
-            }
+            qty: true
         }
     }, {
         limit: searchParams.show ? searchParams.show == 'all' ? getCountData : parseInt(searchParams.show) : 10,

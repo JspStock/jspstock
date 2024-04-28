@@ -1,10 +1,10 @@
 "use client"
 
 import { addProduct, checkProductCode } from "@/app/(public)/(main)/produk/tambahproduk/action";
+import { errorAlert } from "@/utils/alert/swal";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
 import { mixed, number, object, string } from "yup";
 
 export interface ProductCategories {
@@ -91,11 +91,7 @@ const Form = ({
                     }
                 }
             }catch{
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Terjadi kesalahan!',
-                    text: 'Kesalahan saat menambahkan produk, coba kembali beberapa saat dan pastikan koneksi jaringan stabil',
-                })
+                errorAlert()
             }
         }
     })

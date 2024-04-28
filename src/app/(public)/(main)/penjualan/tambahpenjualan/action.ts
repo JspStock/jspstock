@@ -3,10 +3,17 @@
 import { cookies } from "next/headers"
 import prisma from "../../../../../../prisma/database"
 import { FormWithoutDocument } from "@/app/components/penjualan/tambahpenjualan/form"
-import { $Enums } from "@prisma/client"
-import Cloudinary from "@/utils/cloudinary"
 import { revalidatePath } from "next/cache"
+import { Prisma } from "@prisma/client"
 
+export type GetProductPayload = Prisma.ProductGetPayload<{
+    select: {
+        id: true,
+        name: true,
+        price: true,
+        qty: true
+    }
+}>
 export const getProduct = async () => await prisma.product.findMany({
     where: {
         idStore: cookies().get('store')?.value,
@@ -16,16 +23,7 @@ export const getProduct = async () => await prisma.product.findMany({
         id: true,
         name: true,
         price: true,
-        saleOrder: {
-            select: {
-                qty: true,
-            }
-        },
-        purchaseOrder: {
-            select: {
-                qty: true,
-            }
-        }
+        qty: true
     }
 })
 
@@ -58,50 +56,7 @@ export const getSavingAccounts = async () => await prisma.savingAccounts.findMan
 
 export const addData = async (form: FormWithoutDocument, file: string | null) => {
     try{
-        await prisma.$transaction(async e => {
-            const getIdSale = await e.sales.create({
-                data: {
-                    id: `SLS_${form.ref ?? Date.now()}`,
-                    idStore: cookies().get('store')!.value,
-                    idSavingAccount: form.savingAccount,
-                    idCustomerUser: form.customer ? form.customer.id : undefined,
-                    saleStatus: form.saleStatus as keyof typeof $Enums.SaleStatus,
-                    purchaseStatus: form.salePurchaseStatus as keyof typeof $Enums.SalePurchaseStatus,
-                    discount: form.discount ? parseInt(form.discount) : undefined,
-                    shippingCost: form.shippingCost ? parseInt(form.shippingCost) : undefined,
-                    saleNotes: form.saleNotes,
-                    staffNotes: form.staffNotes,
-                    saleOrder: {
-                        createMany: {
-                            data: form.order.map(e => ({
-                                idStore: cookies().get('store')!.value,
-                                idProduct: e.id,
-                                qty: parseInt(e.qty),
-                            }))
-                        }
-                    }
-                },
-                select: {
-                    id: true
-                }
-            })
-
-            if(file){
-                const uploadResult = await Cloudinary.uploader.upload(file, {
-                    public_id: `${cookies().get('store')?.value}/sales/${getIdSale.id}`
-                })
-
-                await e.sales.update({
-                    where: {
-                        id: getIdSale.id,
-                        idStore: cookies().get('store')?.value
-                    },
-                    data: {
-                        documentPath: uploadResult.url
-                    }
-                })
-            }
-        })
+        
 
         revalidatePath("/", "layout")
     }catch(e){

@@ -1,10 +1,10 @@
 "use client"
 
+import { GetAllDataCustomerUserPayload } from "@/app/(public)/(main)/pengguna/costomer/action"
 import useStore from "@/app/(public)/(main)/pengguna/costomer/store"
-import { Customer } from "../table"
 
 const Check = ({ data }: {
-    data: Customer
+    data: GetAllDataCustomerUserPayload
 }) => {
     const select = useStore(state => state.select)
     const add = useStore(state => state.add)

@@ -1,7 +1,7 @@
 "use client"
 
-import { addData, getCountDataById } from "@/app/(public)/(main)/penjualan/tambahpenjualan/action"
-import { Customer, Product, SavingAccounts } from "@/app/(public)/(main)/penjualan/tambahpenjualan/page"
+import { GetProductPayload, addData, getCountDataById } from "@/app/(public)/(main)/penjualan/tambahpenjualan/action"
+import { Customer, SavingAccounts } from "@/app/(public)/(main)/penjualan/tambahpenjualan/page"
 import { $Enums } from "@prisma/client"
 import { useFormik } from "formik"
 import dynamic from "next/dynamic"
@@ -22,11 +22,7 @@ export interface Order {
 
 export interface Form {
     order: Array<Order>,
-    document: File | undefined,
-    ref: string | undefined,
     customer: Customer | undefined,
-    saleStatus: string | undefined,
-    salePurchaseStatus: string | undefined,
     savingAccount: string,
     discount: string | undefined,
     shippingCost: string | undefined,
@@ -36,7 +32,7 @@ export interface Form {
 
 export type FormWithoutDocument = Omit<Form, 'document'>
 const Form = ({ product, customer, savingAccounts }: {
-    product: Array<Product>,
+    product: Array<GetProductPayload>,
     customer: Array<Customer>,
     savingAccounts: Array<SavingAccounts>
 }) => {
@@ -53,11 +49,7 @@ const Form = ({ product, customer, savingAccounts }: {
     const form = useFormik<Form>({
         initialValues: {
             order: [],
-            document: undefined,
-            ref: undefined,
             customer: undefined,
-            saleStatus: undefined,
-            salePurchaseStatus: undefined,
             discount: undefined,
             shippingCost: undefined,
             saleNotes: undefined,
@@ -67,17 +59,6 @@ const Form = ({ product, customer, savingAccounts }: {
         validationSchema: formSchema,
         onSubmit: async e => {
             try{
-                if(e.ref != undefined && e.ref.trim() != ""){
-                    if(await checkIdExists() == false){
-                        return false
-                    }
-                }
-
-                const document = e.document ? `data:${e.document.type};base64,${Buffer.from(await e.document.arrayBuffer()).toString('base64')}` : null
-                const formWithoutDocument: Form = {...e}
-                delete formWithoutDocument.document
-                
-                await addData(formWithoutDocument, document)
                 router.push('/penjualan/listpenjualan')
             }catch{
                 Swal.fire({
@@ -90,16 +71,7 @@ const Form = ({ product, customer, savingAccounts }: {
     })
 
     const { handleSubmit, handleChange, values, errors, touched, isSubmitting, setFieldValue, setFieldError } = form
-    const checkIdExists = async (): Promise<boolean> => {
-        const data = await getCountDataById(values.ref!)
-        if(data == 0){
-            return true
-        }else{
-            setFieldError("ref", "Nomor referensi sudah tersedia!")
-            return false
-        }
-    }
-    const handleChangeProduct = (e: Product) => setFieldValue("order", [...values.order, { ...e, qty: 1 }])
+    const handleChangeProduct = (e: GetProductPayload) => setFieldValue("order", [...values.order, { ...e, qty: 1 }])
     const handleDeleteItemProuct = (val: number) => setFieldValue("order", [...values.order].filter((_, index) => index != val))
     const handleChangeQtyItemProduct = (index: number, qty: string) => setFieldValue(`order[${index}].qty`, qty)
 
@@ -128,14 +100,6 @@ const Form = ({ product, customer, savingAccounts }: {
             <div className="grid lg:grid-cols-2 gap-5 mt-5">
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
-                        <span className="label-text">Nomor Referensi</span>
-                    </div>
-                    <input type="text" placeholder="Masukkan Nomor Referensi" className="input input-bordered w-full max-w-xs" name="ref" value={values.ref} onChange={handleChange} />
-                    {errors.ref && touched.ref ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.ref}</span></label> : null}
-                </label>
-
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
                         <span className="label-text">Kustomer*(Wajib)</span>
                     </div>
                     <Comboboxcostomer
@@ -150,32 +114,10 @@ const Form = ({ product, customer, savingAccounts }: {
                         <span className="label-text">Rekening*(Wajib)</span>
                     </div>
                     <select className="bg-gray-50 border input input-bordered w-full max-w-xs" name="savingAccount" value={values.savingAccount} onChange={handleChange}>
-                        <option value="" className="text-gray-200">Status</option>
+                        <option value="" className="text-gray-200">Rekening</option>
                         { savingAccounts.map((e, index) => <option key={index} value={e.id}>{ e.name }</option>) }
                     </select>
                     {errors.savingAccount && touched.savingAccount ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.savingAccount}</span></label> : null}
-                </label>
-
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
-                        <span className="label-text">Status Penjualan*(Wajib)</span>
-                    </div>
-                    <select className="bg-gray-50 border input input-bordered w-full max-w-xs" name="saleStatus" value={values.saleStatus} onChange={handleChange}>
-                        <option value="" className="text-gray-200">Status</option>
-                        {Object.keys($Enums.SaleStatus).map(e => <option key={e} value={e} className="capitalize">{e.split("_").join(" ").toLowerCase()}</option>)}
-                    </select>
-                    {errors.saleStatus && touched.saleStatus ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.saleStatus}</span></label> : null}
-                </label>
-
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
-                        <span className="label-text">Status Pembayaran*(Wajib)</span>
-                    </div>
-                    <select className="bg-gray-50 border input input-bordered w-full max-w-xs" name="salePurchaseStatus" value={values.salePurchaseStatus} onChange={handleChange}>
-                        <option value="" className="text-gray-200">Status</option>
-                        {Object.keys($Enums.SalePurchaseStatus).map(e => <option key={e} value={e} className="capitalize">{e.split("_").join(" ").toLowerCase()}</option>)}
-                    </select>
-                    {errors.salePurchaseStatus && touched.salePurchaseStatus ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.salePurchaseStatus}</span></label> : null}
                 </label>
 
                 <label className="form-control w-full max-w-xs">

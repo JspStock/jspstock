@@ -9,18 +9,6 @@ export const metadata: Metadata = {
     title: 'Tambah penjualan'
 }
 
-export interface Product{
-    id: string;
-    saleOrder: {
-        qty: number;
-    }[];
-    name: string;
-    price: number;
-    purchaseOrder: {
-        qty: number;
-    }[];
-}
-
 export interface Customer {
     id: string;
     name: string;
@@ -32,9 +20,9 @@ export interface SavingAccounts{
 }
 
 const TambahPembelian = async () => {
-    const productData: Array<Product> = await getProduct()
-    const supplierData: Array<Customer> = await getCustomerUser()
-    const savingAccounts: Array<SavingAccounts> = await getSavingAccounts()
+    const productData = await getProduct()
+    const supplierData = await getCustomerUser()
+    const savingAccounts = await getSavingAccounts()
 
     return (
         <main className="bg-white p-14">

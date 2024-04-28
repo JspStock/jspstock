@@ -5,13 +5,6 @@ import prisma from "../../../../../../../prisma/database"
 import { Form } from "@/app/components/pengguna/costomer/tambah/form"
 import { revalidatePath } from "next/cache"
 
-export const getCountDataByEmail = async (val: string) => await prisma.customerUser.count({
-    where: {
-        idStore: cookies().get('store')?.value,
-        email: val
-    }
-})
-
 export const getCountDataByNoWa = async (val: string) => await prisma.customerUser.count({
     where: {
         idStore: cookies().get('store')?.value,
@@ -37,12 +30,8 @@ export const addData = async (form: Form) => {
                 idStore: cookies().get('store')!.value,
                 idCustomerGroup: form.customerGroup,
                 name: form.name,
-                email: form.email,
                 noWa: form.noWa,
                 address: form.address,
-                city: form.city,
-                zipCode: form.zipCode,
-                region: form.region
             }
         })
 

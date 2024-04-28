@@ -61,7 +61,6 @@ export const addProduct = async (form: FormWithoutImage, image: string) => {
 
         revalidatePath('/', 'layout')
     }catch(e){
-        console.log(e)
         throw new Error("Kesalahan saat menambahkan produk!")
     }
 }

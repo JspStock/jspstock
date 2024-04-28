@@ -4,7 +4,6 @@ import { deleteProducts } from "@/app/(public)/(main)/produk/listproduk/action"
 import useStore from "@/app/(public)/(main)/produk/listproduk/store"
 import { errorAlert, passwordInputAlert } from "@/utils/alert/swal"
 import { useState } from "react"
-import Swal from "sweetalert2"
 
 const DeleteButton = ({ id }: { id: string }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)

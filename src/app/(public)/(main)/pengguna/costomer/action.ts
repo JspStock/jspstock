@@ -5,6 +5,7 @@ import prisma from "../../../../../../prisma/database"
 import { SearchParams } from "./page"
 import { extension } from 'prisma-paginate'
 import { revalidatePath } from "next/cache"
+import { Prisma } from "@prisma/client"
 
 export const deleteData = async (id: Array<string>) => {
     try{
@@ -25,6 +26,20 @@ export const deleteData = async (id: Array<string>) => {
     }
 }
 
+export type GetAllDataCustomerUserPayload = Prisma.CustomerUserGetPayload<{
+    select: {
+        id: true,
+        customerGroup: {
+            select: {
+                name: true
+            }
+        },
+        name: true,
+        noWa: true,
+        address: true
+    },
+}>
+
 export const getAllData = async (searchParams: SearchParams) => {
     const getCountData = await prisma.customerUser.count({
         where: {
@@ -39,12 +54,6 @@ export const getAllData = async (searchParams: SearchParams) => {
             OR: [
                 {
                     name: {
-                        contains: searchParams.search ?? '',
-                        mode: 'insensitive'
-                    }
-                },
-                {
-                    email: {
                         contains: searchParams.search ?? '',
                         mode: 'insensitive'
                     }
@@ -79,7 +88,6 @@ export const getAllData = async (searchParams: SearchParams) => {
                 }
             },
             name: true,
-            email: true,
             noWa: true,
             address: true
         },

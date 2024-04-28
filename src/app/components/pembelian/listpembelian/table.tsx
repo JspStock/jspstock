@@ -60,7 +60,7 @@ const Tablelist = async ({ searchParams }: {
                                 <div tabIndex={0} role="button" className="btn btn-ghost">Lainnya</div>
                                 <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                                     <li><Link href={`/pembelian/${e.id}/edit`}>Ubah</Link></li>
-                                    {e.documentPath ? <li><Link href={e.documentPath}>Lihat Dokumen</Link></li> : null }
+                                    {e.documentPath ? <li><Link href={e.documentPath} passHref target="_blank">Lihat Dokumen</Link></li> : null }
                                     <li><DeleteButton id={e.id} /></li>
                                 </ul>
                             </div>

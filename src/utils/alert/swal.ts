@@ -1,3 +1,5 @@
+"use client"
+
 import Swal from "sweetalert2"
 import { validatePassword } from "./action"
 
@@ -6,6 +8,9 @@ export const passwordInputAlert = async (): Promise<boolean> => {
         title: 'Masukan kata sandi!',
         input: 'password',
         showCancelButton: true,
+        inputAttributes: {
+            autocomplete: 'off'
+        },
         async inputValidator(value) {
             if(!value){
                 return "Kata sandi tidak boleh kosong!"

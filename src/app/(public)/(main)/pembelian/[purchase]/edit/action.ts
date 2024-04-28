@@ -1,23 +1,11 @@
 "use server"
 
-import { cookies } from "next/headers"
-import prisma from "../../../../../../../prisma/database"
-import { $Enums } from "@prisma/client"
-import Cloudinary from "@/utils/cloudinary"
-import { revalidatePath } from "next/cache"
-import { FormWithoutFile } from "@/app/components/pembelian/[purchase]/edit/form"
-
-export const getProductData = async () => await prisma.product.findMany({
-    where: {
-        idStore: cookies().get('store')?.value,
-        deletedAt: null
-    },
-    select: {
-        id: true,
-        name: true,
-        cost: true
-    }
-})
+import { cookies } from "next/headers";
+import Cloudinary from "@/utils/cloudinary";
+import { revalidatePath } from "next/cache";
+import { FormWithoutDocument } from "@/app/components/pembelian/tambahpembelian/form";
+import { $Enums, Prisma } from "@prisma/client";
+import prisma from "../../../../../../../prisma/database";
 
 export const getSupplierData = async () => await prisma.supplier.findMany({
     where: {
@@ -39,87 +27,116 @@ export const getSavingAccounts = async () => await prisma.savingAccounts.findMan
     }
 })
 
+export type GetPurchaseDataPayload = Prisma.PurchaseGetPayload<{
+    select: {
+        id: true,
+        idSupplier: true,
+        idSavingAccount: true,
+        total: true,
+        purchaseStatus: true,
+        notes: true
+    }
+}>
 export const getPurchaseData = async (id: string) => await prisma.purchase.findUnique({
     where: {
         idStore: cookies().get('store')?.value,
-        id: id
+        id
     },
     select: {
         id: true,
+        idSupplier: true,
         idSavingAccount: true,
-        purchaseOrder: {
-            select: {
-                id: true,
-                idProduct: true,
-                qty: true,
-                product: {
-                    select: {
-                        id: true,
-                        name: true,
-                        cost: true,
-                    }
-                }
-            }
-        },
-        supplier: {
-            select: {
-                id: true,
-                name: true
-            }
-        },
-        documentPath: true,
+        total: true,
         purchaseStatus: true,
-        discount: true,
-        shippingCost: true,
         notes: true
     }
 })
 
-export const updatePurchase = async (id: string, form: FormWithoutFile, file: string | null) => {
+export const updatePurchase = async (idPurchase: string, form: FormWithoutDocument, document: string | null) => {
     try {
         await prisma.$transaction(async e => {
-            const purchase = await e.purchase.update({
+            const storeId = cookies().get('store')!.value
+
+            const resultSavingAccount = await e.savingAccounts.findUnique({
                 where: {
-                    idStore: cookies().get('store')?.value,
-                    id: id
-                },
-                data: {
-                    idSupplier: form.supplier ? form.supplier.id : undefined,
-                    discount: form.discount,
-                    shippingCost: form.shippingCost,
-                    notes: form.note,
-                    purchaseStatus: form.purchaseStatus as $Enums.PurchaseStatus,
-                    purchaseOrder: {
-                        deleteMany: {},
-                        createMany: {
-                            data: form.order.map(e => ({
-                                idProduct: e.id,
-                                idStore: cookies().get('store')!.value,
-                                qty: e.selectQty,
-                            }))
-                        }
-                    },
+                    idStore: storeId,
+                    id: form.savingAccount
                 },
                 select: {
-                    id: true,
-                },
+                    startingBalance: true
+                }
             })
 
-            if (file != null) {
-                const resultUpload = await Cloudinary.uploader.upload(file, {
-                    public_id: `${cookies().get('store')?.value}/purchase/${purchase.id}`,
-                })
-
-                await e.purchase.update({
+            if (resultSavingAccount) {
+                const resultPurchase = await e.purchase.findMany({
                     where: {
-                        id: purchase.id,
-                        idStore: cookies().get('store')?.value
+                        idStore: storeId,
+                        idSavingAccount: form.savingAccount,
+                        NOT: {
+                            id: idPurchase
+                        }
                     },
-                    data: {
-                        documentPath: resultUpload.url
+                    select: {
+                        total: true
                     }
                 })
+
+                const { id, total } = await e.purchase.update({
+                    where: {
+                        idStore: storeId,
+                        id: idPurchase
+                    },
+                    data: {
+                        idStore: storeId,
+                        purchaseStatus: form.purchaseStatus as $Enums.PurchaseStatus,
+                        idSupplier: form.supplier,
+                        idSavingAccount: form.savingAccount,
+                        total: form.total,
+                        notes: form.note
+                    },
+                    select: {
+                        id: true,
+                        total: true
+                    }
+                })
+
+                if (document) {
+                    const { url } = await Cloudinary.uploader.upload(document, {
+                        public_id: `${storeId}/purchase/${id}`
+                    })
+
+                    await e.purchase.update({
+                        where: {
+                            idStore: storeId,
+                            id
+                        },
+                        data: {
+                            documentPath: url
+                        }
+                    })
+                }
+
+                const totalBalance = resultSavingAccount.startingBalance - ((resultPurchase.length > 0 ? resultPurchase.map(e => e.total).reduce((val, prev) => val + prev) : 0) + total)
+                await e.transactionRecords.updateMany({
+                    where: {
+                        idStore: storeId,
+                        reference: idPurchase
+                    },
+                    data: {
+                        reference: id,
+                        idStore: storeId,
+                        idSavingAccount: form.savingAccount,
+                        description: `Menambahkan pembelian\n${form.note}`,
+                        debit: total,
+                        credit: 0,
+                        balance: totalBalance
+                    }
+                })
+            } else {
+                throw new Error('Tidak dapat menemukan Rekening!')
             }
+        }, {
+            timeout: 20000
         })
 
         revalidatePath("/", "layout")

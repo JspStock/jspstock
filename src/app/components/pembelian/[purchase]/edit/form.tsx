@@ -1,195 +1,136 @@
 "use client"
 
-import { Product, PurchaseData, SavingAccounts, Supplier } from "@/app/(public)/(main)/pembelian/[purchase]/edit/page"
+import { GetPurchaseDataPayload, updatePurchase } from "@/app/(public)/(main)/pembelian/[purchase]/edit/action"
+import { SavingAccounts, Supplier } from "@/app/(public)/(main)/pembelian/[purchase]/edit/page"
+import { errorAlert, passwordInputAlert } from "@/utils/alert/swal"
+import { $Enums } from "@prisma/client"
 import { useFormik } from "formik"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
-import Swal from "sweetalert2"
-import { array, object, string } from "yup"
-import TableTotal from "./tabletotal"
-import Tabletambahpembelian, { Order } from "./tabletambahpembelian"
-import { $Enums } from "@prisma/client"
-import { updatePurchase } from "@/app/(public)/(main)/pembelian/[purchase]/edit/action"
-import useStore from "@/app/(public)/(main)/pembelian/listpembelian/store"
+import { number, object, string } from "yup"
 
 const SupplierComboBox = dynamic(() => import('@/app/components/comboBoxInput'))
-const ProductComboBox = dynamic(() => import('@/app/components/comboBoxInput'))
 
 export interface Form {
-    order: Array<Order>,
-    product: Product | null,
     document: File | null,
-    supplier: Supplier | null,
+    supplier: string,
     savingAccount: string,
-    purchaseStatus: string,
-    discount: number,
-    shippingCost: number,
-    note: string
+    total: number,
+    note: string,
+    purchaseStatus: string
 }
 
-export interface FormWithoutFile{
-    order: Array<Order>,
-    product: Product | null,
-    supplier: Supplier | null,
+export interface FormWithoutDocument{
+    document?: File | null,
+    supplier: string,
     savingAccount: string,
-    purchaseStatus: string,
-    discount: number,
-    shippingCost: number,
-    note: string
+    total: number,
+    note: string,
+    purchaseStatus: string
 }
 
-const Form = ({ product, supplier, data, savingAccounts }: {
-    product: Array<Product>,
+const Form = ({ supplier, savingAccounts, purchaseData }: {
     supplier: Array<Supplier>,
-    data: PurchaseData,
-    savingAccounts: Array<SavingAccounts>
+    savingAccounts: Array<SavingAccounts>,
+    purchaseData: GetPurchaseDataPayload
 }) => {
-    const reset = useStore(state => state.reset)
     const router = useRouter()
     const formSchema = object().shape({
-        order: array().min(1, 'Order produk harus terisi!'),
-        purchaseStatus: string().required('Status pembelian harus diisi!'),
-        savingAccount: string().required('Rekening harus diisi!')
+        supplier: string().required('Supplier tidak boleh kosong!'),
+        savingAccount: string().required('Rekening harus diisi!'),
+        total: number().required('Total pembayaran tidak boleh kosong!'),
+        purchaseStatus: string().required('Status pembelian tidak boleh kosong!')
     })
 
     const form = useFormik<Form>({
         initialValues: {
-            order: data.purchaseOrder.map(e => ({
-                id: e.product!.id,
-                name: e.product!.name,
-                cost: e.product!.cost,
-                selectQty: e.qty,
-                subTotal: e.qty * e.product!.cost,
-            })),
-            product: null,
             document: null,
-            supplier: data.supplier,
-            purchaseStatus: data.purchaseStatus,
-            discount: data.discount,
-            shippingCost: data.shippingCost,
-            note: data.notes ?? '',
-            savingAccount: data.idSavingAccount ?? ''
+            supplier: purchaseData.idSupplier ?? '',
+            savingAccount: purchaseData.idSavingAccount ?? '',
+            note: purchaseData.notes ?? '',
+            total: purchaseData.total,
+            purchaseStatus: purchaseData.purchaseStatus
         },
         validationSchema: formSchema,
         onSubmit: async e => {
             try {
-                if(e.order.length == 0){
-                    form.setFieldError("order", "Order produk harus diisi!")
-                    return false
-                }
+                const confirmPassword = await passwordInputAlert()
 
-                let file: string | null = null
-                if(e.document){
-                    file = `data:${e.document.type};base64,${Buffer.from(await e.document.arrayBuffer()).toString('base64')}`
+                if(confirmPassword){
+                    let document = null
+                    if(e.document){
+                        const buffer = Buffer.from(await e.document.arrayBuffer()).toString("base64")
+                        document = `data:${e.document.type};base64,${buffer}`
+                    }
+    
+                    const formWithoutDocument: FormWithoutDocument = e
+                    delete formWithoutDocument.document
+                    await updatePurchase(purchaseData.id, formWithoutDocument, document)
+                    router.push("/pembelian/listpembelian")
                 }
-
-                await updatePurchase(
-                    data.id,
-                    {
-                        discount: e.discount,
-                        note: e.note,
-                        order: e.order,
-                        product: e.product,
-                        purchaseStatus: e.purchaseStatus,
-                        savingAccount: e.savingAccount,
-                        shippingCost: e.shippingCost,
-                        supplier: e.supplier
-                    },
-                    file
-                )
-                router.push("/pembelian/listpembelian")
-                reset()
-            } catch(e) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Terjadi kesalahan!',
-                    text: 'Kesalahan saat memasukan data, silahkan coba kembali beberapa saat dan pastikan koneksi jaringan stabil.'
-                })
+            } catch {
+                errorAlert()
             }
         }
     })
-    const { touched, errors, values, isSubmitting, handleSubmit, handleChange, setFieldValue } = form
-    const handleProductInput = (e: Product) => setFieldValue("order", [...values.order, { ...product.filter(val => val.id == e.id)[0], selectQty: 1, subTotal: product.filter(val => val.id == e.id)[0].cost }])
-    const changeQtyOrder = (id: number, qty: string) => {
-        setFieldValue(`order[${id}].selectQty`, parseInt(qty))
-        setFieldValue(`order[${id}].subTotal`, values.order[id].cost * parseInt(qty))
-    }
-    const onDeleteOrder = (val: number) => setFieldValue('order', [...values.order].filter((_, index) => index != val))
-
+    const { errors, values, isSubmitting, handleSubmit, handleChange, setFieldValue } = form
     return (
         <form className="mt-10 relative" onSubmit={handleSubmit}>
-            <label className="form-control w-full max-w-xs">
-                <div className="label">
-                    <span className="label-text">Pilih Produk*(Wajib)</span>
-                </div>
-                <ProductComboBox
-                    data={product.map(e => ({ id: e.id, name: e.name }))}
-                    setSelected={handleProductInput}
-                    selected={values.product} />
-            </label>
-
-            <div className="form-control">
-                <Tabletambahpembelian
-                    data={values.order}
-                    changeQty={changeQtyOrder}
-                    onDelete={onDeleteOrder} />
-
-                {touched.order && errors.order ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.order.toString()}</span></label> : null}
-            </div>
-
             <h1 className="py-2 text-gray-900">Dokumen</h1>
             <input type="file" className="file-input file-input-bordered w-full max-w-xs" onChange={e => setFieldValue("document", e.target.files?.item(0))} />
             <div className="grid lg:grid-cols-2 gap-5 mt-5">
-                <div className="form-control w-full max-w-xs">
+                <div className="form-control w-full">
                     <div className="label">
-                        <span className="label-text">Supplier</span>
+                        <span className="label-text">Supplier*</span>
                     </div>
 
                     <SupplierComboBox
                         data={supplier.map(e => ({ id: e.id, name: e.name }))}
-                        setSelected={e => setFieldValue("supplier", e)}
-                        selected={values.supplier} />
+                        setSelected={(e: Supplier) => setFieldValue("supplier", e.id)}
+                        selected={supplier.find(e => e.id == values.supplier)} />
+                    {errors.supplier ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.supplier}</span></label> : null}
                 </div>
-                <label className="form-control w-full max-w-xs">
+
+                <div className="form-control w-full">
                     <div className="label">
-                        <span className="label-text">Rekening</span>
+                        <span className="label-text">Rekening*</span>
                     </div>
-                    <select className="bg-gray-50 border input input-bordered w-full max-w-xs capitalize" name="savingAccount" defaultValue={values.savingAccount} onChange={handleChange}>
-                        <option value="" disabled>Pilih rekening</option>
-                        { savingAccounts.map((e, index) => <option key={index} value={e.id}>{e.name}</option>) }
-                    </select>
-                    {touched.savingAccount && errors.savingAccount ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.savingAccount}</span></label> : null}
-                </label>
-                <label className="form-control w-full max-w-xs">
+
+                    <SupplierComboBox
+                        data={savingAccounts.map(e => ({ id: e.id, name: e.name }))}
+                        setSelected={(e: SavingAccounts) => setFieldValue("savingAccount", e.id)}
+                        selected={savingAccounts.find(e => e.id == values.savingAccount)} />
+
+                    {errors.savingAccount ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.savingAccount}</span></label> : null}
+                </div>
+
+                <div className="form-control w-full">
+                    <label htmlFor="" className="label">
+                        <span className="label-text">Total pembayaran*</span>
+                    </label>
+
+                    <input type="number" className="input input-bordered" name="total" value={values.total} onChange={handleChange} />
+                    { errors.total ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{ errors.total }</span></label> : null }
+                </div>
+
+                <label className="form-control w-full">
                     <div className="label">
                         <span className="label-text">Status Pembelian</span>
                     </div>
-                    <select className="bg-gray-50 border input input-bordered w-full max-w-xs capitalize" name="purchaseStatus" defaultValue={values.purchaseStatus} onChange={handleChange}>
+                    <select className="bg-gray-50 border input input-bordered w-full capitalize" name="purchaseStatus" defaultValue={values.purchaseStatus} onChange={handleChange}>
                         <option value="" disabled>Pilih status pembelian</option>
                         {Object.keys($Enums.PurchaseStatus).map(key => <option value={key} key={key}>{key.split("_").join(" ").toLowerCase()}</option>)}
                     </select>
-                    {touched.purchaseStatus && errors.purchaseStatus ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.purchaseStatus}</span></label> : null}
+                    {errors.purchaseStatus ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.purchaseStatus}</span></label> : null}
                 </label>
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
-                        <span className="label-text">Diskon</span>
-                    </div>
-                    <input type="number" placeholder="Diskon" className="input input-bordered w-full max-w-xs" name="discount" value={values.discount} onChange={handleChange} />
-                </label>
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
-                        <span className="label-text">Biaya Pengiriman</span>
-                    </div>
-                    <input type="number" placeholder="Biaya" className="input input-bordered w-full max-w-xs" name="shippingCost" value={values.shippingCost} onChange={handleChange} />
-                </label>
-                <label className="form-control w-full max-w-xs">
+
+                <label className="form-control w-full">
                     <div className="label">
                         <span className="label-text">Catatan</span>
                     </div>
-                    <textarea className="textarea textarea-bordered" placeholder="Catatan" name="note" value={values.note} onChange={handleChange}></textarea>
+                    <textarea className="textarea textarea-bordered" placeholder="Catatan" name="note" onChange={handleChange}></textarea>
                 </label>
             </div>
-            <TableTotal form={values} />
             <button type="submit" className="btn bg-blue-900 my-5 text-white" disabled={isSubmitting}>
                 {isSubmitting ? <div className="loading"></div> : null}
                 <span>Simpan</span>

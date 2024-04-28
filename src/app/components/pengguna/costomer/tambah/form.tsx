@@ -1,6 +1,6 @@
 "use client"
 
-import { addData, getCountDataByEmail, getCountDataByNoWa } from "@/app/(public)/(main)/pengguna/costomer/tambah/action"
+import { addData, getCountDataByNoWa } from "@/app/(public)/(main)/pengguna/costomer/tambah/action"
 import { CustomerGroup } from "@/app/(public)/(main)/pengguna/costomer/tambah/page"
 import { useFormik } from "formik"
 import { useRouter } from "next/navigation"
@@ -10,12 +10,8 @@ import { object, string } from "yup"
 export interface Form{
     customerGroup: string,
     name: string,
-    email: string,
     noWa: string,
     address: string,
-    city: string,
-    zipCode: string,
-    region: string
 }
 
 const Form = ({ customerGroup }: {
@@ -25,24 +21,16 @@ const Form = ({ customerGroup }: {
     const formSchema = object().shape({
         customerGroup: string().required("Grub kustomer harus diisi!"),
         name: string().required("Nama harus diisi!"),
-        email: string().required("Email harus diisi!").email('Format email tidak benar!'),
         noWa: string().required('Nomor WhatsApp harus diisi!'),
         address: string().required('Alamat harus diisi!'),
-        city: string().required('Kota harus diisi!'),
-        zipCode: string().required('Kode pos harus diisi!'),
-        region: string().required('Wilayah harus diisi!')
     })
 
     const form = useFormik<Form>({
         initialValues: {
             customerGroup: '',
             name: '',
-            email: '',
             noWa: '',
             address: '',
-            city: '',
-            zipCode: '',
-            region: ''
         },
         validationSchema: formSchema,
         onSubmit: async e => {
@@ -63,10 +51,6 @@ const Form = ({ customerGroup }: {
     const { handleChange, handleSubmit, values, errors, touched, isSubmitting, setFieldError } = form
     const validationFormEmailAndWhatsApp = async (): Promise<boolean> => {
         let isValid = true
-        if(await getCountDataByEmail(values.email) > 0){
-            setFieldError("email", "Email sudah terpakai!")
-            isValid = false
-        }
 
         if(await getCountDataByNoWa(values.noWa) > 0){
             setFieldError("noWa", "Nomor WhatsApp sudah terpakai!")
@@ -98,13 +82,6 @@ const Form = ({ customerGroup }: {
                 </label>
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
-                        <span className="label-text">Email*(Wajib)</span>
-                    </div>
-                    <input type="text" placeholder="Masukkan Email" className="input input-bordered w-full max-w-xs" name="email" value={values.email} onChange={handleChange} />
-                    { errors.email && touched.email ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{ errors.email }</span></label> : null }
-                </label>
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
                         <span className="label-text">No WhatsApp*(Wajib)</span>
                     </div>
                     <input type="text" placeholder="Masukkan nomor WhatsApp" className="input input-bordered w-full max-w-xs" name="noWa" value={values.noWa} onChange={handleChange} />
@@ -116,27 +93,6 @@ const Form = ({ customerGroup }: {
                     </div>
                     <textarea className="textarea textarea-bordered" placeholder="Alamat" name="address" value={values.address} onChange={handleChange}></textarea>
                     { errors.address && touched.address ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{ errors.address }</span></label> : null }
-                </label>
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
-                        <span className="label-text">Kota*(Wajib)</span>
-                    </div>
-                    <input type="text" placeholder="Masukkan Kota" className="input input-bordered w-full max-w-xs" name="city" value={values.city} onChange={handleChange} />
-                    { errors.city && touched.city ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{ errors.city }</span></label> : null }
-                </label>
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
-                        <span className="label-text">Kode Pos*(Wajib)</span>
-                    </div>
-                    <input type="text" placeholder="Masukkan Kode Pos" className="input input-bordered w-full max-w-xs" name="zipCode" value={values.zipCode} onChange={handleChange} />
-                    { errors.zipCode && touched.zipCode ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{ errors.zipCode }</span></label> : null }
-                </label>
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
-                        <span className="label-text">Wilayah*(Wajib)</span>
-                    </div>
-                    <input type="text" placeholder="Masukkan Wilayah" className="input input-bordered w-full max-w-xs" name="region" value={values.region} onChange={handleChange} />
-                    { errors.region && touched.region ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{ errors.region }</span></label> : null }
                 </label>
             </div>
             <button type="submit" className="btn bg-blue-900 my-5 text-white" disabled={isSubmitting}>

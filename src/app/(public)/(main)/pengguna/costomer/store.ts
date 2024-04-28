@@ -1,14 +1,14 @@
-import { Customer } from "@/app/components/pengguna/costomer/table";
 import { create } from "zustand";
+import { GetAllDataCustomerUserPayload } from "./action";
 
 interface State{
-    select: Array<Customer>
+    select: Array<GetAllDataCustomerUserPayload>
 }
 
 interface Action{
-    add: (val: Customer) => void,
+    add: (val: GetAllDataCustomerUserPayload) => void,
     remove: (val: string) => void,
-    set: (val: Array<Customer>) => void,
+    set: (val: Array<GetAllDataCustomerUserPayload>) => void,
     reset: () => void
 }
 

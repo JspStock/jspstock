@@ -37,17 +37,31 @@ export const getData = async (id: string) => await prisma.savingAccounts.findUni
 
 export const updateData = async (id: string, form: Form) => {
     try{
-        await prisma.savingAccounts.update({
-            where: {
-                idStore: cookies().get('store')?.value,
-                id: id
-            },
-            data: {
-                id: form.no,
-                name: form.name,
-                notes: form.notes,
-                startingBalance: form.startingBalance
-            }
+        await prisma.$transaction(async e => {
+            const storeId = cookies().get('store')?.value
+
+            await e.savingAccounts.update({
+                where: {
+                    idStore: storeId,
+                    id: id
+                },
+                data: {
+                    id: form.no,
+                    name: form.name,
+                    notes: form.notes,
+                    startingBalance: form.startingBalance
+                }
+            })
+
+            await e.transactionRecords.updateMany({
+                where: {
+                    idSavingAccount: form.no,
+                    idStore: storeId,
+                },
+                data: {
+                    debit: form.startingBalance
+                }
+            })
         })
 
         revalidatePath("/", "layout")

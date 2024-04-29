@@ -32,74 +32,48 @@ export const addPurchase = async (form: FormWithoutDocument, document: string | 
         await prisma.$transaction(async e => {
             const storeId = cookies().get('store')!.value
 
-            const resultSavingAccount = await e.savingAccounts.findUnique({
-                where: {
+            const { id, total } = await e.purchase.create({
+                data: {
+                    id: `PUR_${Date.now()}`,
                     idStore: storeId,
-                    id: form.savingAccount
+                    purchaseStatus: form.purchaseStatus as $Enums.PurchaseStatus,
+                    idSupplier: form.supplier,
+                    idSavingAccount: form.savingAccount,
+                    total: form.total,
+                    notes: form.note
                 },
                 select: {
-                    startingBalance: true
+                    id: true,
+                    total: true
                 }
             })
 
-            if(resultSavingAccount){
-                const resultPurchase = await e.purchase.findMany({
+            if(document){
+                const { url } = await Cloudinary.uploader.upload(document, {
+                    public_id: `${storeId}/purchase/${id}`
+                })
+
+                await e.purchase.update({
                     where: {
                         idStore: storeId,
-                        idSavingAccount: form.savingAccount
+                        id
                     },
-                    select: {
-                        total: true
-                    }
-                })
-    
-                const { id, total } = await e.purchase.create({
                     data: {
-                        id: `PUR_${Date.now()}`,
-                        idStore: storeId,
-                        purchaseStatus: form.purchaseStatus as $Enums.PurchaseStatus,
-                        idSupplier: form.supplier,
-                        idSavingAccount: form.savingAccount,
-                        total: form.total,
-                        notes: form.note
-                    },
-                    select: {
-                        id: true,
-                        total: true
+                        documentPath: url
                     }
                 })
-    
-                if(document){
-                    const { url } = await Cloudinary.uploader.upload(document, {
-                        public_id: `${storeId}/purchase/${id}`
-                    })
-    
-                    await e.purchase.update({
-                        where: {
-                            idStore: storeId,
-                            id
-                        },
-                        data: {
-                            documentPath: url
-                        }
-                    })
-                }
-    
-                const totalBalance = resultSavingAccount.startingBalance - ((resultPurchase.length > 0 ? resultPurchase.map(e => e.total).reduce((val, prev) => val + prev) : 0) + total)
-                await e.transactionRecords.create({
-                    data: {
-                        reference: id,
-                        idStore: storeId,
-                        idSavingAccount: form.savingAccount,
-                        description: `Menambahkan pembelian\n${form.note}`,
-                        debit: total,
-                        credit: 0,
-                        balance: totalBalance
-                    }
-                })
-            }else{
-                throw new Error('Tidak dapat menemukan Rekening!')
             }
+            
+            await e.transactionRecords.create({
+                data: {
+                    reference: id,
+                    idStore: storeId,
+                    idSavingAccount: form.savingAccount,
+                    description: `Melakukan pembelian\n${form.note}`,
+                    debit: 0,
+                    credit: total,
+                }
+            })
         }, {
             timeout: 20000
         })

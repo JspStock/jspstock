@@ -1,12 +1,12 @@
 "use client"
 
-import { Product } from "@/app/(public)/(main)/penjualan/tambahpenjualan/page"
 import { currencyFormat } from "@/utils/utils"
 import { Order } from "../listpenjualan/[sales]/edit/form"
+import { GetProductPayload } from "@/app/(public)/(main)/penjualan/tambahpenjualan/action"
 
 const TableTambahpembelian = ({ order, product, onDeleteItem, onChangeQtyItem }: {
     order: Array<Order>,
-    product: Array<Product>,
+    product: Array<GetProductPayload>,
     onDeleteItem: (index: number) => void,
     onChangeQtyItem: (index: number, qty: string) => void
 }) => {

@@ -6,6 +6,8 @@ import { SearchParams } from "./page"
 import { extension } from 'prisma-paginate'
 import Cloudinary from "@/utils/cloudinary"
 import { revalidatePath } from "next/cache"
+import { gte, lte } from "@/utils/utils"
+import { Prisma } from "@prisma/client"
 
 export const deleteData = async(id: Array<string>) => {
     try{
@@ -28,36 +30,32 @@ export const deleteData = async(id: Array<string>) => {
     }
 }
 
-export const getData = async (searchParams: SearchParams) => {
-    try{
-        const gte = () => {
-            if (searchParams.date) {
-                const from = searchParams.date.split("to")[0]
-                const to = searchParams.date.split("to")[1]
-    
-                if (from != to) {
-                    const date = new Date(from)
-                    date.setDate(date.getDate() - 1)
-                    return date
-                } else {
-                    return undefined
+export type GetDataPlayload = Prisma.SalesGetPayload<{
+    select: {
+        id: true,
+        customerUser: {
+            select: {
+                name: true
+            }
+        },
+        saleOrder: {
+            select: {
+                qty: true,
+                product: {
+                    select: {
+                        price: true
+                    }
                 }
             }
-    
-            return undefined
-        }
-    
-        const lte = () => {
-            if (searchParams.date) {
-                const to = searchParams.date.split("to")[1]
-    
-                const date = new Date(to)
-                return date
-            }
-    
-            return undefined
-        }
+        },
+        discount: true,
+        shippingCost: true,
+        createdAt: true
+    },
+}>
 
+export const getData = async (searchParams: SearchParams) => {
+    try{
         const extend = prisma.$extends(extension)
         const getCountData  = await extend.sales.count({
             where: {
@@ -69,8 +67,8 @@ export const getData = async (searchParams: SearchParams) => {
             where: {
                 idStore: cookies().get('store')?.value,
                 createdAt: {
-                    gte: gte(),
-                    lte: lte()
+                    gte: gte(searchParams),
+                    lte: lte(searchParams)
                 },
                 OR: [
                     {
@@ -96,8 +94,6 @@ export const getData = async (searchParams: SearchParams) => {
                         name: true
                     }
                 },
-                saleStatus: true,
-                purchaseStatus: true,
                 saleOrder: {
                     select: {
                         qty: true,

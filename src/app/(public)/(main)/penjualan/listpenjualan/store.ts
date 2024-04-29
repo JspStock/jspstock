@@ -1,16 +1,16 @@
 "use client"
 
-import { Sales } from "@/app/components/penjualan/listpenjualan/table"
 import { create } from "zustand"
+import { GetDataPlayload } from "./action"
 
 interface State{
-    select: Array<Sales>
+    select: Array<GetDataPlayload>
 }
 
 interface Action{
-    add: (val: Sales) => void,
+    add: (val: GetDataPlayload) => void,
     remove: (val: string) => void,
-    set: (val: Array<Sales>) => void,
+    set: (val: Array<GetDataPlayload>) => void,
     reset: () => void
 }
 

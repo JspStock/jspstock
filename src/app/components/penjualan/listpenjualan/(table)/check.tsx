@@ -1,10 +1,10 @@
 "use client"
 
+import { GetDataPlayload } from "@/app/(public)/(main)/penjualan/listpenjualan/action"
 import useStore from "@/app/(public)/(main)/penjualan/listpenjualan/store"
-import { Sales } from "../table"
 
 const Check = ({ data }: {
-    data: Sales
+    data: GetDataPlayload
 }) => {
     const select = useStore(state => state.select)
     const add = useStore(state => state.add)

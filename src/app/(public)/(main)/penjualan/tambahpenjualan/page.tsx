@@ -1,6 +1,6 @@
 import { Metadata } from "next"
 import dynamic from "next/dynamic"
-import { getProduct, getCustomerUser, getSavingAccounts } from "./action"
+import { getProduct, getCustomerUser, getSavingAccounts, getCustomerGroup } from "./action"
 
 const BackButton = dynamic(() => import('@/app/components/backButton'))
 const Form = dynamic(() => import("@/app/components/penjualan/tambahpenjualan/form"))
@@ -20,9 +20,12 @@ export interface SavingAccounts{
 }
 
 const TambahPembelian = async () => {
-    const productData = await getProduct()
-    const supplierData = await getCustomerUser()
-    const savingAccounts = await getSavingAccounts()
+    const [productData, supplierData, savingAccounts, customerGroup] = await Promise.all([
+        getProduct(),
+        getCustomerUser(),
+        getSavingAccounts(),
+        getCustomerGroup()
+    ])
 
     return (
         <main className="bg-white p-14">
@@ -34,7 +37,8 @@ const TambahPembelian = async () => {
                 <Form
                     product={productData}
                     customer={supplierData}
-                    savingAccounts={savingAccounts} />
+                    savingAccounts={savingAccounts}
+                    customerGroup={customerGroup} />
             </div>
         </main>
     )

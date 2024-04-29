@@ -5,6 +5,7 @@ import useStoreGlobal from "@/app/(public)/(main)/store"
 import { useState } from "react"
 import Swal from "sweetalert2"
 import useStore from "@/app/(public)/(main)/penjualan/listpenjualan/store"
+import { passwordInputAlert } from "@/utils/alert/swal"
 
 const DeleteButton = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -12,10 +13,14 @@ const DeleteButton = () => {
     const reset = useStoreGlobal(state => state.reset)
     const handleClick = async () => {
         try{
-            setIsLoading(true)
-            await deleteData(select.map(e => e.id))
-            setIsLoading(false)
-            reset()
+            const confirmPassword = await passwordInputAlert()
+
+            if(confirmPassword){
+                setIsLoading(true)
+                await deleteData(select.map(e => e.id))
+                setIsLoading(false)
+                reset()
+            }
         }catch{
             Swal.fire({
                 title: 'Terjadi kesalahan!',

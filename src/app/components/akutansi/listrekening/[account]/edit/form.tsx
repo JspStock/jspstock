@@ -34,12 +34,15 @@ const Form = ({ data }: {
         validationSchema: formSchema,
         onSubmit: async e => {
             try{
-                if(await checkExistsNo()){
-                    await updateData(data.id, e)
-                    router.push("/akutansi/listrekening")
-                }else{
-                    return false
+                if(e.no != data.id){
+                    const check = await checkExistsNo()
+                    if(!check){
+                        return false
+                    }
                 }
+
+                await updateData(data.id, e)
+                router.push("/akutansi/listrekening")
             }catch{
                 Swal.fire({
                     icon: "error",

@@ -331,7 +331,6 @@ model TransactionRecords{
   description String
   debit Int
   credit Int
-  balance Int
   createdAt DateTime @default(now())
 
   savingAccounts SavingAccounts @relation(fields: [idSavingAccount], references: [id], onDelete: Cascade, onUpdate: Cascade)

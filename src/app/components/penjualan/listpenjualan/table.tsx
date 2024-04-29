@@ -1,28 +1,9 @@
 import { getData } from "@/app/(public)/(main)/penjualan/listpenjualan/action"
 import { SearchParams } from "@/app/(public)/(main)/penjualan/listpenjualan/page"
 import { currencyFormat } from "@/utils/utils"
-import { $Enums } from "@prisma/client"
 import moment from "moment"
 import dynamic from "next/dynamic"
 import Link from "next/link"
-
-export interface Sales{
-    id: string;
-    customerUser: {
-        name: string;
-    } | null;
-    saleOrder: {
-        product: {
-            price: number;
-        };
-        qty: number;
-    }[];
-    createdAt: Date;
-    saleStatus: $Enums.SaleStatus;
-    purchaseStatus: $Enums.SalePurchaseStatus;
-    discount: number;
-    shippingCost: number;
-}
 
 const Pagination = dynamic(() => import('@/app/components/pagination'))
 const CheckAll = dynamic(() => import('@/app/components/penjualan/listpenjualan/(table)/checkAll'))
@@ -33,10 +14,6 @@ const Tablelist = async ({ searchParams }: {
     searchParams: SearchParams
 }) => {
     const data = await getData(searchParams)
-    const generateBackColorForSaleStatus = (val: $Enums.SaleStatus) => $Enums.SaleStatus.SELESAI == val ? 'bg-green-400' : 'bg-red-400'
-    const generateBackColorForPurchaseStatus = (color: $Enums.SalePurchaseStatus) => $Enums.SalePurchaseStatus.DIBAYAR == color ? "bg-green-400"
-        : $Enums.PurchaseStatus.SEBAGIAN && $Enums.SalePurchaseStatus.TERTUNDA == color ? "bg-yellow-400"
-            : $Enums.PurchaseStatus.TERTUNDA == color ? "bg-blue-400" : "bg-red-400"
 
     return <>
         <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900">
@@ -47,8 +24,6 @@ const Tablelist = async ({ searchParams }: {
                         <th>Tanggal</th>
                         <th>Referensi</th>
                         <th>Costomer</th>
-                        <th>Status Penjualan</th>
-                        <th>Status Pembayaran</th>
                         <th>Total</th>
                         <th></th>
                     </tr>
@@ -60,16 +35,6 @@ const Tablelist = async ({ searchParams }: {
                             <td>{moment(e.createdAt).format('DD-MM-YYYY')}</td>
                             <td>{e.id}</td>
                             <td>{e.customerUser ? e.customerUser.name : 'N/A'}</td>
-                            <td>
-                                <div className={`${generateBackColorForSaleStatus(e.saleStatus)} text-center text-xs w-20 p-1 rounded-lg font-semibold text-white`}>
-                                    {e.saleStatus}
-                                </div>
-                            </td>
-                            <td>
-                                <div className={`${generateBackColorForPurchaseStatus(e.purchaseStatus)} text-center text-xs w-20 p-1 rounded-lg font-semibold text-white`}>
-                                    {e.purchaseStatus}
-                                </div>
-                            </td>
                             <td>{ currencyFormat(
                                     (e.shippingCost +
                                     (e.saleOrder.length > 0 ? e.saleOrder.map(a => a.qty * a.product.price).reduce((val, prev) => val + prev) : 0)) -
@@ -93,10 +58,7 @@ const Tablelist = async ({ searchParams }: {
                         <th>Total</th>
                         <th></th>
                         <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
+                        <th>{currencyFormat(data.result.length > 0 ? data.result.map(e => (e.shippingCost + e.saleOrder.map(val => val.qty * val.product.price).reduce((val, prev) => val + prev)) - e.discount).reduce((val, prev) => val + prev) : 0)}</th>
                     </tr>
                 </tfoot>
             </table>

@@ -32,7 +32,7 @@ export const addData = async (form: FormWithoutFile, file: string | null) => {
                     idStore: cookies().get('store')!.value,
                     idSales: form.idSale,
                     address: form.address,
-                    status: $Enums.PackagingStatus.SEDANG_MENGIRIM,
+                    status: $Enums.PackagingStatus.MENUNGGU_KURIR,
                     notes: form.notes
                 },
                 select: {

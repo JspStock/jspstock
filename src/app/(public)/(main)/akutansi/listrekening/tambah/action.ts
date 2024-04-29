@@ -14,18 +14,36 @@ export const getCountDataByNo = async (no: string) => await prisma.savingAccount
 
 export const addData = async (form: Form) => {
     try{
-        await prisma.savingAccounts.create({
-            data: {
-                id: form.no,
-                idStore: cookies().get('store')!.value,
-                name: form.name,
-                startingBalance: form.startingBalance,
-                notes: form.notes
-            }
+        await prisma.$transaction(async e => {
+            const storeId = cookies().get('store')!.value
+
+            const createSavingAccount = await e.savingAccounts.create({
+                data: {
+                    id: form.no,
+                    idStore: storeId,
+                    name: form.name,
+                    startingBalance: form.startingBalance,
+                    notes: form.notes
+                },
+                select: {
+                    id: true
+                }
+            })
+
+            await e.transactionRecords.create({
+                data: {
+                    idStore: storeId,
+                    debit: form.startingBalance,
+                    credit: 0,
+                    description: 'Mutasi awal',
+                    reference: "-",
+                    idSavingAccount: createSavingAccount.id
+                }
+            })
         })
 
         revalidatePath("/", "layout")
-    }catch{
+    }catch(e){
         throw new Error("Kesalahan pada server!")
     }
 }

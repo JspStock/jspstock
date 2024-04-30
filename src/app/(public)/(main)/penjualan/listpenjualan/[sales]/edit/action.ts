@@ -1,12 +1,68 @@
 "use server"
 
 import { cookies } from "next/headers"
-import { $Enums } from "@prisma/client"
-import Cloudinary from "@/utils/cloudinary"
+import { FormWithoutDocument } from "@/app/components/penjualan/tambahpenjualan/form"
 import { revalidatePath } from "next/cache"
+import { $Enums, Prisma } from "@prisma/client"
 import prisma from "../../../../../../../../prisma/database"
-import { FormWithoutDocument } from "@/app/components/penjualan/listpenjualan/[sales]/edit/form"
 
+export type GetDataPayload = Prisma.SalesGetPayload<{
+    select: {
+        id: true,
+        saleOrder: {
+            select: {
+                qty: true,
+                product: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
+            }
+        },
+        idCustomerUser: true,
+        idSavingAccount: true,
+        discount: true,
+        shippingCost: true,
+        notes: true
+    }
+}>
+
+export const getData = async (id: string) => await prisma.sales.findUnique({
+    where: {
+        idStore: cookies().get('store')?.value,
+        id: id
+    },
+    select: {
+        id: true,
+        saleOrder: {
+            select: {
+                qty: true,
+                product: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
+            }
+        },
+        idCustomerUser: true,
+        idSavingAccount: true,
+        discount: true,
+        shippingCost: true,
+        notes: true
+    }
+})
+
+export type GetProductPayload = Prisma.ProductGetPayload<{
+    select: {
+        id: true,
+        code: true,
+        name: true,
+        price: true,
+        qty: true
+    }
+}>
 export const getProduct = async () => await prisma.product.findMany({
     where: {
         idStore: cookies().get('store')?.value,
@@ -14,18 +70,10 @@ export const getProduct = async () => await prisma.product.findMany({
     },
     select: {
         id: true,
+        code: true,
         name: true,
         price: true,
-        saleOrder: {
-            select: {
-                qty: true,
-            }
-        },
-        purchaseOrder: {
-            select: {
-                qty: true,
-            }
-        }
+        qty: true
     }
 })
 
@@ -56,93 +104,167 @@ export const getSavingAccounts = async () => await prisma.savingAccounts.findMan
     }
 })
 
-export const getData = async (id: string) => await prisma.sales.findUnique({
-    where: {
-        idStore: cookies().get('store')?.value,
-        id: id
-    },
-    select: {
-        id: true,
-        saleOrder: {
-            select: {
-                id: true,
-                product: {
-                    select: {
-                        id: true,
-                        name: true
-                    }
-                },
-                qty: true,
-            }
-        },
-        documentPath: true,
-        idCustomerUser: true,
-        saleStatus: true,
-        purchaseStatus: true,
-        discount: true,
-        shippingCost: true,
-        saleNotes: true,
-        staffNotes: true,
-        idSavingAccount: true
-    }
-})
+export const updateData = async (id: string, form: FormWithoutDocument) => {
+    try {
+        const storeId = cookies().get('store')!.value
 
-
-export const updateData = async (id: string, form: FormWithoutDocument, file: string | null) => {
-    try{
         await prisma.$transaction(async e => {
-            const updateResult = await e.sales.update({
+            const customer = await e.customerUser.findUnique({
                 where: {
-                    id: id,
-                    idStore: cookies().get('store')?.value
-                },
-                data: {
-                    id: `SLS_${form.ref}`,
-                    idCustomerUser: form.customer ? form.customer.id : undefined,
-                    saleStatus: form.saleStatus as keyof typeof $Enums.SaleStatus,
-                    purchaseStatus: form.salePurchaseStatus as keyof typeof $Enums.SalePurchaseStatus,
-                    discount: form.discount ? parseInt(form.discount) : undefined,
-                    shippingCost: form.shippingCost ? parseInt(form.shippingCost) : undefined,
-                    staffNotes: form.staffNotes ?? undefined,
-                    saleNotes: form.saleNotes ?? undefined,
+                    idStore: storeId,
+                    id: form.customer
                 },
                 select: {
-                    id: true,
+                    address: true
+                }
+            })
+
+            const oldData = await e.sales.findUnique({
+                where: {
+                    idStore: storeId,
+                    id: id
+                },
+                select: {
                     saleOrder: {
                         select: {
-                            id: true,
                             qty: true,
+                            product: {
+                                select: {
+                                    id: true
+                                }
+                            }
                         }
                     }
                 }
             })
 
-            await e.sales.update({
-                where: {
-                    idStore: cookies().get('store')?.value,
-                    id: updateResult.id
-                },
-                data: {
-                    saleOrder: {
-                        deleteMany: {},
-                        createMany: {
-                            data: form.order.map(e => ({
-                                idStore: cookies().get('store')!.value,
-                                idProduct: e.id,
-                                qty: parseInt(e.qty),
-                            }))
+            if (customer && oldData) {
+                for(let i of oldData.saleOrder){
+                    const product = await e.product.findUnique({
+                        where: {
+                            idStore: storeId,
+                            id: i.product.id
+                        },
+                        select: {
+                            qty: true
                         }
+                    })
+
+                    if(product){
+                        await e.product.update({
+                            where: {
+                                idStore: storeId,
+                                id: i.product.id
+                            },
+                            data: {
+                                qty: product.qty + i.qty
+                            }
+                        })
+                    }else{
+                        throw new Error('Kesalahan pada server!')
                     }
                 }
-            })
 
-            if(file){
-                await Cloudinary.uploader.upload(file)
+                const createSale = await e.sales.update({
+                    where: {
+                        idStore: storeId,
+                        id
+                    },
+                    data: {
+                        idCustomerUser: form.customer,
+                        idSavingAccount: form.savingAccount,
+                        discount: form.discount,
+                        shippingCost: form.shippingCost,
+                        notes: form.notes,
+                        saleOrder: {
+                            deleteMany: {},
+                            createMany: {
+                                data: form.order.map(a => ({
+                                    idProduct: a.id,
+                                    idStore: storeId,
+                                    qty: parseInt(a.qty),
+                                }))
+                            },
+                        },
+                    },
+                    select: {
+                        id: true,
+                        saleOrder: {
+                            select: {
+                                idProduct: true,
+                                qty: true,
+                                product: {
+                                    select: {
+                                        price: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
+
+                for (let i of createSale.saleOrder) {
+                    const product = await e.product.findUnique({
+                        where: {
+                            idStore: storeId,
+                            id: i.idProduct
+                        },
+                        select: {
+                            qty: true
+                        }
+                    })
+
+                    if (product) {
+                        await e.product.update({
+                            where: {
+                                id: i.idProduct,
+                                idStore: storeId
+                            },
+                            data: {
+                                qty: product.qty - i.qty
+                            }
+                        })
+                    } else {
+                        throw new Error('Kesalahan pada server!')
+                    }
+                }
+
+                const sumSale = ((form.shippingCost + createSale.saleOrder.map(a => a.qty * a.product.price).reduce((a, b) => a + b)) - form.discount)
+                await e.transactionRecords.updateMany({
+                    where: {
+                        idStore: storeId,
+                        reference: id
+                    },
+                    data: {
+                        idStore: storeId,
+                        reference: createSale.id,
+                        credit: 0,
+                        debit: sumSale,
+                        description: `Melakukan penjualan\n${form.notes}`,
+                        idSavingAccount: form.savingAccount
+                    }
+                })
             }
         })
 
-        revalidatePath('/', 'layout')
-    }catch{
-        throw new Error("Terjadi kesalahan saat memperbarui data!")
+        revalidatePath("/", "layout")
+    } catch {
+        throw new Error("Kesalahan saat menambahkan data!")
     }
 }
+
+export type GetCustomerGroupPayload = Prisma.CustomerGroupGetPayload<{
+    select: {
+        id: true,
+        name: true
+    }
+}>
+export const getCustomerGroup = async () => await prisma.customerGroup.findMany({
+    where: {
+        idStore: cookies().get('store')?.value
+    },
+    select: {
+        id: true,
+        name: true
+    }
+})

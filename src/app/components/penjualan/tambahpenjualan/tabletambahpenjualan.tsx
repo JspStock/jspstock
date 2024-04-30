@@ -1,7 +1,7 @@
 "use client"
 
 import { currencyFormat } from "@/utils/utils"
-import { Order } from "../listpenjualan/[sales]/edit/form"
+import { Order } from "./form"
 import { GetProductPayload } from "@/app/(public)/(main)/penjualan/tambahpenjualan/action"
 
 const TableTambahpembelian = ({ order, product, onDeleteItem, onChangeQtyItem }: {
@@ -31,7 +31,7 @@ const TableTambahpembelian = ({ order, product, onDeleteItem, onChangeQtyItem }:
                             <td>{e.id.split("_")[1]}</td>
                             <td><input type="number" name="" id="" className="input input-bordered"  value={e.qty} onChange={val => onChangeQtyItem(index, val.target.value)} /></td>
                             <td>{currencyFormat((product.find(val => val.id == e.id)?.price ?? 0) * parseInt(e.qty))}</td>
-                            <td> <button className="btn text-red-400 btn-ghost" onClick={() => onDeleteItem(index)}>Hapus</button></td>
+                            <td> <button type="button" className="btn text-red-400 btn-ghost" onClick={() => onDeleteItem(index)}>Hapus</button></td>
                         </tr>)
                     }
 

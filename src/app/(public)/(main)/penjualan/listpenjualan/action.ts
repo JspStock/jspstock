@@ -11,16 +11,80 @@ import { Prisma } from "@prisma/client"
 
 export const deleteData = async(id: Array<string>) => {
     try{
+        const storeId = cookies().get('store')?.value
         await prisma.$transaction(async e => {
             for(let i of id){
-                await e.sales.delete({
+                const oldData = await e.sales.findUnique({
                     where: {
-                        idStore: cookies().get('store')?.value,
-                        id: i
+                        id: i,
+                        idStore: storeId
+                    },
+                    select: {
+                        saleOrder: {
+                            select: {
+                                qty: true,
+                                product: {
+                                    select: {
+                                        id: true
+                                    }
+                                }
+                            }
+                        }
                     }
                 })
 
-                await Cloudinary.uploader.destroy(`${cookies().get('store')?.value}/sales/${i}`)
+                if(oldData){
+                    await e.sales.delete({
+                        where: {
+                            idStore: storeId,
+                            id: i
+                        }
+                    })
+    
+                    await e.transactionRecords.deleteMany({
+                        where: {
+                            idStore: storeId,
+                            reference: i
+                        }
+                    })
+
+                    for(let a of oldData.saleOrder){
+                        const product = await e.product.findUnique({
+                            where: {
+                                idStore: storeId,
+                                id: a.product.id
+                            },
+                            select: {
+                                qty: true
+                            }
+                        })
+
+                        if(product){
+                            await e.product.update({
+                                where: {
+                                    idStore: storeId,
+                                    id: a.product.id
+                                },
+                                data: {
+                                    qty: product.qty + a.qty
+                                }
+                            })
+                        }else{
+                            throw new Error('Kesalahan pada server!')
+                        }
+                    }
+    
+                    await e.packaging.deleteMany({
+                        where: {
+                            idStore: storeId,
+                            idSales: i
+                        }
+                    })
+
+                    await Cloudinary.uploader.destroy(`${storeId}/sales/${i}`)
+                }else{
+                    throw new Error('Kesalahan pada server!')
+                }
             }
         })
 

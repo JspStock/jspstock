@@ -6,15 +6,19 @@ import { useFormik } from "formik"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
-import { array, object, string } from "yup"
+import { array, object, ref, string } from "yup"
 import AddCustomerModal, { Ref } from './(form)/addCustomerModal'
 import ScanProductModal, { ScanProductModalRef } from "./(form)/scanProductModal"
-import { createRef, useState } from "react"
+import { createRef } from "react"
+import useSound from 'use-sound'
+import { Result } from "react-zxing"
+
 
 const Tabletambahpenjualan = dynamic(() => import("@/app/components/penjualan/tambahpenjualan/tabletambahpenjualan"))
 const TableTotal = dynamic(() => import("@/app/components/penjualan/tambahpenjualan/tabletotal"))
 const Comboboxcostomer = dynamic(() => import("@/app/components/comboBoxInput"))
 const Comboboxproduk = dynamic(() => import("@/app/components/comboBoxInput"))
+
 
 export interface Order {
     id: string,
@@ -39,6 +43,7 @@ const Form = ({ product, customer, savingAccounts, customerGroup }: {
     customerGroup: Array<GetCustomerGroupPayload>
 }) => {
     const router = useRouter()
+    const [play] = useSound("/static/sounds/scan-detect.mp3")
     const addCustomerModalRef = createRef<Ref>()
     const scanProductModalRef = createRef<ScanProductModalRef>()
 
@@ -76,6 +81,14 @@ const Form = ({ product, customer, savingAccounts, customerGroup }: {
     const handleChangeProduct = (e: GetProductPayload) => setFieldValue("order", [...values.order, { ...e, qty: 1 }])
     const handleDeleteItemProuct = (val: number) => setFieldValue("order", [...values.order].filter((_, index) => index != val))
     const handleChangeQtyItemProduct = (index: number, qty: string) => setFieldValue(`order[${index}].qty`, qty)
+    const handleScan = (val: Result) => {
+        const getProduct = product.find(e => e.code == val.getText())
+        if(getProduct != undefined){
+            play()
+            handleChangeProduct(getProduct)
+        }
+    }
+    
 
     return <>
         <form className="mt-10" onSubmit={handleSubmit}>
@@ -185,8 +198,7 @@ const Form = ({ product, customer, savingAccounts, customerGroup }: {
 
         <ScanProductModal
             ref={scanProductModalRef}
-        />
-
+            onCapture={handleScan} />
     </>
 }
 export default Form

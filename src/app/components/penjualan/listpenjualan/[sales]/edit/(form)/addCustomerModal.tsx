@@ -1,7 +1,7 @@
 "use client"
 
 import { addData } from "@/app/(public)/(main)/pengguna/costomer/tambah/action"
-import { GetCustomerGroupPayload } from "@/app/(public)/(main)/penjualan/tambahpenjualan/action"
+import { GetCustomerGroupPayload } from "@/app/(public)/(main)/penjualan/listpenjualan/[sales]/edit/action"
 import { Form } from "@/app/components/pengguna/costomer/tambah/form"
 import { errorAlert } from "@/utils/alert/swal"
 import { useFormik } from "formik"

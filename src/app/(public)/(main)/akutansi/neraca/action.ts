@@ -6,88 +6,88 @@ import { cookies } from "next/headers"
 import { SearchParams } from "./page"
 import { Prisma } from "@prisma/client"
 
-export type GetSavingAccounts = Prisma.SavingAccountsGetPayload<{
-    select: {
-        id: true,
-        name: true,
-        sales: {
-            select: {
-                discount: true,
-                shippingCost: true,
-                saleOrder: {
-                    select: {
-                        qty: true,
-                        product: {
-                            select: {
-                                price: true
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        saleReturns: {
-            select: {
-                saleReturnOrders: {
-                    select: {
-                        qty: true,
-                        product: {
-                            select: {
-                                price: true
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        purchase: {
-            select: {
-                discount: true,
-                shippingCost: true,
-                purchaseOrder: {
-                    select: {
-                        qty: true,
-                        product: {
-                            select: {
-                                price: true
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        purchaseReturns: {
-            select: {
-                purchaseReturnOrders: {
-                    select: {
-                        qty: true,
-                        product: {
-                            select: {
-                                price: true
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        expenditures: {
-            select: {
-                total: true
-            }
-        },
-        sender: {
-            select: {
-                total: true
-            }
-        },
-        recipient: {
-            select: {
-                total: true
-            }
-        },
-        startingBalance: true
-    }
-}>
+// export type GetSavingAccounts = Prisma.SavingAccountsGetPayload<{
+//     select: {
+//         id: true,
+//         name: true,
+//         sales: {
+//             select: {
+//                 discount: true,
+//                 shippingCost: true,
+//                 saleOrder: {
+//                     select: {
+//                         qty: true,
+//                         product: {
+//                             select: {
+//                                 price: true
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         },
+//         saleReturns: {
+//             select: {
+//                 saleReturnOrders: {
+//                     select: {
+//                         qty: true,
+//                         product: {
+//                             select: {
+//                                 price: true
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         },
+//         purchase: {
+//             select: {
+//                 discount: true,
+//                 shippingCost: true,
+//                 purchaseOrder: {
+//                     select: {
+//                         qty: true,
+//                         product: {
+//                             select: {
+//                                 price: true
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         },
+//         purchaseReturns: {
+//             select: {
+//                 purchaseReturnOrders: {
+//                     select: {
+//                         qty: true,
+//                         product: {
+//                             select: {
+//                                 price: true
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         },
+//         expenditures: {
+//             select: {
+//                 total: true
+//             }
+//         },
+//         sender: {
+//             select: {
+//                 total: true
+//             }
+//         },
+//         recipient: {
+//             select: {
+//                 total: true
+//             }
+//         },
+//         startingBalance: true
+//     }
+// }>
 
 export const getSavingAccounts = async (searchParams: SearchParams) => {
     const extend = prisma.$extends(extension)
@@ -150,32 +150,10 @@ export const getSavingAccounts = async (searchParams: SearchParams) => {
             },
             purchase: {
                 select: {
-                    discount: true,
-                    shippingCost: true,
-                    purchaseOrder: {
-                        select: {
-                            qty: true,
-                            product: {
-                                select: {
-                                    price: true
-                                }
-                            }
-                        }
-                    }
                 }
             },
             purchaseReturns: {
                 select: {
-                    purchaseReturnOrders: {
-                        select: {
-                            qty: true,
-                            product: {
-                                select: {
-                                    price: true
-                                }
-                            }
-                        }
-                    }
                 }
             },
             expenditures: {

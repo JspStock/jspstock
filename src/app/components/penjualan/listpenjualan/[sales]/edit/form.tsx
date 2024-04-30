@@ -1,93 +1,83 @@
 "use client"
 
-import { getCountDataById, updateData } from "@/app/(public)/(main)/penjualan/listpenjualan/[sales]/edit/action"
-import { Sales } from "@/app/(public)/(main)/penjualan/listpenjualan/[sales]/edit/page"
-import { Customer, Product, SavingAccounts } from "@/app/(public)/(main)/penjualan/listpenjualan/[sales]/edit/page"
-import { $Enums } from "@prisma/client"
+import { GetCustomerGroupPayload, GetDataPayload, GetProductPayload, updateData } from "@/app/(public)/(main)/penjualan/listpenjualan/[sales]/edit/action"
+import { Customer, SavingAccounts } from "@/app/(public)/(main)/penjualan/listpenjualan/[sales]/edit/page"
 import { useFormik } from "formik"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
-import { array, mixed, object, ref, string } from "yup"
+import { array, object, string } from "yup"
+import AddCustomerModal, { Ref } from './(form)/addCustomerModal'
+import ScanProductModal, { ScanProductModalRef } from "./(form)/scanProductModal"
+import { createRef } from "react"
+import useSound from 'use-sound'
+import { Result } from "react-zxing"
+import { passwordInputAlert } from "@/utils/alert/swal"
+
 
 const Tabletambahpenjualan = dynamic(() => import("@/app/components/penjualan/listpenjualan/[sales]/edit/tabletambahpenjualan"))
-const TableTotal = dynamic(() => import("@/app/components/penjualan/tambahpenjualan/tabletotal"))
+const TableTotal = dynamic(() => import("@/app/components/penjualan/listpenjualan/[sales]/edit/tabletotal"))
 const Comboboxcostomer = dynamic(() => import("@/app/components/comboBoxInput"))
 const Comboboxproduk = dynamic(() => import("@/app/components/comboBoxInput"))
 
+
 export interface Order {
     id: string,
-    idOrder?: string,
     name: string,
-    qty: string,
+    qty: string
 }
 
 export interface Form {
     order: Array<Order>,
-    document: File | undefined,
-    ref: string | undefined,
-    customer: Customer | undefined,
+    customer: string,
     savingAccount: string,
-    saleStatus: string | undefined,
-    salePurchaseStatus: string | undefined,
-    discount: string | undefined,
-    shippingCost: string | undefined,
-    saleNotes: string | undefined,
-    staffNotes: string | undefined
+    discount: number,
+    shippingCost: number,
+    notes: string,
 }
 
 export type FormWithoutDocument = Omit<Form, 'document'>
-const Form = ({ product, customer, sales, savingAccounts }: {
-    product: Array<Product>,
+const Form = ({ product, customer, savingAccounts, customerGroup, data }: {
+    product: Array<GetProductPayload>,
     customer: Array<Customer>,
-    sales: Sales,
-    savingAccounts: Array<SavingAccounts>
+    savingAccounts: Array<SavingAccounts>,
+    customerGroup: Array<GetCustomerGroupPayload>,
+    data: GetDataPayload
 }) => {
     const router = useRouter()
+    const [play] = useSound("/static/sounds/scan-detect.mp3")
+    const addCustomerModalRef = createRef<Ref>()
+    const scanProductModalRef = createRef<ScanProductModalRef>()
+
     const formSchema = object().shape({
         order: array().min(1, "Order tidak boleh kosong!"),
-        ref: string().required("Nomor referensi tidak boleh kosong!"),
-        customer: mixed().required('Kustomer tidak boleh kosong!'),
-        saleStatus: string().required("Status penjualan tidak boleh kosong!"),
-        salePurchaseStatus: string().required("Status pembayaran tidak boleh kosong!"),
-        savingAccount: string().required('Rekening tidak boleh kosong!')
+        customer: string().required('Kustomer tidak boleh kosong!'),
+        savingAccount: string().required("Rekening harus diisi!")
     })
 
     const form = useFormik<Form>({
         initialValues: {
-            order: sales.saleOrder.map(e => ({
+            order: data.saleOrder.map(e => ({
                 id: e.product.id,
-                idOrder: e.id,
                 name: e.product.name,
                 qty: e.qty.toString(),
             })),
-            document: undefined,
-            ref: sales.id.split("_")[1],
-            customer: sales.idCustomerUser ? customer.find(e => e.id == sales.idCustomerUser) : undefined,
-            saleStatus: sales.saleStatus,
-            salePurchaseStatus: sales.purchaseStatus,
-            discount: sales.discount.toString(),
-            shippingCost: sales.shippingCost.toString(),
-            saleNotes: sales.saleNotes ?? undefined,
-            staffNotes: sales.staffNotes ?? undefined,
-            savingAccount: sales.idSavingAccount ?? ''
+            customer: data.idCustomerUser ?? '',
+            discount: data.discount,
+            shippingCost: data.shippingCost,
+            notes: data.notes ?? '',
+            savingAccount: data.idSavingAccount ?? ''
         },
         validationSchema: formSchema,
         onSubmit: async e => {
-            try{
-                if(e.ref == sales.id){
-                    if(await checkIdExists() == false){
-                        return false
-                    }
-                }
+            try {
+                const confirmPassword = await passwordInputAlert()
 
-                const document = e.document ? `data:${e.document.type};base64,${Buffer.from(await e.document.arrayBuffer()).toString('base64')}` : null
-                const formWithoutDocument: Form = {...e}
-                delete formWithoutDocument.document
-                
-                await updateData(sales.id, formWithoutDocument, document)
-                router.push('/penjualan/listpenjualan')
-            }catch{
+                if(confirmPassword){
+                    await updateData(data.id, e)
+                    router.push('/penjualan/listpenjualan')
+                }
+            } catch {
                 Swal.fire({
                     icon: 'error',
                     title: 'Terjadi kesalahan!',
@@ -97,32 +87,40 @@ const Form = ({ product, customer, sales, savingAccounts }: {
         }
     })
 
-    const { handleSubmit, handleChange, values, errors, touched, isSubmitting, setFieldValue, setFieldError } = form
-    const checkIdExists = async (): Promise<boolean> => {
-        const data = await getCountDataById(values.ref!)
-        if(data == 0){
-            return true
-        }else{
-            setFieldError("ref", "Nomor referensi sudah tersedia!")
-            return false
+    const { handleSubmit, handleChange, values, errors, touched, isSubmitting, setFieldValue } = form
+    const handleChangeProduct = (e: GetProductPayload) => setFieldValue("order", [...values.order, { ...e, qty: 1 }])
+    const handleDeleteItemProuct = (val: number) => setFieldValue("order", [...values.order].filter((_, index) => index != val))
+    const handleChangeQtyItemProduct = (index: number, qty: string) => setFieldValue(`order[${index}].qty`, qty)
+    const handleScan = (val: Result) => {
+        const getProduct = product.find(e => e.code == val.getText())
+        if(getProduct != undefined){
+            play()
+            handleChangeProduct(getProduct)
         }
     }
-    const handleChangeProduct = (e: Product) => setFieldValue("order", [...values.order, { ...e, qty: 1, action: "add" }])
-    const handleDeleteItemProuct = (val: number) => {
-        setFieldValue('order', [...values.order].filter((_, index) => index != val))
-    }
-    const handleChangeQtyItemProduct = (index: number, qty: string) => setFieldValue(`order[${index}].qty`, qty)
+    
 
-    return (
+    return <>
         <form className="mt-10" onSubmit={handleSubmit}>
-            <div className="form-control w-full max-w-xs">
-                <div className="label">
-                    <span className="label-text">Pilih Produk*(Wajib)</span>
+            <div className="flex gap-x-2 items-end">
+                <div className="form-control w-full max-w-xs">
+                    <div className="label">
+                        <span className="label-text">Pilih Produk*(Wajib)</span>
+                    </div>
+                    <Comboboxproduk
+                        data={product}
+                        selected={""}
+                        setSelected={handleChangeProduct} />
                 </div>
-                <Comboboxproduk
-                    data={product}
-                    selected={""}
-                    setSelected={handleChangeProduct} />
+
+                <div className="tooltip" data-tip="Pindai produk">
+                    <button type="button" className="btn btn-ghost btn-circle" onClick={() => scanProductModalRef.current?.showModal()}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75ZM6.75 16.5h.75v.75h-.75v-.75ZM16.5 6.75h.75v.75h-.75v-.75ZM13.5 13.5h.75v.75h-.75v-.75ZM13.5 19.5h.75v.75h-.75v-.75ZM19.5 13.5h.75v.75h-.75v-.75ZM19.5 19.5h.75v.75h-.75v-.75ZM16.5 16.5h.75v.75h-.75v-.75Z" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <Tabletambahpenjualan
@@ -132,27 +130,29 @@ const Form = ({ product, customer, sales, savingAccounts }: {
                 onChangeQtyItem={handleChangeQtyItemProduct} />
             {errors.order && touched.order ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.order.toString()}</span></label> : null}
 
-            <h1 className="py-2 text-gray-900">Dokumen</h1>
-            <input type="file" className="file-input file-input-bordered w-full max-w-xs" onChange={e => setFieldValue("document", e.target.files![0])} />
-
             <div className="grid lg:grid-cols-2 gap-5 mt-5">
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
-                        <span className="label-text">Nomor Referensi</span>
-                    </div>
-                    <input type="text" placeholder="Masukkan Nomor Referensi" className="input input-bordered w-full max-w-xs" name="ref" value={values.ref} onChange={handleChange} />
-                    {errors.ref && touched.ref ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.ref}</span></label> : null}
-                </label>
-
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
                         <span className="label-text">Kustomer*(Wajib)</span>
                     </div>
-                    <Comboboxcostomer
-                        data={customer.map(e => ({ id: e.id, name: e.name }))}
-                        selected={values.customer}
-                        setSelected={(e: Customer) => setFieldValue("customer", e)} />
-                    {errors.customer && touched.customer ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.customer}</span></label> : null}
+
+                    <div className="flex items-center gap-x-2">
+                        <section className="w-full">
+                            <Comboboxcostomer
+                                data={customer.map(e => ({ id: e.id, name: e.name }))}
+                                selected={customer.find(e => e.id == values.customer)}
+                                setSelected={(e: Customer) => setFieldValue("customer", e.id)} />
+                            {errors.customer && touched.customer ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.customer}</span></label> : null}
+                        </section>
+
+                        <div className="tooltip" data-tip="Tambah kustomer">
+                            <button className="btn btn-square" onClick={() => addCustomerModalRef.current?.showModal()}>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                                    <path fillRule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 </label>
 
                 <label className="form-control w-full max-w-xs">
@@ -160,46 +160,24 @@ const Form = ({ product, customer, sales, savingAccounts }: {
                         <span className="label-text">Rekening*(Wajib)</span>
                     </div>
                     <select className="bg-gray-50 border input input-bordered w-full max-w-xs" name="savingAccount" value={values.savingAccount} onChange={handleChange}>
-                        <option value="" className="text-gray-200">Status</option>
-                        { savingAccounts.map((e, index) => <option key={index} value={e.id}>{ e.name }</option>) }
+                        <option value="" className="text-gray-200">Rekening</option>
+                        {savingAccounts.map((e, index) => <option key={index} value={e.id}>{e.name}</option>)}
                     </select>
                     {errors.savingAccount && touched.savingAccount ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.savingAccount}</span></label> : null}
                 </label>
 
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
-                        <span className="label-text">Status Penjualan*(Wajib)</span>
-                    </div>
-                    <select className="bg-gray-50 border input input-bordered w-full max-w-xs" name="saleStatus" value={values.saleStatus} onChange={handleChange}>
-                        <option value="" className="text-gray-200">Status</option>
-                        {Object.keys($Enums.SaleStatus).map(e => <option key={e} value={e} className="capitalize">{e.split("_").join(" ").toLowerCase()}</option>)}
-                    </select>
-                    {errors.saleStatus && touched.saleStatus ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.saleStatus}</span></label> : null}
-                </label>
-
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
-                        <span className="label-text">Status Pembayaran*(Wajib)</span>
-                    </div>
-                    <select className="bg-gray-50 border input input-bordered w-full max-w-xs" name="salePurchaseStatus" value={values.salePurchaseStatus} onChange={handleChange}>
-                        <option value="" className="text-gray-200">Status</option>
-                        {Object.keys($Enums.SalePurchaseStatus).map(e => <option key={e} value={e} className="capitalize">{e.split("_").join(" ").toLowerCase()}</option>)}
-                    </select>
-                    {errors.salePurchaseStatus && touched.salePurchaseStatus ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.salePurchaseStatus}</span></label> : null}
-                </label>
-
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
                         <span className="label-text">Diskon</span>
                     </div>
-                    <input type="text" placeholder="Diskon" className="input input-bordered w-full max-w-xs" name="discount" value={values.discount} onChange={handleChange} />
+                    <input type="number" placeholder="Diskon" className="input input-bordered w-full max-w-xs" name="discount" value={values.discount} onChange={handleChange} />
                 </label>
 
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
                         <span className="label-text">Biaya Pengiriman</span>
                     </div>
-                    <input type="text" placeholder="Biaya" className="input input-bordered w-full max-w-xs" name="shippingCost" value={values.shippingCost} onChange={handleChange} />
+                    <input type="number" placeholder="Biaya" className="input input-bordered w-full max-w-xs" name="shippingCost" value={values.shippingCost} onChange={handleChange} />
                     {errors.shippingCost && touched.shippingCost ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.shippingCost}</span></label> : null}
                 </label>
 
@@ -207,29 +185,30 @@ const Form = ({ product, customer, sales, savingAccounts }: {
                     <div className="label">
                         <span className="label-text">Catatan Penjualan</span>
                     </div>
-                    <textarea className="textarea textarea-bordered" placeholder="Catatan" name="saleNotes" value={values.saleNotes} onChange={handleChange}></textarea>
-                    {errors.saleNotes && touched.saleNotes ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.saleNotes}</span></label> : null}
-                </label>
-
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
-                        <span className="label-text">Catatan Staff Admin</span>
-                    </div>
-                    <textarea className="textarea textarea-bordered" placeholder="Catatan" name="staffNotes" value={values.staffNotes} onChange={handleChange}></textarea>
-                    {errors.staffNotes && touched.staffNotes ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.staffNotes}</span></label> : null}
+                    <textarea className="textarea textarea-bordered" placeholder="Catatan" name="saleNotes" value={values.notes} onChange={handleChange}></textarea>
+                    {errors.notes && touched.notes ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.notes}</span></label> : null}
                 </label>
             </div>
 
             <TableTotal
-                discount={parseInt(values.discount ?? '0')}
-                shippingCost={parseInt(values.shippingCost ?? '0')}
+                discount={values.discount}
+                shippingCost={values.shippingCost}
                 order={values.order}
                 product={product} />
             <button type="submit" className="btn bg-blue-900 my-5 text-white" disabled={isSubmitting}>
-                { isSubmitting ? <div className="loading"></div> : null }
+                {isSubmitting ? <div className="loading"></div> : null}
                 <span>Simpan</span>
             </button>
         </form>
-    )
+
+        <AddCustomerModal
+            ref={addCustomerModalRef}
+            customerGroup={customerGroup}
+            close={() => addCustomerModalRef.current?.close()} />
+
+        <ScanProductModal
+            ref={scanProductModalRef}
+            onCapture={handleScan} />
+    </>
 }
 export default Form

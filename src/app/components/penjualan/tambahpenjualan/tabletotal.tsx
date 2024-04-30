@@ -1,4 +1,3 @@
-import { Product } from "@/app/(public)/(main)/penjualan/listpenjualan/[sales]/edit/page"
 import { Order } from "./form"
 import { currencyFormat } from "@/utils/utils"
 import { GetProductPayload } from "@/app/(public)/(main)/penjualan/tambahpenjualan/action"

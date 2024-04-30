@@ -1,12 +1,12 @@
 "use client"
 
-import { Product } from "@/app/(public)/(main)/penjualan/listpenjualan/[sales]/edit/page"
 import { currencyFormat } from "@/utils/utils"
 import { Order } from "./form"
+import { GetProductPayload } from "@/app/(public)/(main)/penjualan/tambahpenjualan/action"
 
 const TableTambahpembelian = ({ order, product, onDeleteItem, onChangeQtyItem }: {
     order: Array<Order>,
-    product: Array<Product>,
+    product: Array<GetProductPayload>,
     onDeleteItem: (index: number) => void,
     onChangeQtyItem: (index: number, qty: string) => void
 }) => {
@@ -29,9 +29,9 @@ const TableTambahpembelian = ({ order, product, onDeleteItem, onChangeQtyItem }:
                         order.map((e, index) => <tr key={index}>
                             <td>{e.name}</td>
                             <td>{e.id.split("_")[1]}</td>
-                            <td><input type="number" className="input input-bordered" value={e.qty} onChange={e => onChangeQtyItem(index, e.target.value)} /></td>
+                            <td><input type="number" name="" id="" className="input input-bordered"  value={e.qty} onChange={val => onChangeQtyItem(index, val.target.value)} /></td>
                             <td>{currencyFormat((product.find(val => val.id == e.id)?.price ?? 0) * parseInt(e.qty))}</td>
-                            <td> <button className="btn text-red-400 btn-ghost" onClick={() => onDeleteItem(index)}>Hapus</button></td>
+                            <td> <button type="button" className="btn text-red-400 btn-ghost" onClick={() => onDeleteItem(index)}>Hapus</button></td>
                         </tr>)
                     }
 

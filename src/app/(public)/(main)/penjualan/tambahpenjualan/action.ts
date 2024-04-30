@@ -9,6 +9,7 @@ import { $Enums, Prisma } from "@prisma/client"
 export type GetProductPayload = Prisma.ProductGetPayload<{
     select: {
         id: true,
+        code: true,
         name: true,
         price: true,
         qty: true
@@ -21,6 +22,7 @@ export const getProduct = async () => await prisma.product.findMany({
     },
     select: {
         id: true,
+        code: true,
         name: true,
         price: true,
         qty: true
@@ -125,7 +127,6 @@ export const addData = async (form: FormWithoutDocument) => {
                         }
                     })
     
-                    const sumQtyOrder = createSale.saleOrder.filter(a => a.idProduct == i.idProduct).map(a => a.qty).reduce((val, prev) => val + prev)
                     if (product) {
                         await e.product.update({
                             where: {
@@ -133,7 +134,7 @@ export const addData = async (form: FormWithoutDocument) => {
                                 idStore: storeId
                             },
                             data: {
-                                qty: product.qty - sumQtyOrder
+                                qty: product.qty - i.qty
                             }
                         })
                     }else{
@@ -156,7 +157,8 @@ export const addData = async (form: FormWithoutDocument) => {
         })
 
         revalidatePath("/", "layout")
-    } catch {
+    } catch(e) {
+        console.log(e)
         throw new Error("Kesalahan saat menambahkan data!")
     }
 }

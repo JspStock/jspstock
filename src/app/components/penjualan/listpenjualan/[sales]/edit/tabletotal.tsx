@@ -1,10 +1,9 @@
-import { Product } from "@/app/(public)/(main)/penjualan/tambahpenjualan/page"
 import { Order } from "./form"
 import { currencyFormat } from "@/utils/utils"
-
+import { GetProductPayload } from "@/app/(public)/(main)/penjualan/listpenjualan/[sales]/edit/action"
 const TableTotal = ({ order, product, shippingCost, discount }: {
     order: Array<Order>,
-    product: Array<Product>,
+    product: Array<GetProductPayload>,
     shippingCost: number,
     discount: number
 }) => {

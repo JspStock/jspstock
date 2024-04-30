@@ -1,16 +1,16 @@
 "use client"
 
 import { create } from "zustand"
-import { GetSavingAccounts } from "./action"
+// import { GetSavingAccounts } from "./action"
 
 interface State{
-    select: Array<GetSavingAccounts>
+    select: Array<any>
 }
 
 interface Action{
-    add: (val: GetSavingAccounts) => void,
-    remove: (val: GetSavingAccounts['id']) => void,
-    set: (val: Array<GetSavingAccounts>) => void,
+    add: (val: any) => void,
+    remove: (val: any['id']) => void,
+    set: (val: Array<any>) => void,
     reset: () => void
 }
 

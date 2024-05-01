@@ -41,7 +41,6 @@ export const addData = async (form: Form) => {
     try{
         await prisma.$transaction(async e => {
             const storeId = cookies().get('store')!.value
-
             const { id, saleReturnOrders } = await e.saleReturns.create({
                 data: {
                     id: `RTS_${Date.now()}`,
@@ -92,7 +91,7 @@ export const addData = async (form: Form) => {
                             idStore: storeId,
                         },
                         data: {
-                            qty: product.qty - i.qty
+                            qty: product.qty + i.qty
                         }
                     })
                 }else{

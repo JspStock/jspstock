@@ -2,6 +2,7 @@
 
 import { updateData } from "@/app/(public)/(main)/pengembalian/penjualan/[saleReturn]/edit/actions"
 import { CustomerUser, Product, SaleReturn, SavingAccounts } from "@/app/(public)/(main)/pengembalian/penjualan/[saleReturn]/edit/page"
+import { passwordInputAlert } from "@/utils/alert/swal"
 import { useFormik } from "formik"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
@@ -54,8 +55,12 @@ const Form = ({ customerUser, product, savingAccounts, saleReturn }: {
         validationSchema: formSchema,
         onSubmit: async e => {
             try{
-                await updateData(saleReturn.id, e)
-                router.push('/pengembalian/penjualan')
+                const confirmPassword = await passwordInputAlert()
+
+                if(confirmPassword){
+                    await updateData(saleReturn.id, e, saleReturn)
+                    router.push('/pengembalian/penjualan')
+                }
             }catch{
                 Swal.fire({
                     icon: 'error',

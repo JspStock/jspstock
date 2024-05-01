@@ -28,7 +28,7 @@ const OrderTable = ({ order, onDeleteItem, onChangeQtyItem }: {
                     <td><input type="number" className="input input-bordered" value={e.qty} onChange={e => onChangeQtyItem(index, parseInt(e.target.value))} /></td>
                     <td>{ currencyFormat(e.price) }</td>
                     <td>{ currencyFormat(e.qty * e.price) }</td>
-                    <td><button className="btn btn-ghost text-error" onClick={() => onDeleteItem(index)}>Hapus</button></td>
+                    <td><button type="button" className="btn btn-ghost text-error" onClick={() => onDeleteItem(index)}>Hapus</button></td>
                 </tr>)
             }
         </tbody>

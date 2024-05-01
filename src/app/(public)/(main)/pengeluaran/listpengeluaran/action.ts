@@ -5,6 +5,7 @@ import prisma from "../../../../../../prisma/database"
 import { SearchParams } from "./page"
 import { extension } from "prisma-paginate"
 import { revalidatePath } from "next/cache"
+import { gte, lte } from "@/utils/utils"
 
 export const getAllData = async (searchParams: SearchParams) => {
     const extend = prisma.$extends(extension)
@@ -14,40 +15,12 @@ export const getAllData = async (searchParams: SearchParams) => {
         }
     })
 
-    const gte = () => {
-        if (searchParams.date) {
-            const from = searchParams.date.split("to")[0]
-            const to = searchParams.date.split("to")[1]
-
-            if (from != to) {
-                const date = new Date(from)
-                date.setDate(date.getDate() - 1)
-                return date
-            } else {
-                return undefined
-            }
-        }
-
-        return undefined
-    }
-
-    const lte = () => {
-        if (searchParams.date) {
-            const to = searchParams.date.split("to")[1]
-
-            const date = new Date(to)
-            return date
-        }
-
-        return undefined
-    }
-
     return extend.expenditures.paginate({
         where: {
             idStore: cookies().get('store')?.value,
             createdAt: {
-                lte: lte(),
-                gte: gte()
+                lte: lte(searchParams),
+                gte: gte(searchParams)
             },
             OR: [
                 {
@@ -100,11 +73,20 @@ export const getAllData = async (searchParams: SearchParams) => {
 export const deleteData = async (id: Array<string>) => {
     try {
         await prisma.$transaction(async e => {
+            const storeId = cookies().get('store')?.value
+
             for (let i of id) {
                 await e.expenditures.delete({
                     where: {
                         id: i,
-                        idStore: cookies().get('store')?.value
+                        idStore: storeId
+                    }
+                })
+
+                await e.transactionRecords.deleteMany({
+                    where: {
+                        reference: i,
+                        idStore: storeId
                     }
                 })
             }

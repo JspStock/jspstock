@@ -1,54 +1,43 @@
 "use client"
 
-import { addData } from "@/app/(public)/(main)/pengembalian/pembelian/tambah/action"
-import { Supplier, Product, SavingAccount } from "@/app/(public)/(main)/pengembalian/pembelian/tambah/page"
+import { GetPurchasePayload, addData } from "@/app/(public)/(main)/pengembalian/pembelian/tambah/action"
+import {SavingAccount } from "@/app/(public)/(main)/pengembalian/pembelian/tambah/page"
+import { currencyFormat } from "@/utils/utils"
 import { useFormik } from "formik"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
-import { array, object, string } from "yup"
+import { object, string } from "yup"
 
 const Combobox = dynamic(() => import('@/app/components/comboBoxInput'))
-const OrderTable = dynamic(() => import('@/app/components/pengembalian/penjualan/tambah/orderTable'))
-
-export interface Order {
-    id: string,
-    name: string,
-    qty: number,
-    price: number,
-}
 
 export interface Form {
-    order: Array<Order>,
+    purchase: string,
     savingAccounts: string,
-    supplier: string,
     notes: string
 }
 
-const Form = ({ supplier, product, savingAccount }: {
-    supplier: Array<Supplier>,
-    product: Array<Product>,
-    savingAccount: Array<SavingAccount>
+const Form = ({ savingAccount, purchase }: {
+    savingAccount: Array<SavingAccount>,
+    purchase: Array<GetPurchasePayload>
 }) => {
     const router = useRouter()
     const formSchema = object().shape({
-        supplier: string().required("Kustomer tidak boleh kosong!"),
-        order: array().min(1, "Order tidak boleh kosong!"),
+        purchase: string().required('Pembelian tidak boleh kosong!'),
         savingAccounts: string().required('Rekening tidak boleh kosong!')
     })
 
     const form = useFormik<Form>({
         initialValues: {
-            order: [],
+            purchase: '',
             savingAccounts: '',
-            supplier: '',
             notes: ''
         },
         validationSchema: formSchema,
         onSubmit: async e => {
             try{
                 await addData(e)
-                router.push('/pengembalian/penjualan')
+                router.push('/pengembalian/pembelian')
             }catch{
                 Swal.fire({
                     icon: 'error',
@@ -65,26 +54,6 @@ const Form = ({ supplier, product, savingAccount }: {
             <div className="grid lg:grid-cols-2 gap-5 mt-5">
                 <label className="form-control w-full">
                     <div className="label">
-                        <span className="label-text">Supplier*(Wajib)</span>
-                    </div>
-                    <Combobox
-                        data={supplier}
-                        selected={supplier.find(e => values.supplier == e.id)}
-                        setSelected={(e: Supplier) => setFieldValue("supplier", e.id)} />
-                    {errors.supplier ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.supplier}</span></label> : null}
-                </label>
-                <label className="form-control w-full">
-                    <div className="label">
-                        <span className="label-text">Pilih Produk*(Wajib)</span>
-                    </div>
-                    <Combobox
-                        data={product}
-                        selected={""}
-                        setSelected={(e: Product) => setFieldValue("order", [...values.order, { ...e, qty: 1 }])} />
-                </label>
-
-                <label className="form-control w-full">
-                    <div className="label">
                         <span className="label-text">Rekening*(Wajib)</span>
                     </div>
                     <Combobox
@@ -94,16 +63,16 @@ const Form = ({ supplier, product, savingAccount }: {
                     {errors.savingAccounts ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.savingAccounts}</span></label> : null}
                 </label>
 
-                <div className="col-span-2">
-                    <label htmlFor="" className="label">
-                        <span className="label-text">Tabel order*</span>
-                    </label>
-                    <OrderTable
-                        order={values.order}
-                        onDeleteItem={(val: number) => setFieldValue("order", [...values.order].filter((_, index) => index != val))}
-                        onChangeQtyItem={(index: number, val: number) => setFieldValue(`order[${index}].qty`, val)} />
-                    {errors.order ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.order.toString()}</span></label> : null}
-                </div>
+                <label className="form-control w-full">
+                    <div className="label">
+                        <span className="label-text">Pembelian*(Wajib)</span>
+                    </div>
+                    <Combobox
+                        data={purchase.map(e => ({ id: e.id, name: `${e.id} (${currencyFormat(e.total)})` }))}
+                        selected={purchase.find(e => e.id == values.purchase)}
+                        setSelected={(e: GetPurchasePayload) => setFieldValue("purchase", e.id)} />
+                    {errors.purchase ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.purchase}</span></label> : null}
+                </label>
 
                 <label className="form-control w-full col-span-2">
                     <div className="label">

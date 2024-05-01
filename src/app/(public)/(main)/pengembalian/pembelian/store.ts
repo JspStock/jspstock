@@ -1,16 +1,16 @@
 "use client"
 
-import { PurchaseReturn } from "@/app/components/pengembalian/pembelian/table"
 import { create } from "zustand"
+import { GetPurchaseReturnPayload } from "./action"
 
 interface State{
-    select: Array<PurchaseReturn>
+    select: Array<GetPurchaseReturnPayload>
 }
 
 interface Action{
-    add: (val: PurchaseReturn) => void,
+    add: (val: GetPurchaseReturnPayload) => void,
     remove: (val: string) => void,
-    set: (val: Array<PurchaseReturn>) => void,
+    set: (val: Array<GetPurchaseReturnPayload>) => void,
     reset: () => void
 }
 

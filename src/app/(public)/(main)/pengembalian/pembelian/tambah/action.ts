@@ -4,16 +4,8 @@ import { cookies } from "next/headers"
 import prisma from "../../../../../../../prisma/database"
 import { Form } from "@/app/components/pengembalian/pembelian/tambah/form"
 import { revalidatePath } from "next/cache"
+import { Prisma } from "@prisma/client"
 
-export const getSupplier = async () => await prisma.supplier.findMany({
-    where: {
-        idStore: cookies().get('store')?.value
-    },
-    select: {
-        id: true,
-        name: true
-    }
-})
 
 export const getSavingAccount = async () => await prisma.savingAccounts.findMany({
     where: {
@@ -25,37 +17,56 @@ export const getSavingAccount = async () => await prisma.savingAccounts.findMany
     }
 })
 
-export const getProduct = async () => await prisma.product.findMany({
+export type GetPurchasePayload = Prisma.PurchaseGetPayload<{
+    select: {
+        id: true,
+        total: true
+    }
+}>
+
+export const getPurchase = async () => await prisma.purchase.findMany({
     where: {
         idStore: cookies().get('store')?.value,
-        deletedAt: null
     },
     select: {
         id: true,
-        name: true,
-        price: true
+        total: true
     }
 })
 
 export const addData = async (form: Form) => {
     try{
-        await prisma.purchaseReturns.create({
-            data: {
-                id: `RET_${Date.now()}`,
-                idStore: cookies().get('store')!.value,
-                idSavingAccount: form.savingAccounts,
-                idSupplier: form.supplier,
-                notes: form.notes,
-                purchaseReturnOrders: {
-                    createMany: {
-                        data: form.order.map(e => ({
-                            idStore: cookies().get('store')!.value,
-                            qty: e.qty,
-                            idProduct: e.id
-                        }))
-                    }
+        await prisma.$transaction(async e => {
+            const storeId = cookies().get('store')!.value
+
+            const { id, purchase } = await e.purchaseReturns.create({
+                data: {
+                    id: `RET_${Date.now()}`,
+                    idPurchase: form.purchase,
+                    idStore: storeId,
+                    idSavingAccount: form.savingAccounts,
+                    notes: form.notes,
                 },
-            }
+                select: {
+                    id: true,
+                    purchase: {
+                        select: {
+                            total: true
+                        }
+                    }
+                }
+            })
+
+            await e.transactionRecords.create({
+                data: {
+                    idStore: storeId,
+                    credit: 0,
+                    debit: purchase.total,
+                    description: 'Pengembalian pembelian',
+                    reference: id,
+                    idSavingAccount: form.savingAccounts
+                }
+            })
         })
 
         revalidatePath("/", "layout")

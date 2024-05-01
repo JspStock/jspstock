@@ -127,7 +127,6 @@ model Supplier{
 
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
   purchase Purchase[]
-  purchaseReturns PurchaseReturns[]
 }
 
 model SavingAccounts{
@@ -284,7 +283,6 @@ model PurchaseReturns{
   id String @id
   idStore String
   idSavingAccount String?
-  idSupplier String?
   idPurchase String
   notes String?
   createdAt DateTime @default(now())
@@ -292,7 +290,6 @@ model PurchaseReturns{
   purchase Purchase @relation(fields: [idPurchase], references: [id], onDelete: Cascade, onUpdate: Cascade)
   savingAccount SavingAccounts? @relation(fields: [idSavingAccount], references: [id], onDelete: SetNull, onUpdate: Cascade)
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  supplier Supplier? @relation(fields: [idSupplier], references: [id], onDelete: SetNull, onUpdate: Cascade)
 }
 
 model Packaging{

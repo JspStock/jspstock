@@ -26,9 +26,11 @@ export interface SavingAccounts{
 }
 
 const page = async () => {
-    const customerUser: Array<CustomerUser> = await getCustomerUser()
-    const product: Array<Product> = await getProduct()
-    const savingAccount: Array<SavingAccounts> = await getSavingAccount()
+    const [customerUser, product, savingAccount] = await Promise.all([
+        getCustomerUser(),
+        getProduct(),
+        getSavingAccount()
+    ])
 
     return (
         <main className="bg-white p-14">

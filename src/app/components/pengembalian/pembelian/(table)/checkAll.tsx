@@ -1,10 +1,10 @@
 "use client"
 
+import { GetPurchaseReturnPayload } from "@/app/(public)/(main)/pengembalian/pembelian/action"
 import useStore from "@/app/(public)/(main)/pengembalian/pembelian/store"
-import { PurchaseReturn } from "../table"
 
 const CheckAll = ({ data }: {
-    data: Array<PurchaseReturn>
+    data: Array<GetPurchaseReturnPayload>
 }) => {
     const select = useStore(state => state.select)
     const set = useStore(state => state.set)

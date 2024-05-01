@@ -5,20 +5,6 @@ import moment from "moment"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 
-export interface PurchaseReturn{
-    id: string;
-    supplier: {
-        name: string;
-    } | null;
-    purchaseReturnOrders: {
-        product: {
-            price: number;
-        } | null;
-        qty: number;
-    }[];
-    createdAt: Date;
-}
-
 const Pagination = dynamic(() => import('@/app/components/pagination'))
 const CheckAll = dynamic(() => import('@/app/components/pengembalian/pembelian/(table)/checkAll'))
 const Check = dynamic(() => import('@/app/components/pengembalian/pembelian/(table)/check'))
@@ -48,8 +34,8 @@ const Tablelist = async ({ searchParams }: {
                             <td><Check data={e} /></td>
                             <td>{moment(e.createdAt).format('DD-MM-YYYY')}</td>
                             <td>{e.id}</td>
-                            <td>{e.supplier?.name}</td>
-                            <td>{currencyFormat(e.purchaseReturnOrders.length > 0 ? e.purchaseReturnOrders.map(a => a.qty * a.product!.price).reduce((val, prev) => val + prev) : 0)}</td>
+                            <td>{e.purchase.supplier?.name}</td>
+                            <td>{currencyFormat(e.purchase.total)}</td>
                             <td>
                                 <div className="dropdown dropdown-left">
                                     <div tabIndex={0} role="button" className="btn btn-ghost">Lainnya</div>
@@ -68,7 +54,7 @@ const Tablelist = async ({ searchParams }: {
                         <th>Total</th>
                         <th></th>
                         <th></th>
-                        <th>{currencyFormat(purchaseReturn.result.length > 0 ? purchaseReturn.result.map(e => e.purchaseReturnOrders.map(a => a.qty * a.product!.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0)}</th>
+                        <th>{currencyFormat(purchaseReturn.result.length > 0 ? purchaseReturn.result.map(e => e.purchase.total).reduce((val, prev) => val + prev) : 0)}</th>
                     </tr>
                 </tfoot>
             </table>

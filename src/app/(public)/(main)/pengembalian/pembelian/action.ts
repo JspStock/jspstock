@@ -5,6 +5,24 @@ import prisma from "../../../../../../prisma/database"
 import { cookies } from "next/headers"
 import { SearchParams } from "./page"
 import { revalidatePath } from "next/cache"
+import { Prisma } from "@prisma/client"
+
+export type GetPurchaseReturnPayload = Prisma.PurchaseReturnsGetPayload<{
+    select: {
+        id: true,
+        purchase: {
+            select: {
+                supplier: {
+                    select: {
+                        name: true
+                    }
+                },
+                total: true
+            }
+        },
+        createdAt: true
+    }
+}>
 
 export const getPurchaseReturn = async (searchParams: SearchParams) => {
     const extend = prisma.$extends(extension)
@@ -25,13 +43,30 @@ export const getPurchaseReturn = async (searchParams: SearchParams) => {
                     }
                 },
                 {
-                    supplier: {
-                        name: {
+                    purchase: {
+                        id: {
                             contains: searchParams.search ?? '',
                             mode: 'insensitive'
                         }
                     }
                 },
+                {
+                    purchase: {
+                        supplier: {
+                            name: {
+                                contains: searchParams.search ?? '',
+                                mode: 'insensitive'
+                            }
+                        }
+                    }
+                },
+                {
+                    purchase: {
+                        total: searchParams.search ? !Number.isNaN(parseInt(searchParams.search)) ? {
+                            lte: parseInt(searchParams.search)
+                        } : undefined : undefined
+                    }
+                }
             ],
         },
         orderBy: {
@@ -39,19 +74,14 @@ export const getPurchaseReturn = async (searchParams: SearchParams) => {
         },
         select: {
             id: true,
-            supplier: {
+            purchase: {
                 select: {
-                    name: true
-                }
-            },
-            purchaseReturnOrders: {
-                select: {
-                    qty: true,
-                    product: {
+                    supplier: {
                         select: {
-                            price: true
+                            name: true
                         }
-                    }
+                    },
+                    total: true
                 }
             },
             createdAt: true
@@ -65,10 +95,19 @@ export const getPurchaseReturn = async (searchParams: SearchParams) => {
 export const deleteData = async (id: Array<string>) => {
     try{
         await prisma.$transaction(async e => {
+            const storeId = cookies().get('store')?.value
+            
             for(let i of id){
                 await e.purchaseReturns.delete({
                     where: {
-                        idStore: cookies().get('store')?.value,
+                        idStore: storeId,
+                        id: i
+                    }
+                })
+
+                await e.transactionRecords.deleteMany({
+                    where: {
+                        idStore: storeId,
                         id: i
                     }
                 })

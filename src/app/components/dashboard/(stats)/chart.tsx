@@ -52,7 +52,7 @@ const Chart = ({ data }: {
                             backgroundColor: '#0c4a6e'
                         },
                         {
-                            label: 'Pembelian',
+                            label: `Pembelian ${searchParams.get('date') ? moment(searchParams.get('date')?.split('to')[0]).year() : moment().year()}`,
                             data: Array.from({ length: 12 }).map((_, index) => data.purchase.filter(e => e.createdAt.getMonth() == (index + 1)).map(e => e.total).reduce((val, prev) => val + prev, 0)),
                             backgroundColor: "#1e3a8a"
                         }

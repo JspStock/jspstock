@@ -12,7 +12,7 @@ const Chart = ({ data }: {
 }) => {
     const searchParams = useSearchParams()
 
-    return <div className="grid grid-cols-2">
+    return <div className="grid grid-cols-1 md:grid-cols-2">
         <article className='col-span'>
             <Doughnut
                 data={

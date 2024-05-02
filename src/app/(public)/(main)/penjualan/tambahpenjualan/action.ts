@@ -142,7 +142,7 @@ export const addData = async (form: FormWithoutDocument) => {
                     }
                 }
 
-                const sumSale = ((form.shippingCost + createSale.saleOrder.map(a => a.qty * a.product.price).reduce((a, b) => a + b)) - form.discount)
+                const sumSale = (createSale.saleOrder.map(a => a.qty * a.product.price).reduce((a, b) => a + b) - form.discount - form.shippingCost)
                 await e.transactionRecords.create({
                     data: {
                         idStore: storeId,

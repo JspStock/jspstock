@@ -2,9 +2,11 @@ import { Metadata } from "next"
 import dynamic from "next/dynamic"
 import { getProfileData } from "./action"
 import { redirect } from "next/navigation"
+import { cookies } from "next/headers"
 
 const Form = dynamic(() => import("@/app/components/pengaturan/form"))
 const FormPass = dynamic(() => import("@/app/components/pengaturan/formpassword"))
+const FormChangePasswordStore = dynamic(() => import("@/app/components/pengaturan/formChangePasswordStore"))
 
 export const metadata: Metadata = {
     title: 'Pengaturan'
@@ -12,6 +14,7 @@ export const metadata: Metadata = {
 
 const Pengaturan = async () => {
     const profile = await getProfileData()
+    const role = cookies().get('role')?.value
 
     if (profile) {
         return (
@@ -26,9 +29,17 @@ const Pengaturan = async () => {
                     <h1 className="text-gray-400 text-sm">Label pada kotak yang ditandai dengan * adalah Wajib di input.</h1>
                     <FormPass id={profile.id} />
                 </main>
+                {
+                    role != undefined && role == "OWNER" ? <main className="bg-white p-14 mt-5">
+                        <h1 className="text-gray-900 font-semibold text-xl">Ganti Kata Sandi Toko</h1>
+                        <h1 className="text-gray-400 text-sm">Label pada kotak yang ditandai dengan * adalah Wajib di input.</h1>
+                        <FormChangePasswordStore />
+                    </main> : null
+                }
+
             </>
         )
-    }else{
+    } else {
         return redirect("/auth/signin")
     }
 }

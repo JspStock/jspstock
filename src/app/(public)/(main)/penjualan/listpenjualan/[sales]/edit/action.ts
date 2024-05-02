@@ -229,7 +229,7 @@ export const updateData = async (id: string, form: FormWithoutDocument) => {
                     }
                 }
 
-                const sumSale = ((form.shippingCost + createSale.saleOrder.map(a => a.qty * a.product.price).reduce((a, b) => a + b)) - form.discount)
+                const sumSale = (createSale.saleOrder.map(a => a.qty * a.product.price).reduce((a, b) => a + b) - form.discount - form.shippingCost)
                 await e.transactionRecords.updateMany({
                     where: {
                         idStore: storeId,

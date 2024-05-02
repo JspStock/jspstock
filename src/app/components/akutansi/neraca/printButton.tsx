@@ -1,5 +1,6 @@
 "use client"
 
+import { GetTransactionRecordPayload } from "@/app/(public)/(main)/akutansi/neraca/action"
 import useStore from "@/app/(public)/(main)/akutansi/neraca/store"
 import { currencyFormat } from "@/utils/utils"
 import { useRef, useState } from "react"
@@ -15,6 +16,8 @@ const PrintButton = () => {
         onBeforeGetContent: () => setIsLoading(true),
         onBeforePrint: () => setIsLoading(false)
     })
+    const sumCredit = (data: GetTransactionRecordPayload['transactionRecords']) => data.map(e => e.credit).reduce((val, prev) => val + prev)
+    const sumDebit = (data: GetTransactionRecordPayload['transactionRecords']) => data.map(e => e.debit).reduce((val, prev) => val + prev)
 
     return <>
         <button
@@ -27,80 +30,37 @@ const PrintButton = () => {
 
         <div className="hidden">
             <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900" ref={ref}>
-                <table className="table">
-                    <thead className=" text-gray-900">
-                        <tr>
-                            <th>Nama</th>
-                            <th>Nomor Rekening</th>
-                            <th>Kredit</th>
-                            <th>Debit</th>
-                            <th>Saldo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            select.map((e, index) => <tr key={index}>
-                                <td>{e.name}</td>
-                                <td>{e.id}</td>
-                                <td>{currencyFormat(
-                                    (e.recipient.length > 0 ? e.recipient.map(a => a.total).reduce((val, prev) => val + prev) : 0) +
-                                    (e.sales.length > 0 ? e.sales.map(a => a.saleOrder.map(b => b.qty * b.product.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) +
-                                    (e.purchaseReturns.length > 0 ? e.purchaseReturns.map(a => a.purchaseReturnOrders.map(b => b.qty * b.product!.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0))}</td>
-                                <td>-{currencyFormat(
-                                    (e.sender.length > 0 ? e.sender.map(a => a.total).reduce((val, prev) => val + prev) : 0) +
-                                    (e.purchase.length > 0 ? e.purchase.map(a => a.purchaseOrder.map(b => b.qty * b.product.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) +
-                                    (e.saleReturns.length > 0 ? e.saleReturns.map(a => a.saleReturnOrders.map(b => b.qty * b.product!.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) +
-                                    (e.expenditures.length > 0 ? e.expenditures.map(a => a.total).reduce((val, prev) => val + prev) : 0)
-                                )}</td>
-                                <td>{currencyFormat(
-                                    e.startingBalance +
-                                    (((e.recipient.length > 0 ? e.recipient.map(a => a.total).reduce((val, prev) => val + prev) : 0) +
-                                        (e.sales.length > 0 ? e.sales.map(a => a.saleOrder.map(b => b.qty * b.product.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) +
-                                        (e.purchaseReturns.length > 0 ? e.purchaseReturns.map(a => a.purchaseReturnOrders.map(b => b.qty * b.product!.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0)) -
-
-                                        ((e.sender.length > 0 ? e.sender.map(a => a.total).reduce((val, prev) => val + prev) : 0) +
-                                            (e.purchase.length > 0 ? e.purchase.map(a => a.purchaseOrder.map(b => b.qty * b.product.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) +
-                                            (e.saleReturns.length > 0 ? e.saleReturns.map(a => a.saleReturnOrders.map(b => b.qty * b.product!.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) +
-                                            (e.expenditures.length > 0 ? e.expenditures.map(a => a.total).reduce((val, prev) => val + prev) : 0)))
-                                )}</td>
-                            </tr>)
-                        }
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>Total</th>
-                            <th></th>
-                            <td>{currencyFormat(
-                                select.length > 0 ? select.map(e =>
-                                    (e.recipient.length > 0 ? e.recipient.map(a => a.total).reduce((val, prev) => val + prev) : 0) +
-                                    (e.sales.length > 0 ? e.sales.map(a => a.saleOrder.map(b => b.qty * b.product.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) +
-                                    (e.purchaseReturns.length > 0 ? e.purchaseReturns.map(a => a.purchaseReturnOrders.map(b => b.qty * b.product!.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0)
-                                ).reduce((val, prev) => val + prev) : 0
-                            )}</td>
-                            <td>-{currencyFormat(
-                                select.length > 0 ? select.map(e =>
-                                    (e.sender.length > 0 ? e.sender.map(a => a.total).reduce((val, prev) => val + prev) : 0) +
-                                    (e.purchase.length > 0 ? e.purchase.map(a => a.purchaseOrder.map(b => b.qty * b.product.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) +
-                                    (e.saleReturns.length > 0 ? e.saleReturns.map(a => a.saleReturnOrders.map(b => b.qty * b.product!.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) +
-                                    (e.expenditures.length > 0 ? e.expenditures.map(a => a.total).reduce((val, prev) => val + prev) : 0)
-                                ).reduce((val, prev) => val + prev) : 0
-                            )}</td>
-                            <td>{currencyFormat(
-                                select.length > 0 ? select.map(e =>
-                                    e.startingBalance +
-                                    (((e.recipient.length > 0 ? e.recipient.map(a => a.total).reduce((val, prev) => val + prev) : 0) +
-                                        (e.sales.length > 0 ? e.sales.map(a => a.saleOrder.map(b => b.qty * b.product.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) +
-                                        (e.purchaseReturns.length > 0 ? e.purchaseReturns.map(a => a.purchaseReturnOrders.map(b => b.qty * b.product!.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0)) -
-
-                                        ((e.sender.length > 0 ? e.sender.map(a => a.total).reduce((val, prev) => val + prev) : 0) +
-                                            (e.purchase.length > 0 ? e.purchase.map(a => a.purchaseOrder.map(b => b.qty * b.product.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) +
-                                            (e.saleReturns.length > 0 ? e.saleReturns.map(a => a.saleReturnOrders.map(b => b.qty * b.product!.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) +
-                                            (e.expenditures.length > 0 ? e.expenditures.map(a => a.total).reduce((val, prev) => val + prev) : 0)))
-                                ).reduce((val, prev) => val + prev) : 0
-                            )}</td>
-                        </tr>
-                    </tfoot>
-                </table>
+            <table className="table">
+                <thead className=" text-gray-900">
+                    <tr>
+                        <th>Nama</th>
+                        <th>Nomor Rekening</th>
+                        <th>Kredit</th>
+                        <th>Debit</th>
+                        <th>Saldo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {
+                        select.map((e, index) => <tr key={index}>
+                            <td>{e.name}</td>
+                            <td>{e.id}</td>
+                            <td>-{currencyFormat(sumCredit(e.transactionRecords))}</td>
+                            <td>{currencyFormat(sumDebit(e.transactionRecords))}</td>
+                            <td>{currencyFormat(e.startingBalance + sumDebit(e.transactionRecords) - sumCredit(e.transactionRecords))}</td>
+                        </tr>)
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Total</th>
+                        <th></th>
+                        <td>-{currencyFormat(select.length > 0 ? select.map(e => sumCredit(e.transactionRecords)).reduce((val, prev) => val + prev) : 0)}</td>
+                        <td>{currencyFormat(select.length > 0 ? select.map(e => sumDebit(e.transactionRecords)).reduce((val, prev) => val + prev) : 0)}</td>
+                        <td>{currencyFormat(select.length > 0 ? select.map(e => e.startingBalance + sumDebit(e.transactionRecords) - sumCredit(e.transactionRecords)).reduce((val, prev) => val + prev) : 0)}</td>
+                    </tr>
+                </tfoot>
+            </table>
             </div>
         </div>
     </>

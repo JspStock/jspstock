@@ -12,22 +12,13 @@ export type GetProductPayload = Prisma.ProductGetPayload<{
         id: true,
         name: true,
         price: true,
-        purchaseOrder: {
-            select: {
-                qty: true,
-            }
-        },
+        qty: true,
         saleOrder: {
             select: {
                 qty: true
             }
         },
         saleReturnOrders: {
-            select: {
-                qty: true
-            }
-        },
-        purchaseReturnOrders: {
             select: {
                 qty: true
             }
@@ -71,22 +62,13 @@ export const getProduct = async (searchParams: SearchParams) => {
             id: true,
             name: true,
             price: true,
-            purchaseOrder: {
-                select: {
-                    qty: true,
-                }
-            },
+            qty: true,
             saleOrder: {
                 select: {
                     qty: true
                 }
             },
             saleReturnOrders: {
-                select: {
-                    qty: true
-                }
-            },
-            purchaseReturnOrders: {
                 select: {
                     qty: true
                 }

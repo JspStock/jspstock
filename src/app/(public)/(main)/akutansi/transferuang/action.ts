@@ -96,11 +96,20 @@ export const getMoneyTransfer = async (searchParams: SearchParams) => {
 export const deleteData = async (id: Array<string>) => {
     try{
         await prisma.$transaction(async e => {
+            const storeId = cookies().get('store')?.value
+
             for(let i of id){
                 await e.moneyTransfer.delete({
                     where: {
-                        idStore: cookies().get('store')?.value,
+                        idStore: storeId,
                         id: i
+                    }
+                })
+
+                await e.transactionRecords.deleteMany({
+                    where: {
+                        reference: i,
+                        idStore: storeId
                     }
                 })
             }

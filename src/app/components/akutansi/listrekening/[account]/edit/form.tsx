@@ -2,6 +2,7 @@
 
 import { getCountDataByNo, updateData } from "@/app/(public)/(main)/akutansi/listrekening/[account]/edit/action"
 import { SavingAccount } from "@/app/(public)/(main)/akutansi/listrekening/[account]/edit/page"
+import { passwordInputAlert } from "@/utils/alert/swal"
 import { useFormik } from "formik"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
@@ -34,15 +35,19 @@ const Form = ({ data }: {
         validationSchema: formSchema,
         onSubmit: async e => {
             try{
-                if(e.no != data.id){
-                    const check = await checkExistsNo()
-                    if(!check){
-                        return false
-                    }
-                }
+                const confirmPassword = await passwordInputAlert()
 
-                await updateData(data.id, e)
-                router.push("/akutansi/listrekening")
+                if(confirmPassword){
+                    if(e.no != data.id){
+                        const check = await checkExistsNo()
+                        if(!check){
+                            return false
+                        }
+                    }
+    
+                    await updateData(data.id, e)
+                    router.push("/akutansi/listrekening")
+                }
             }catch{
                 Swal.fire({
                     icon: "error",

@@ -41,7 +41,7 @@ const PrintButton = () => {
                                 <td>{moment(e.createdAt).format('DD-MM-YYYY')}</td>
                                 <td>{e.id}</td>
                                 <td>{e.customerUser ? e.customerUser.name : 'N/A'}</td>
-                                <td>{currencyFormat((e.shippingCost + e.saleOrder.map(val => val.qty * val.product.price).reduce((val, prev) => val + prev)) - e.discount)}</td>
+                                <td>{currencyFormat((e.shippingCost - e.saleOrder.map(val => val.qty * val.product.price).reduce((val, prev) => val + prev)) - e.discount)}</td>
                             </tr>)
                         }
                     </tbody>
@@ -50,7 +50,7 @@ const PrintButton = () => {
                             <th></th>
                             <th>Total</th>
                             <th></th>
-                            <th>{currencyFormat(select.length > 0 ? select.map(e => (e.shippingCost + e.saleOrder.map(val => val.qty * val.product.price).reduce((val, prev) => val + prev)) - e.discount).reduce((val, prev) => val + prev) : 0)}</th>
+                            <th>{currencyFormat(select.length > 0 ? select.map(e => (e.shippingCost - e.saleOrder.map(val => val.qty * val.product.price).reduce((val, prev) => val + prev)) - e.discount).reduce((val, prev) => val + prev) : 0)}</th>
                         </tr>
                     </tfoot>
                 </table>

@@ -1,7 +1,8 @@
 "use client"
 
-import { updateData } from "@/app/(public)/(main)/pemaketan/[packaging]/edit/action"
-import { CustomerUser, Packaging, Sales } from "@/app/(public)/(main)/pemaketan/[packaging]/edit/page"
+import { GetCustomerUserPayload, updateData } from "@/app/(public)/(main)/pemaketan/[packaging]/edit/action"
+import { Packaging, Sales } from "@/app/(public)/(main)/pemaketan/[packaging]/edit/page"
+import { passwordInputAlert } from "@/utils/alert/swal"
 import { useFormik } from "formik"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
@@ -27,7 +28,7 @@ export interface FormWithoutFile{
 }
 
 const Form = ({ customerUser, sales, packaging }: {
-    customerUser: Array<CustomerUser>,
+    customerUser: Array<GetCustomerUserPayload>,
     sales: Array<Sales>,
     packaging: Packaging
 }) => {
@@ -49,18 +50,22 @@ const Form = ({ customerUser, sales, packaging }: {
         validationSchema: formSchema,
         onSubmit: async e => {
             try{
-                let document: string | null = null
-                if(e.file){
-                    document = `data:${e.file.type};base64,${Buffer.from(await e.file.arrayBuffer()).toString("base64")}`
-                }
+                const confirmPassword = await passwordInputAlert()
 
-                await updateData(packaging.id, {
-                    idSale: e.idSale,
-                    address: e.address,
-                    idCustomerUser: e.idCustomerUser,
-                    notes: e.notes
-                }, document)
-                router.push('/pemaketan/listpemaketan')
+                if(confirmPassword){
+                    let document: string | null = null
+                    if(e.file){
+                        document = `data:${e.file.type};base64,${Buffer.from(await e.file.arrayBuffer()).toString("base64")}`
+                    }
+    
+                    await updateData(packaging.id, {
+                        idSale: e.idSale,
+                        address: e.address,
+                        idCustomerUser: e.idCustomerUser,
+                        notes: e.notes
+                    }, document)
+                    router.push('/pemaketan/listpemaketan')
+                }
             }catch{
                 Swal.fire({
                     icon: 'error',
@@ -74,7 +79,7 @@ const Form = ({ customerUser, sales, packaging }: {
     useEffect(() => {
         if(values.idCustomerUser.trim() != ''){
             const customer = customerUser.find(e => e.id == values.idCustomerUser)
-            setFieldValue("address", `${customer?.name}\n${customer?.address}, ${customer?.region}, ${customer?.city}, ${customer?.zipCode}\n\nNo. Telepon: ${customer?.noWa}`)
+            setFieldValue("address", `${customer?.name}\n${customer?.address}\n\nNo. Telepon: ${customer?.noWa}`)
         }
     }, [values.idCustomerUser])
 
@@ -93,7 +98,7 @@ const Form = ({ customerUser, sales, packaging }: {
                 </label>
                 <ComboBox
                     data={sales.map(e => ({ id: e.id, name: e.id }))}
-                    selected={{ id: sales.find(e => e.id == values.idSale)?.id, name: sales.find(e => e.id == values.idSale)?.id }}
+                    selected={{ id: values.idSale, name: values.idSale }}
                     setSelected={(e: Sales) => setFieldValue("idSale", e.id)} />
                 {errors.idSale ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.idSale}</span></label> : null}
             </div>
@@ -105,7 +110,7 @@ const Form = ({ customerUser, sales, packaging }: {
                 <ComboBox
                     data={customerUser}
                     selected={customerUser.find(e => e.id == values.idCustomerUser)}
-                    setSelected={(e: CustomerUser) => setFieldValue("idCustomerUser", e.id)} />
+                    setSelected={(e: GetCustomerUserPayload) => setFieldValue("idCustomerUser", e.id)} />
                 {errors.idCustomerUser ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.idCustomerUser}</span></label> : null}
             </div>
 

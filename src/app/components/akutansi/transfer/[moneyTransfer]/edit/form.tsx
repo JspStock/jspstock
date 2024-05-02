@@ -2,6 +2,7 @@
 
 import { updateData } from "@/app/(public)/(main)/akutansi/transferuang/[moneyTransfer]/edit/action"
 import { MoneyTransfer, SavingAccount } from "@/app/(public)/(main)/akutansi/transferuang/[moneyTransfer]/edit/page"
+import { passwordInputAlert } from "@/utils/alert/swal"
 import { useFormik } from "formik"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
@@ -36,8 +37,12 @@ const Form = ({ savingAccount, moneyTransfer }: {
         validationSchema: formSchema,
         onSubmit: async e => {
             try{
-                await updateData(moneyTransfer.id, e)
-                router.push("/akutansi/transferuang")
+                const confirmPassword = await passwordInputAlert()
+
+                if(confirmPassword){
+                    await updateData(moneyTransfer.id, e)
+                    router.push("/akutansi/transferuang")
+                }
             }catch{
                 Swal.fire({
                     icon: 'error',

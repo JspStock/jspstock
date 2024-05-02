@@ -1,21 +1,21 @@
-import { Mutation } from "@/app/components/akutansi/rekeningnasabah/table";
 import { create } from "zustand";
+import { GetMutationPayload } from "./action";
 
 interface State{
-    select: Array<Mutation>
+    select: Array<GetMutationPayload>
 }
 
 interface Action{
-    add: (val: Mutation) => void,
+    add: (val: GetMutationPayload) => void,
     remove: (val: string) => void,
-    set: (val: Array<Mutation>) => void,
+    set: (val: Array<GetMutationPayload>) => void,
     reset: () => void
 }
 
 const useStore = create<State & Action>()(set => ({
     select: [],
     add: val => set(state => ({select: [...state.select, val]})),
-    remove: val => set(state => ({select: [...state.select].filter(e => e.ref != val)})),
+    remove: val => set(state => ({select: [...state.select].filter(e => e.reference != val)})),
     set: val => set({select: val}),
     reset: () => set({select: []})
 }))

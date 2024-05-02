@@ -2,20 +2,39 @@
 
 import { cookies } from "next/headers"
 import { FormWithoutFile } from "@/app/components/pemaketan/listpemaketan/input/form"
-import { $Enums } from "@prisma/client"
+import { $Enums, Prisma } from "@prisma/client"
 import Cloudinary from "@/utils/cloudinary"
 import { revalidatePath } from "next/cache"
 import prisma from "../../../../../../../prisma/database"
 
+export type GetCustomerUserPayload = Prisma.CustomerUserGetPayload<{
+    select: {
+        id: true,
+        name: true,
+        address: true,
+        noWa: true
+    }
+}>
 export const getCustomerUser = async () => await prisma.customerUser.findMany({
     where: {
         idStore: cookies().get('store')?.value
     },
+    select: {
+        id: true,
+        name: true,
+        address: true,
+        noWa: true
+    }
 })
 
 export const getSales = async () => await prisma.sales.findMany({
     where: {
-        idStore: cookies().get('store')?.value
+        idStore: cookies().get('store')?.value,
+        packaging: {
+            every: {
+                idSales: null
+            }
+        }
     },
     select: {
         id: true,
@@ -46,10 +65,9 @@ export const updateData = async (id: string, form: FormWithoutFile, file: string
                 },
                 data: {
                     idCustomerUser: form.idCustomerUser,
-                    idStore: cookies().get('store')!.value,
                     idSales: form.idSale,
                     address: form.address,
-                    status: $Enums.PackagingStatus.SEDANG_MENGIRIM,
+                    status: $Enums.PackagingStatus.MENUNGGU_KURIR,
                     notes: form.notes
                 },
                 select: {

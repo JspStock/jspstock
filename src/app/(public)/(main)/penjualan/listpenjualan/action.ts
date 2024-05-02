@@ -34,13 +34,6 @@ export const deleteData = async(id: Array<string>) => {
                 })
 
                 if(oldData){
-                    await e.sales.delete({
-                        where: {
-                            idStore: storeId,
-                            id: i
-                        }
-                    })
-    
                     await e.transactionRecords.deleteMany({
                         where: {
                             idStore: storeId,
@@ -78,6 +71,13 @@ export const deleteData = async(id: Array<string>) => {
                         where: {
                             idStore: storeId,
                             idSales: i
+                        }
+                    })
+
+                    await e.sales.delete({
+                        where: {
+                            idStore: storeId,
+                            id: i
                         }
                     })
 

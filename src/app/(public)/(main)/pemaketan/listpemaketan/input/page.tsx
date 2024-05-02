@@ -14,12 +14,7 @@ export interface CustomerUser{
     idStore: string;
     idCustomerGroup: string | null;
     name: string;
-    email: string;
-    noWa: string;
     address: string | null;
-    city: string;
-    zipCode: string;
-    region: string;
     createdAt: Date;
 }
 

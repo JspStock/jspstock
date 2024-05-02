@@ -11,14 +11,10 @@ const Tablelist = async ({ searchParams }: {
     searchParams: SearchParams
 }) => {
     const product = await getProduct(searchParams)
-    const purchaseQty = (e: GetProductPayload) => e.purchaseOrder.length > 0 ? e.purchaseOrder.map(a => a.qty).reduce((val, prev) => val + prev) : 0
-    const purchaseTotal = (e: GetProductPayload) => e.purchaseOrder.length > 0 ? e.price * e.purchaseOrder.map(a => a.qty).reduce((val, prev) => val + prev) : 0
     const saleQty = (e: GetProductPayload) => e.saleOrder.length > 0 ? e.saleOrder.map(a => a.qty).reduce((val, prev) => val + prev) : 0
     const saleTotal = (e: GetProductPayload) => e.saleOrder.length > 0 ? e.price * e.saleOrder.map(a => a.qty).reduce((val, prev) => val + prev) : 0
     const saleReturnQty = (e: GetProductPayload) => e.saleReturnOrders.length > 0 ? e.saleReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev) : 0
-    const saleReturnTotal = (e: GetProductPayload) => e.saleReturnOrders.length > 0 ? e.price + e.saleReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev) : 0
-    const purchaseReturnQty = (e: GetProductPayload) => e.purchaseReturnOrders.length > 0 ? e.purchaseReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev) : 0
-    const purchaseReturnTotal = (e: GetProductPayload) => e.purchaseReturnOrders.length > 0 ? e.price * e.purchaseReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev) : 0
+    const saleReturnTotal = (e: GetProductPayload) => e.saleReturnOrders.length > 0 ? e.price * e.saleReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev) : 0
 
 
     return <>
@@ -28,14 +24,10 @@ const Tablelist = async ({ searchParams }: {
                     <tr>
                         <th><CheckAll data={product.result} /></th>
                         <th>Nama Produk</th>
-                        <th>Dibeli Qty</th>
-                        <th>Jumlah yang dibeli</th>
                         <th>Terjual Qty</th>
                         <th>Jumlah yang Terjual</th>
                         <th>Pengembalian Penjualan Qty</th>
                         <th>Pengembalian Penjualan</th>
-                        <th>Pengembalian pembelian</th>
-                        <th>Pengembalian pembelian Qty</th>
                         <th>Laba/Profit</th>
                         <th>Persediaan</th>
                     </tr>
@@ -45,26 +37,12 @@ const Tablelist = async ({ searchParams }: {
                         product.result.map((e, index) => <tr key={index}>
                             <th><Check data={e} /></th>
                             <td>{e.name}</td>
-                            <td>{purchaseQty(e)}</td>
-                            <td>{currencyFormat(purchaseTotal(e))}</td>
                             <td>{saleQty(e)}</td>
                             <td>{currencyFormat(saleTotal(e))}</td>
                             <td>{saleReturnQty(e)}</td>
                             <td>{currencyFormat(saleReturnTotal(e))}</td>
-                            <td>{saleReturnQty(e)}</td>
-                            <td>{currencyFormat(saleReturnTotal(e))}</td>
-                            <td>{currencyFormat(
-                                saleTotal(e) -
-                                purchaseTotal(e) +
-                                purchaseReturnTotal(e) -
-                                saleReturnTotal(e)
-                            )}</td>
-                            <td>{
-                                purchaseQty(e) -
-                                saleQty(e) -
-                                purchaseReturnQty(e) +
-                                saleReturnQty(e)
-                            }</td>
+                            <td>{currencyFormat(saleTotal(e) - saleReturnTotal(e))}</td>
+                            <td>{e.qty + saleQty(e) - saleReturnQty(e)}</td>
                         </tr>)
                     }
                 </tbody>
@@ -72,26 +50,12 @@ const Tablelist = async ({ searchParams }: {
                     <tr>
                         <th></th>
                         <th>Total</th>
-                        <th>{product.result.length > 0 ? product.result.map(e => purchaseQty(e)).reduce((val, prev) => val + prev) : 0}</th>
-                        <th>{product.result.length > 0 ? currencyFormat(product.result.map(e => purchaseTotal(e)).reduce((val, prev) => val + prev)) : 0}</th>
                         <th>{product.result.length > 0 ? product.result.map(e => saleQty(e)).reduce((val, prev) => val + prev) : 0}</th>
                         <th>{product.result.length > 0 ? currencyFormat(product.result.map(e => saleTotal(e)).reduce((val, prev) => val + prev)) : 0}</th>
                         <th>{product.result.length > 0 ? product.result.map(e => saleReturnQty(e)).reduce((val, prev) => val + prev) : 0}</th>
                         <th>{product.result.length > 0 ? currencyFormat(product.result.map(e => saleReturnTotal(e)).reduce((val, prev) => val + prev)) : 0}</th>
-                        <th>{product.result.length > 0 ? product.result.map(e => purchaseReturnQty(e)).reduce((val, prev) => val + prev) : 0}</th>
-                        <th>{product.result.length > 0 ? currencyFormat(product.result.map(e => purchaseReturnTotal(e)).reduce((val, prev) => val + prev)) : 0}</th>
-                        <th>{product.result.length > 0 ? currencyFormat(product.result.map(e =>
-                            saleTotal(e) -
-                            purchaseTotal(e) +
-                            purchaseReturnTotal(e) -
-                            saleReturnTotal(e)
-                        ).reduce((val, prev) => val + prev)) : 0}</th>
-                        <th>{product.result.length > 0 ? product.result.map(e =>
-                            purchaseQty(e) -
-                            saleQty(e) -
-                            purchaseReturnQty(e) +
-                            saleReturnQty(e)
-                        ).reduce((val, prev) => val + prev) : 0}</th>
+                        <th>{product.result.length > 0 ? currencyFormat(product.result.map(e => saleTotal(e) - saleReturnTotal(e)).reduce((val, prev) => val + prev)) : 0}</th>
+                        <th>{product.result.length > 0 ? product.result.map(e => e.qty + saleQty(e) - saleReturnQty(e) ).reduce((val, prev) => val + prev) : 0}</th>
                     </tr>
                 </tfoot>
             </table>

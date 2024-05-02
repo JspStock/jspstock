@@ -15,19 +15,7 @@ export const getPurchase = async (searcParams: SearchParams) => {
             }
         },
         select: {
-            discount: true,
-            shippingCost: true,
-            purchaseOrder: {
-                select: {
-                    qty: true,
-                    product: {
-                        select: {
-                            price: true,
-                            cost: true
-                        }
-                    }
-                }
-            }
+            total: true
         }
     })
 }
@@ -87,16 +75,11 @@ export const getPurchaseReturn = async (searchParams: SearchParams) => await pri
         }
     },
     select: {
-        purchaseReturnOrders: {
+        purchase: {
             select: {
-                qty: true,
-                product: {
-                    select: {
-                        price: true,
-                    }
-                }
+                total: true
             }
-        }
+        } 
     }
 })
 

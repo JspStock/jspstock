@@ -15,7 +15,12 @@ export const getCustomerUser = async () => await prisma.customerUser.findMany({
 
 export const getSales = async () => await prisma.sales.findMany({
     where: {
-        idStore: cookies().get('store')?.value
+        idStore: cookies().get('store')?.value,
+        packaging: {
+            every: {
+                idSales: null
+            }
+        }
     },
     select: {
         id: true,

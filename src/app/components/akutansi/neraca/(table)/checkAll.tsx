@@ -1,10 +1,10 @@
 "use client"
 
-import { GetSavingAccounts } from "@/app/(public)/(main)/akutansi/neraca/action"
+import { GetTransactionRecordPayload } from "@/app/(public)/(main)/akutansi/neraca/action"
 import useStore from "@/app/(public)/(main)/akutansi/neraca/store"
 
 const CheckAll = ({ data }: {
-    data: Array<GetSavingAccounts>
+    data: Array<GetTransactionRecordPayload>
 }) => {
     const select = useStore(state => state.select)
     const set = useStore(state => state.set)

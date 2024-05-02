@@ -5,7 +5,7 @@ import prisma from "../../../../../../prisma/database"
 import { getServerSession } from "next-auth"
 import { Form } from "@/app/components/pengaturan/form"
 import { revalidatePath } from "next/cache"
-import bcrypt, { genSalt, hash } from 'bcrypt'
+import bcrypt, { genSalt, hash, compareSync } from 'bcrypt'
 import { cookies } from "next/headers"
 
 
@@ -38,8 +38,6 @@ export type GetProfileDataPayload = Prisma.UserGetPayload<{
 }>
 
 export const getProfileData = async () => {
-    const session = await getServerSession()
-
     return await prisma.user.findUnique({
         where: {
             id: cookies().get('userId')?.value
@@ -104,5 +102,46 @@ export const updatePassword = async(id: string, password: string) => {
         revalidatePath("/", "layout")
     }catch{
         throw new Error('Kesalahan pada server!')
+    }
+}
+
+export const checkPasswordStore = async (password: string) => {
+    try{
+        const data = await prisma.permissionPassword.findFirst({
+            where: {
+                idStore: cookies().get('store')?.value,
+            },
+            select: {
+                password: true
+            }
+        })
+
+        if(data){
+            return compareSync(password, data.password)
+        }else{
+            throw new Error('Kesalahan pada server!')
+        }
+    }catch{
+        throw new Error('Kesalahan pada server!')
+    }
+}
+
+export const updatePasswordStore = async (password: string) => {
+    try{
+        const salt = await genSalt(5)
+        const hashed = await hash(password, salt)
+
+        await prisma.permissionPassword.updateMany({
+            where: {
+                idStore: cookies().get('store')?.value,
+            },
+            data: {
+                password: hashed
+            }
+        })
+
+        revalidatePath("/", "layout")
+    }catch{
+        throw new Error('Kesalahan pasa server!')
     }
 }

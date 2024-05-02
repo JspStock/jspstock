@@ -37,12 +37,7 @@ const Tablelist = async ({ searchParams }: {
                             <td>{e.email}</td>
                             <td>{e.address}</td>
                             <td>{e.product.length}</td>
-                            <td>{e.product.length > 0 ? e.product.map(a =>
-                                (a.purchaseOrder.length > 0 ? a.purchaseOrder.map(a => a.qty).reduce((val, prev) => val + prev) : 0) -
-                                (a.saleOrder.length > 0 ? a.saleOrder.map(a => a.qty).reduce((val, prev) => val + prev) : 0) +
-                                (a.saleReturnOrders.length > 0 ? a.saleReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev) : 0) -
-                                (a.purchaseReturnOrders.length > 0 ? a.purchaseReturnOrders.map(a => a.qty).reduce((val, prev) => val + prev) : 0)
-                            ) : 0}</td>
+                            <td>{e.product.map(e => e.qty).reduce((val, prev) => val + prev, 0)}</td>
                             <td>
                                 <div className="dropdown dropdown-left">
                                     <div tabIndex={0} role="button" className="btn btn-ghost">Lainnya</div>

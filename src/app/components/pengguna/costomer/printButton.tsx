@@ -28,7 +28,6 @@ const PrintButton = () => {
                         <tr>
                             <th>Grup Costomer</th>
                             <th>Nama</th>
-                            <th>Email</th>
                             <th>No WhatsApp</th>
                             <th>Alamat</th>
                         </tr>
@@ -38,7 +37,6 @@ const PrintButton = () => {
                             select.map(e => <tr key={e.id}>
                                 <td>{e.customerGroup ? e.customerGroup.name : 'N/A'}</td>
                                 <td>{e.name}</td>
-                                <td>{e.email}</td>
                                 <td>{e.noWa}</td>
                                 <td>{e.address}</td>
                             </tr>)

@@ -4,8 +4,8 @@ import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import Stats from "@/app/components/dashboard/stats";
 
-const FilterDrop = dynamic(() => import("@/app/components/dashboard/filter"))
 const TableLoaderSkeleton = dynamic(() => import('@/app/components/tableLoadingSkeleton'))
+const Datepicker = dynamic(() => import('@/app/components/datePicker'))
 
 export const metadata: Metadata = {
   title: 'Dashboard'
@@ -22,7 +22,7 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
     <div className="p-5 bg-white rounded-lg">
       <h1 className="text-gray-900 font-bold text-xl lg:text-2xl">Selamat Datang {session?.user?.name}</h1>
       <div className="flex justify-end w-full">
-        <FilterDrop />
+        <Datepicker />
       </div>
 
       <Suspense key={`${searchParams.date}`} fallback={<TableLoaderSkeleton />}>

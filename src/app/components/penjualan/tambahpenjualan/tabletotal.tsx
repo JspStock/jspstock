@@ -30,7 +30,7 @@ const TableTotal = ({ order, product, shippingCost, discount }: {
             </div>
             <div className="flex space-x-2">
                 <h1>Total : </h1>
-                <h1 className="font-bold">{ currencyFormat((subTotal + shippingCost) - discount) }</h1>
+                <h1 className="font-bold">{ currencyFormat((subTotal - shippingCost) - discount) }</h1>
             </div>
         </div>
     )

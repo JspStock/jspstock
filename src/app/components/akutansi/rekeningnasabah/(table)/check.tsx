@@ -1,25 +1,25 @@
 "use client"
 
+import { GetMutationPayload } from "@/app/(public)/(main)/akutansi/rekeningnasabah/action"
 import useStore from "@/app/(public)/(main)/akutansi/rekeningnasabah/store"
-import { Mutation } from "../table"
 
 const Check = ({ data }: {
-    data: Mutation
+    data: GetMutationPayload
 }) => {
     const select = useStore(state => state.select)
     const add = useStore(state => state.add)
     const remove = useStore(state => state.remove)
     const handleChecked = () => {
-        if(select.find(e => e.ref == data.ref) == undefined){
+        if(select.find(e => e.reference == data.reference) == undefined){
             add(data)
         }else{
-            remove(data.ref)
+            remove(data.reference)
         }
     }
 
     return <input type="checkbox"
         className="checkbox"
-        checked={select.find(e => e.ref == data.ref) != undefined}
+        checked={select.find(e => e.reference == data.reference) != undefined}
         onChange={handleChecked} />
 }
 

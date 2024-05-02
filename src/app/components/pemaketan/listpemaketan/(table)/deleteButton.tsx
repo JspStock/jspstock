@@ -2,6 +2,7 @@
 
 import { deleteData } from "@/app/(public)/(main)/pemaketan/listpemaketan/action"
 import useStore from "@/app/(public)/(main)/pemaketan/listpemaketan/store"
+import { passwordInputAlert } from "@/utils/alert/swal"
 import { useState } from "react"
 import Swal from "sweetalert2"
 
@@ -12,10 +13,14 @@ const DeleteButton = ({ id }: {
     const remove = useStore(state => state.remove)
     const handleClick = async () => {
         try{
-            setIsLoading(true)
-            await deleteData([id])
-            setIsLoading(false)
-            remove(id)
+            const confirmPassword = await passwordInputAlert()
+
+            if(confirmPassword){
+                setIsLoading(true)
+                await deleteData([id])
+                setIsLoading(false)
+                remove(id)
+            }
         }catch{
             Swal.fire({
                 icon: 'error',

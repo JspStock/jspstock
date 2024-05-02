@@ -73,7 +73,7 @@ const Form = ({ customerUser, sales }: {
     useEffect(() => {
         if(values.idCustomerUser.trim() != ''){
             const customer = customerUser.find(e => e.id == values.idCustomerUser)
-            setFieldValue("address", `${customer?.name}\n${customer?.address}, ${customer?.region}, ${customer?.city}, ${customer?.zipCode}\n\nNo. Telepon: ${customer?.noWa}`)
+            setFieldValue("address", `${customer?.name}\n${customer?.address}`)
         }
     }, [values.idCustomerUser])
 

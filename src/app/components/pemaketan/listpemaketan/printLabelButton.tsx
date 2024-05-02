@@ -27,9 +27,11 @@ const PrintLabelButton = ({ BASE_URL }: {
         </button>
 
         <div className="hidden">
-            <div className="grid grid-cols-2 justify-center items-center" ref={ref}>
+            <div ref={ref}>
                 {
-                    select.map((e, index) => <PackageLabel key={index} content={e.address} linkQr={`${BASE_URL}/package/${e.id}`}/>)
+                    select.map((e, index) => <div className="w-full h-screen" key={index}>
+                        <PackageLabel content={e.address} linkQr={`${BASE_URL}/package/${e.id}`}/>
+                    </div> )
                 }
             </div>
         </div>

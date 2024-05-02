@@ -32,8 +32,8 @@ const PrintButton = () => {
                     <tbody>
                         {
                             select.map((e, index) => <tr key={index}>
-                                <td>{moment(e.date).format('DD-MM-YYYY')}</td>
-                                <td>{e.ref}</td>
+                                <td>{moment(e.createdAt).format('DD-MM-YYYY')}</td>
+                                <td>{e.reference}</td>
                                 <td>{currencyFormat(e.credit)}</td>
                                 <td>{currencyFormat(e.debit)}</td>
                             </tr>)

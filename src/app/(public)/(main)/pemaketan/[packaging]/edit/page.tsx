@@ -10,19 +10,6 @@ export const metadata: Metadata = {
     title: 'Tambah pemaketan'
 }
 
-export interface CustomerUser{
-    id: string;
-    idStore: string;
-    idCustomerGroup: string | null;
-    name: string;
-    email: string;
-    noWa: string;
-    address: string | null;
-    city: string;
-    zipCode: string;
-    region: string;
-    createdAt: Date;
-}
 
 export interface Sales{
     id: string;

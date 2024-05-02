@@ -13,7 +13,9 @@ export default function AllLayout({
     children: React.ReactNode;
 }) {
     const store = cookies().has("store")
-    !store ? redirect('/auth/signin') : null
+    const role = cookies().has('role')
+    const userId = cookies().has('userId')
+    !store || !role || !userId ? redirect('/auth/signin') : null
 
     return (
         <div className="drawer lg:drawer-open">

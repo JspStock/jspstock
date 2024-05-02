@@ -27,30 +27,9 @@ export default async function page({ searchParams }: { searchParams: SearchParam
                 month: e.createdAt.getMonth() + 1,
                 content: <div className="space-y-2 text-start">
                     <article>
-                        <h1 className="font-semibold">Diskon</h1>
-                        <p>{currencyFormat(
-                            sales.filter(a => a.createdAt.getMonth() == e.createdAt.getMonth() && a.createdAt.getFullYear() == e.createdAt.getFullYear()).map(a => a.discount).reduce((val, prev) => val + prev)
-                        )}</p>
-                    </article>
-
-                    <article>
-                        <h1 className="font-semibold">Biaya Pengiriman</h1>
-                        <p>{currencyFormat(
-                            sales.filter(a => a.createdAt.getMonth() == e.createdAt.getMonth() && a.createdAt.getFullYear() == e.createdAt.getFullYear()).map(a => a.shippingCost).reduce((val, prev) => val + prev)
-                        )}</p>
-                    </article>
-
-                    <article>
-                        <h1 className="font-semibold">Sub Total</h1>
-                        <h1>{currencyFormat(
-                            sales.filter(a => a.createdAt.getMonth() == e.createdAt.getMonth() && a.createdAt.getFullYear() == e.createdAt.getFullYear()).map(a => a.purchaseOrder.map(b => b.qty * b.product.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev)
-                        )}</h1>
-                    </article>
-
-                    <article>
                         <h1 className="font-semibold">Total</h1>
                         <h1>{currencyFormat(
-                            sales.filter(a => a.createdAt.getMonth() == e.createdAt.getMonth() && a.createdAt.getFullYear() == e.createdAt.getFullYear()).map(a => (a.shippingCost + a.purchaseOrder.map(b => b.qty * b.product.price).reduce((val, prev) => val + prev)) - a.discount).reduce((val, prev) => val + prev)
+                            sales.filter(a => a.createdAt.getMonth() == e.createdAt.getMonth() && a.createdAt.getFullYear() == e.createdAt.getFullYear()).map(a => a.total).reduce((val, prev) => val + prev)
                         )}</h1>
                     </article>
                 </div>

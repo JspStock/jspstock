@@ -51,8 +51,9 @@ const authOptions = NextAuth({
                                 })
 
                                 if (getStore != null) {
-                                    cookies().set("store", getStore?.id, { secure: true })
+                                    cookies().set("store", getStore.id, { secure: true })
                                     cookies().set('role', getUser.role, { secure: true })
+                                    cookies().set('userId', getUser.id, { secure: true })
 
                                     return {
                                         id: getUser.id,

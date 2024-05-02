@@ -15,18 +15,7 @@ export const getPurchase = async ({ year }: { year?: number }) => {
         },
         select: {
             id: true,
-            shippingCost: true,
-            discount: true,
-            purchaseOrder: {
-                select: {
-                    qty: true,
-                    product: {
-                        select: {
-                            price: true
-                        }
-                    }
-                }
-            },
+            total: true,
             createdAt: true
         }
     })

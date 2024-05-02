@@ -37,7 +37,7 @@ const page = async ({ params }: { params: Params }) => {
 
                     <div className="flex justify-center mt-5">
                         {
-                            packages.status == $Enums.PackagingStatus.SEDANG_MENGIRIM ? <ConfirmButton id={packages.id} /> : <h1 className="text-xl font-semibold text-center text-blue-900">Paket telat sampai ditujuan</h1>
+                            packages.status == $Enums.PackagingStatus.MENUNGGU_KURIR ? <ConfirmButton id={packages.id} /> : <h1 className="text-xl font-semibold text-center text-blue-900">Paket telat sampai ditujuan</h1>
                         }
                         
                     </div>

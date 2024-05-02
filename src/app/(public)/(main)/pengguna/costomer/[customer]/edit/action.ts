@@ -5,12 +5,11 @@ import prisma from "../../../../../../../../prisma/database"
 import { Form } from "@/app/components/pengguna/costomer/[customer]/edit/form"
 import { revalidatePath } from "next/cache"
 
-export const getCountDataByEmail = async (val: string) => await prisma.customerUser.count({
-    where: {
-        idStore: cookies().get('store')?.value,
-        email: val
-    }
-})
+// export const getCountDataByEmail = async (val: string) => await prisma.customerUser.count({
+//     where: {
+//         idStore: cookies().get('store')?.value,
+//     }
+// })
 
 export const getCountDataByNoWa = async (val: string) => await prisma.customerUser.count({
     where: {
@@ -48,12 +47,8 @@ export const getCustomerData = async (id: string) => await prisma.customerUser.f
         id: true,
         idCustomerGroup: true,
         name: true,
-        email: true,
         noWa: true,
         address: true,
-        city: true,
-        zipCode: true,
-        region: true
     }
 })
 
@@ -66,12 +61,8 @@ export const updateData = async (id: string, data: Form) => {
             },
             data: {
                 name: data.name,
-                email: data.email,
                 noWa: data.noWa,
                 address: data.address,
-                city: data.city,
-                zipCode: data.zipCode,
-                region: data.region
             }
         })
 

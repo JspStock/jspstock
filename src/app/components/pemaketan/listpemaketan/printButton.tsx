@@ -53,7 +53,7 @@ const PrintButton = ({ BASE_URL }: {
                                 <td>{e.id}</td>
                                 <td>{e.customerUser?.name}</td>
                                 <td>
-                                    <div className={`${e.status == $Enums.PackagingStatus.SEDANG_MENGIRIM ? 'bg-blue-400' : 'bg-green-400'} text-center text-xs max-w-fit p-1 rounded-lg font-semibold text-white`}>
+                                    <div className={`${e.status == $Enums.PackagingStatus.MENUNGGU_KURIR ? 'bg-blue-400' : 'bg-green-400'} text-center text-xs max-w-fit p-1 rounded-lg font-semibold text-white`}>
                                         {e.status.split("_").join(" ")}
                                     </div>
                                 </td>

@@ -6,175 +6,70 @@ import { cookies } from "next/headers"
 import { SearchParams } from "./page"
 import { Prisma } from "@prisma/client"
 
-// export type GetSavingAccounts = Prisma.SavingAccountsGetPayload<{
-//     select: {
-//         id: true,
-//         name: true,
-//         sales: {
-//             select: {
-//                 discount: true,
-//                 shippingCost: true,
-//                 saleOrder: {
-//                     select: {
-//                         qty: true,
-//                         product: {
-//                             select: {
-//                                 price: true
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         },
-//         saleReturns: {
-//             select: {
-//                 saleReturnOrders: {
-//                     select: {
-//                         qty: true,
-//                         product: {
-//                             select: {
-//                                 price: true
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         },
-//         purchase: {
-//             select: {
-//                 discount: true,
-//                 shippingCost: true,
-//                 purchaseOrder: {
-//                     select: {
-//                         qty: true,
-//                         product: {
-//                             select: {
-//                                 price: true
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         },
-//         purchaseReturns: {
-//             select: {
-//                 purchaseReturnOrders: {
-//                     select: {
-//                         qty: true,
-//                         product: {
-//                             select: {
-//                                 price: true
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         },
-//         expenditures: {
-//             select: {
-//                 total: true
-//             }
-//         },
-//         sender: {
-//             select: {
-//                 total: true
-//             }
-//         },
-//         recipient: {
-//             select: {
-//                 total: true
-//             }
-//         },
-//         startingBalance: true
-//     }
-// }>
-
-export const getSavingAccounts = async (searchParams: SearchParams) => {
+export type GetTransactionRecordPayload = Prisma.SavingAccountsGetPayload<{
+    select: {
+        name: true,
+        id: true,
+        startingBalance: true,
+        transactionRecords: {
+            select: {
+                credit: true,
+                debit: true,
+            }
+        }
+    }
+}>
+export const getTransactionRecord = async (searchParams: SearchParams) => {
+    const storeId = cookies().get('store')?.value
     const extend = prisma.$extends(extension)
     const getCountData = await extend.savingAccounts.count({
         where: {
-            idStore: cookies().get('store')?.value
+            idStore: storeId
         },
     })
 
     return await extend.savingAccounts.paginate({
         where: {
-            idStore: cookies().get('store')?.value,
+            idStore: storeId,
             OR: [
-                {
-                    id: {
-                        contains: searchParams.search ?? '',
-                        mode: 'insensitive'
-                    },
-                },
                 {
                     name: {
                         contains: searchParams.search ?? '',
                         mode: 'insensitive'
                     }
                 },
+                {
+                    id: {
+                        contains: searchParams.search ?? '',
+                        mode: 'insensitive'
+                    }
+                },
+                {
+                    transactionRecords: {
+                        some: {
+                            OR: [
+                                {
+                                    credit: searchParams.search ? !Number.isNaN(parseInt(searchParams.search)) ? parseInt(searchParams.search) : undefined : undefined,
+                                },
+                                {
+                                    debit: searchParams.search ? !Number.isNaN(parseInt(searchParams.search)) ? parseInt(searchParams.search) : undefined : undefined,
+                                },
+                            ]
+                        }
+                    }
+                }
             ]
         },
         select: {
-            id: true,
             name: true,
-            sales: {
+            id: true,
+            startingBalance: true,
+            transactionRecords: {
                 select: {
-                    discount: true,
-                    shippingCost: true,
-                    saleOrder: {
-                        select: {
-                            qty: true,
-                            product: {
-                                select: {
-                                    price: true
-                                }
-                            }
-                        }
-                    }
+                    credit: true,
+                    debit: true,
                 }
-            },
-            saleReturns: {
-                select: {
-                    saleReturnOrders: {
-                        select: {
-                            qty: true,
-                            product: {
-                                select: {
-                                    price: true
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            purchase: {
-                select: {
-                }
-            },
-            purchaseReturns: {
-                select: {
-                }
-            },
-            expenditures: {
-                select: {
-                    total: true
-                }
-            },
-            sender: {
-                select: {
-                    total: true
-                }
-            },
-            recipient: {
-                select: {
-                    total: true
-                }
-            },
-            startingBalance: true
-        },
-        orderBy: {
-            createdAt: "desc",
+            }
         }
     }, {
         limit: searchParams.show ? searchParams.show == 'all' ? getCountData : parseInt(searchParams.show) : 10,

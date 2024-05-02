@@ -1,10 +1,10 @@
 "use client"
 
+import { GetMutationPayload } from "@/app/(public)/(main)/akutansi/rekeningnasabah/action"
 import useStore from "@/app/(public)/(main)/akutansi/rekeningnasabah/store"
-import { Mutation } from "../table"
 
 const CheckAll = ({ data }: {
-    data: Array<Mutation>
+    data: Array<GetMutationPayload>
 }) => {
     const select = useStore(state => state.select)
     const set = useStore(state => state.set)

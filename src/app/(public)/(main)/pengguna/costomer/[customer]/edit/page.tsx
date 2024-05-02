@@ -24,12 +24,8 @@ export interface CustomerGroup{
 
 export interface Customer{
     name: string;
-    email: string;
     noWa: string;
     address: string | null;
-    city: string;
-    zipCode: string;
-    region: string;
     id: string;
     idCustomerGroup: string | null;
 }

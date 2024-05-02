@@ -9,34 +9,18 @@ import { revalidatePath } from "next/cache"
 export type GetStorePayload = Prisma.StoreGetPayload<{
     select: {
         id: true,
-        name: true,
-        noWa: true,
-        email: true,
-        address: true,
-        product: {
-            select: {
-                purchaseOrder: {
-                    select: {
-                        qty: true
-                    }
+            name: true,
+            noWa: true,
+            email: true,
+            address: true,
+            product: {
+                where: {
+                    deletedAt: null
                 },
-                saleOrder: {
-                    select: {
-                        qty: true
-                    }
-                },
-                purchaseReturnOrders: {
-                    select: {
-                        qty: true,
-                    }
-                },
-                saleReturnOrders: {
-                    select: {
-                        qty: true
-                    }
+                select: {
+                    qty: true
                 }
             }
-        }
     },
 }>
 export const getStore = async (searchParams: SearchParams) => {
@@ -76,26 +60,7 @@ export const getStore = async (searchParams: SearchParams) => {
                     deletedAt: null
                 },
                 select: {
-                    purchaseOrder: {
-                        select: {
-                            qty: true
-                        }
-                    },
-                    saleOrder: {
-                        select: {
-                            qty: true
-                        }
-                    },
-                    purchaseReturnOrders: {
-                        select: {
-                            qty: true,
-                        }
-                    },
-                    saleReturnOrders: {
-                        select: {
-                            qty: true
-                        }
-                    }
+                    qty: true
                 }
             }
         },

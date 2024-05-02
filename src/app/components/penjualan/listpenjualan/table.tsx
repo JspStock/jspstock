@@ -35,8 +35,7 @@ const Tablelist = async ({ searchParams }: {
                             <td>{moment(e.createdAt).format('DD-MM-YYYY')}</td>
                             <td>{e.id}</td>
                             <td>{e.customerUser ? e.customerUser.name : 'N/A'}</td>
-                            <td>{ currencyFormat(
-                                    (e.saleOrder.length > 0 ? e.saleOrder.map(a => a.qty * a.product.price).reduce((val, prev) => val + prev) : 0) - e.discount - e.shippingCost) }</td>
+                            <td>{ currencyFormat(e.saleOrder.map(a => a.qty * a.product.price).reduce((val, prev) => val + prev, 0) - e.discount - e.shippingCost) }</td>
                             <td>
                                 <div className="dropdown">
                                     <div tabIndex={0} role="button" className="btn btn-ghost">Lainnya</div>
@@ -55,7 +54,7 @@ const Tablelist = async ({ searchParams }: {
                         <th>Total</th>
                         <th></th>
                         <th></th>
-                        <th>{currencyFormat(data.result.length > 0 ? data.result.map(e => (e.shippingCost - e.saleOrder.map(val => val.qty * val.product.price).reduce((val, prev) => val + prev)) - e.discount).reduce((val, prev) => val + prev) : 0)}</th>
+                        <th>{currencyFormat(data.result.length > 0 ? data.result.map(e => e.saleOrder.map(val => val.qty * val.product.price).reduce((val, prev) => val + prev, 0) - e.shippingCost - e.discount).reduce((val, prev) => val + prev) : 0)}</th>
                     </tr>
                 </tfoot>
             </table>

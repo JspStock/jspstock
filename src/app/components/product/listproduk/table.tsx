@@ -63,7 +63,7 @@ const Tablelist = async ({ searchParams }: {
                                     <div tabIndex={0} role="button" className="btn btn-ghost">Lainnya</div>
                                     <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                                         <li><Link href={`/produk/${e.id}/edit`}>Ubah</Link></li>
-                                        <li><PrintBarcode value={e.code} /></li>
+                                        <li><PrintBarcode data={e} /></li>
                                         <li><DeleteButton id={e.id} /></li>
                                     </ul>
                                 </div>

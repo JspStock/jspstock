@@ -108,7 +108,7 @@ const Form = ({ product, customer, savingAccounts, customerGroup, data }: {
                         <span className="label-text">Pilih Produk*(Wajib)</span>
                     </div>
                     <Comboboxproduk
-                        data={product}
+                        data={product.map(e => ({ id: e.id, name: `${e.code} (${e.name})` }))}
                         selected={""}
                         setSelected={handleChangeProduct} />
                 </div>

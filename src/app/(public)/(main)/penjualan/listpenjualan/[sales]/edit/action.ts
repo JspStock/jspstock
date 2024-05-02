@@ -15,6 +15,7 @@ export type GetDataPayload = Prisma.SalesGetPayload<{
                 product: {
                     select: {
                         id: true,
+                        code: true,
                         name: true
                     }
                 }
@@ -41,6 +42,7 @@ export const getData = async (id: string) => await prisma.sales.findUnique({
                 product: {
                     select: {
                         id: true,
+                        code: true,
                         name: true
                     }
                 }
@@ -229,7 +231,7 @@ export const updateData = async (id: string, form: FormWithoutDocument) => {
                     }
                 }
 
-                const sumSale = (createSale.saleOrder.map(a => a.qty * a.product.price).reduce((a, b) => a + b) - form.discount - form.shippingCost)
+                const sumSale = ((createSale.saleOrder.map(a => a.qty * a.product.price).reduce((a, b) => a + b) + form.shippingCost) - form.discount)
                 await e.transactionRecords.updateMany({
                     where: {
                         idStore: storeId,

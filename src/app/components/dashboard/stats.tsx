@@ -13,8 +13,8 @@ const Stats = async ({ searchParams }: {
         return redirect("/auth/signin")
     }
 
-    const sales = data.sales.map(e => e.saleOrder.map(a => a.qty * a.product.price).reduce((val, prev) => val + prev) - e.discount).reduce((val, prev) => val + prev, 0)
-    const purchase = data.purchase.length > 0 ? data.purchase.map(e => e.total).reduce((val, prev) => val + prev) : 0
+    const sales = data.sales.map(e => e.saleOrder.map(a => a.qty * a.product.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev, 0)
+    const profit = data.sales.map(e => e.saleOrder.map(a => (a.qty * (a.product.price - a.product.cost))).reduce((val, prev) => val + prev) - e.discount).reduce((val, prev) => val + prev, 0)
     const returnSales = data.saleReturns.length > 0 ? data.saleReturns.map(e => e.saleReturnOrders.map(a => a.qty * a.product!.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0
     const returnPurchase = data.purchaseReturns.length > 0 ? data.purchaseReturns.map(e => e.purchase.total).reduce((val, prev) => val + prev) : 0
 
@@ -39,7 +39,7 @@ const Stats = async ({ searchParams }: {
                     </svg>
                 </div>
                 <div className="stat-title">Profit</div>
-                <div className="stat-value">{currencyFormat(purchase - sales)}</div>
+                <div className="stat-value">{currencyFormat(profit)}</div>
                 <div className="stat-desc">Keuntungan setelah dikurangi biaya.</div>
             </div>
 

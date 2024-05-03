@@ -80,20 +80,39 @@ export const updateData = async (idReturn: string, form: Form) => {
                 }
             })
 
-            await e.transactionRecords.updateMany({
+            const transactionRecords = await e.transactionRecords.aggregate({
                 where: {
-                    reference: id,
-                    idStore: storeId
-                },
-                data: {
                     idStore: storeId,
-                    credit: 0,
-                    debit: purchase.total,
-                    description: 'Pengembalian pembelian',
-                    reference: id,
-                    idSavingAccount: form.savingAccounts
+                    idSavingAccount: form.savingAccounts,
+                    NOT: {
+                        reference: id
+                    }
+                },
+                _sum: {
+                    credit: true,
+                    debit: true
                 }
             })
+
+            if(transactionRecords._sum.debit && transactionRecords._sum.credit){
+                await e.transactionRecords.updateMany({
+                    where: {
+                        reference: id,
+                        idStore: storeId
+                    },
+                    data: {
+                        idStore: storeId,
+                        credit: 0,
+                        debit: purchase.total,
+                        description: 'Pengembalian pembelian',
+                        reference: id,
+                        idSavingAccount: form.savingAccounts,
+                        saldo: (transactionRecords._sum.debit - transactionRecords._sum.credit) + purchase.total
+                    }
+                })
+            }else{
+                throw new Error('Kesalahan pada server!')
+            }
         })
 
         revalidatePath("/", "layout")

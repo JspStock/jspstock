@@ -148,19 +148,38 @@ export const updateData = async (idSaleReturn: string, form: Form, olData: SaleR
             }
 
             const sum = saleReturnOrders.map(a => a.qty * a.product!.price).reduce((val, prev) => val + prev)
-            await e.transactionRecords.updateMany({
+            const transactionRecords = await e.transactionRecords.aggregate({
                 where: {
-                    reference: idSaleReturn,
-                    idStore: storeId
-                },
-                data: {
+                    idStore: storeId,
                     idSavingAccount: form.savingAccounts,
-                    credit: sum,
-                    debit: 0,
-                    reference: id,
-                    description: 'Pengembalian penjualan'
+                    NOT: {
+                        reference: idSaleReturn
+                    }
+                },
+                _sum: {
+                    credit: true,
+                    debit: true
                 }
             })
+
+            if(transactionRecords._sum.credit && transactionRecords._sum.debit){
+                await e.transactionRecords.updateMany({
+                    where: {
+                        reference: idSaleReturn,
+                        idStore: storeId
+                    },
+                    data: {
+                        idSavingAccount: form.savingAccounts,
+                        credit: sum,
+                        debit: 0,
+                        reference: id,
+                        description: 'Pengembalian penjualan',
+                        saldo: (transactionRecords._sum.debit - transactionRecords._sum.credit) - sum
+                    }
+                })
+            }else{
+                throw new Error('Kesalahan pada server!')
+            }
         })
 
         revalidatePath('/', 'layout')

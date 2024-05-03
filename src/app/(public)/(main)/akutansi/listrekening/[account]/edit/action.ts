@@ -59,7 +59,8 @@ export const updateData = async (id: string, form: Form) => {
                     idStore: storeId,
                 },
                 data: {
-                    debit: form.startingBalance
+                    debit: form.startingBalance,
+                    saldo: form.startingBalance
                 }
             })
         })

@@ -100,16 +100,32 @@ export const addData = async (form: Form) => {
             }
 
             const sum = saleReturnOrders.map(a => a.qty * a.product!.price).reduce((val, prev) => val + prev)
-            await e.transactionRecords.create({
-                data: {
+            const transactionRecords = await e.transactionRecords.aggregate({
+                where: {
                     idStore: storeId,
-                    idSavingAccount: form.savingAccounts,
-                    credit: sum,
-                    debit: 0,
-                    reference: id,
-                    description: 'Pengembalian penjualan'
+                    idSavingAccount: form.savingAccounts
+                },
+                _sum: {
+                    credit: true,
+                    debit: true
                 }
             })
+
+            if(transactionRecords._sum.credit && transactionRecords._sum.debit){
+                await e.transactionRecords.create({
+                    data: {
+                        idStore: storeId,
+                        idSavingAccount: form.savingAccounts,
+                        credit: sum,
+                        debit: 0,
+                        reference: id,
+                        description: 'Pengembalian penjualan',
+                        saldo: (transactionRecords._sum.debit - transactionRecords._sum.credit) - sum
+                    }
+                })
+            }else{
+                throw new Error('Kesalahan pada server!')
+            }
         })
 
         revalidatePath('/', 'layout')

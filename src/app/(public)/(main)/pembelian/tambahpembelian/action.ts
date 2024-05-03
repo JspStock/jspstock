@@ -64,16 +64,32 @@ export const addPurchase = async (form: FormWithoutDocument, document: string | 
                 })
             }
             
-            await e.transactionRecords.create({
-                data: {
-                    reference: id,
+            const transactionRecord = await e.transactionRecords.aggregate({
+                where: {
                     idStore: storeId,
-                    idSavingAccount: form.savingAccount,
-                    description: `Melakukan pembelian\n${form.note}`,
-                    debit: 0,
-                    credit: total,
+                    idSavingAccount: form.savingAccount
+                },
+                _sum: {
+                    credit: true,
+                    debit: true
                 }
             })
+
+            if(transactionRecord._sum.credit && transactionRecord._sum.debit){
+                await e.transactionRecords.create({
+                    data: {
+                        reference: id,
+                        idStore: storeId,
+                        idSavingAccount: form.savingAccount,
+                        description: `Melakukan pembelian\n${form.note}`,
+                        debit: 0,
+                        credit: total,
+                        saldo: (transactionRecord._sum.debit - transactionRecord._sum.credit) - total
+                    }
+                })
+            }else{
+                throw new Error('Kesalahan pada server!')
+            }
         }, {
             timeout: 20000
         })

@@ -19,18 +19,18 @@ const Pengaturan = async () => {
     if (profile) {
         return (
             <>
-                <main className="bg-white p-14">
+                <main className="bg-white p-14 max-md:p-5">
                     <h1 className="text-gray-900 font-semibold text-xl">Update Profil</h1>
                     <h1 className="text-gray-400 text-sm">Label pada kotak yang ditandai dengan * adalah Wajib di input.</h1>
                     <Form data={profile} />
                 </main>
-                <main className="bg-white p-14 mt-5">
+                <main className="bg-white p-14 max-md:p-5 mt-5">
                     <h1 className="text-gray-900 font-semibold text-xl">Ganti Kata Sandi</h1>
                     <h1 className="text-gray-400 text-sm">Label pada kotak yang ditandai dengan * adalah Wajib di input.</h1>
                     <FormPass id={profile.id} />
                 </main>
                 {
-                    role != undefined && role == "OWNER" ? <main className="bg-white p-14 mt-5">
+                    role != undefined && role == "OWNER" ? <main className="bg-white p-14 max-md:p-5 mt-5">
                         <h1 className="text-gray-900 font-semibold text-xl">Ganti Kata Sandi Toko</h1>
                         <h1 className="text-gray-400 text-sm">Label pada kotak yang ditandai dengan * adalah Wajib di input.</h1>
                         <FormChangePasswordStore />

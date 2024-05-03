@@ -33,12 +33,12 @@ const PrintBarcode = ({ data }: {
         <div className="hidden">
             <section ref={ref} className="grid grid-cols-2 justify-center gap-y-[14px]">
                 {
-                    Array.from({ length: loop }).map((_, index) => <div className="transform max-w-min p-3" key={index}>
+                    Array.from({ length: loop }).map((_, index) => <div className="transform max-w-[124.72px] p-3" key={index}>
                         <div className="flex items-center justify-between">
                             <p className="text-xs">{data.name}</p>
                             <div className="badge bg-black text-white badge-xs">{currencyFormat(data.price)}</div>
                         </div>
-                        <Barcode value={data.code} displayValue={true} fontSize={12} height={50} width={1.4} />
+                        <Barcode value={data.code} displayValue={true} fontSize={12} height={50} width={1.4} format="CODE128" />
                     </div>)
                 }
             </section>

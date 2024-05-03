@@ -143,16 +143,30 @@ export const addData = async (form: FormWithoutDocument) => {
                 }
 
                 const sumSale = ((createSale.saleOrder.map(a => a.qty * a.product.price).reduce((a, b) => a + b) + form.shippingCost) - form.discount)
-                await e.transactionRecords.create({
-                    data: {
+                const transactionRecord = await e.transactionRecords.aggregate({
+                    where: {
                         idStore: storeId,
-                        reference: createSale.id,
-                        credit: 0,
-                        debit: sumSale,
-                        description: `Melakukan penjualan\n${form.notes}`,
                         idSavingAccount: form.savingAccount
+                    },
+                    _sum: {
+                        credit: true,
+                        debit: true
                     }
                 })
+
+                if(transactionRecord._sum.debit && transactionRecord._sum.credit){
+                    await e.transactionRecords.create({
+                        data: {
+                            idStore: storeId,
+                            reference: createSale.id,
+                            credit: 0,
+                            debit: sumSale,
+                            description: `Melakukan penjualan\n${form.notes}`,
+                            idSavingAccount: form.savingAccount,
+                            saldo: (transactionRecord._sum.debit - transactionRecord._sum.credit) + sumSale
+                        }
+                    })
+                }
             }
         })
 

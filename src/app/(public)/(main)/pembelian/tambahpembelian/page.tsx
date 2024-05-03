@@ -23,7 +23,7 @@ const TambahPembelian = async () => {
     const [supplierData, savingAccounts] = await Promise.all([getSupplierData(), getSavingAccounts()])
 
     return (
-        <main className="bg-white p-14">
+        <main className="bg-white p-14 max-md:p-5">
             <BackButton />
 
             <div className="mt-5">

@@ -1,5 +1,4 @@
 import Image from "next/image"
-import LogoImage from '@/assets/images/logo.png'
 
 const Loader = () => {
     return <div className="absolute top-2/4 left-2/4 transform -translate-y-2/4 -translate-x-2/4">
@@ -7,7 +6,7 @@ const Loader = () => {
             <Image
                 width={150}
                 height={150}
-                src={LogoImage}
+                src={"/static/images/icon.jpg"}
                 alt="JSP Logo" />
 
             <h1>Sedang mengambil data...</h1>

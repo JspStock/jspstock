@@ -327,6 +327,7 @@ model TransactionRecords{
   reference String
   description String
   debit Int
+  saldo Int
   credit Int
   createdAt DateTime @default(now())
 

@@ -84,7 +84,7 @@ const Form = ({ customerUser, sales, packaging }: {
     }, [values.idCustomerUser])
 
     return (
-        <form className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-3" onSubmit={handleSubmit}>
+        <form className="mt-10 grid-cols-2 lg:grid max-md:grid-cols-1 gap-3" onSubmit={handleSubmit}>
             <div className="form-control col-span-2">
                 <label htmlFor="" className="label">
                     <span className="label-text">Berkas</span>

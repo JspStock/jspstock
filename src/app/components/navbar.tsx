@@ -12,13 +12,15 @@ const Navbar = async () => {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
             </label>
             <div className="flex-1">
-                <Image
-                    alt="logo"
-                    src="https://res.cloudinary.com/dblroye9s/image/upload/v1710783474/logo_qo4fss.png"
-                    height={100}
-                    width={100}
-                    className="w-20"
-                />
+                <Link href="/" className="btn btn-ghost">
+                    <Image
+                        alt="logo"
+                        src="/static/images/icon.jpg"
+                        height={100}
+                        width={100}
+                        className="w-12"
+                    />
+                </Link>
             </div>
             {
                 ['owner'].includes(cookies().get('role')!.value.toLowerCase()) ? <div className="flex-none">
@@ -46,11 +48,11 @@ const Navbar = async () => {
                     <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                         <div className="w-10 rounded-full">
                             <Image
-                                src={`https://ui-avatars.com/api/?name=${session ? session.user ? session.user.name ? session.user.name.toLowerCase() == 'default' ? 'JSP' : session.user.name : 'JSP' : 'JSP' : 'JSP'}`} 
+                                src={`https://ui-avatars.com/api/?name=${session ? session.user ? session.user.name ? session.user.name.toLowerCase() == 'default' ? 'JSP' : session.user.name : 'JSP' : 'JSP' : 'JSP'}`}
                                 alt={`Profile ${session?.user?.name}`}
                                 width={0}
                                 height={0}
-                                sizes="100vw"/>
+                                sizes="100vw" />
                         </div>
                     </div>
                     <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-white text-gray-900 rounded-box w-52">
@@ -59,7 +61,6 @@ const Navbar = async () => {
                                 Profil pengaturan
                             </Link>
                         </li>
-                        <li><a>Logout</a></li>
                     </ul>
                 </div>
             </div>

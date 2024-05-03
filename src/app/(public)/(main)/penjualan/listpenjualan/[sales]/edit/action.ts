@@ -141,7 +141,7 @@ export const updateData = async (id: string, form: FormWithoutDocument) => {
             })
 
             if (customer && oldData) {
-                for(let i of oldData.saleOrder){
+                for (let i of oldData.saleOrder) {
                     const product = await e.product.findUnique({
                         where: {
                             idStore: storeId,
@@ -152,7 +152,7 @@ export const updateData = async (id: string, form: FormWithoutDocument) => {
                         }
                     })
 
-                    if(product){
+                    if (product) {
                         await e.product.update({
                             where: {
                                 idStore: storeId,
@@ -162,7 +162,7 @@ export const updateData = async (id: string, form: FormWithoutDocument) => {
                                 qty: product.qty + i.qty
                             }
                         })
-                    }else{
+                    } else {
                         throw new Error('Kesalahan pada server!')
                     }
                 }
@@ -232,20 +232,35 @@ export const updateData = async (id: string, form: FormWithoutDocument) => {
                 }
 
                 const sumSale = ((createSale.saleOrder.map(a => a.qty * a.product.price).reduce((a, b) => a + b) + form.shippingCost) - form.discount)
-                await e.transactionRecords.updateMany({
+                const transactionRecord = await e.transactionRecords.aggregate({
                     where: {
                         idStore: storeId,
-                        reference: id
+                        idSavingAccount: form.savingAccount,
+                        NOT: {
+                            reference: id
+                        }
                     },
-                    data: {
-                        idStore: storeId,
-                        reference: createSale.id,
-                        credit: 0,
-                        debit: sumSale,
-                        description: `Melakukan penjualan\n${form.notes}`,
-                        idSavingAccount: form.savingAccount
+                    _sum: {
+                        credit: true,
+                        debit: true
                     }
                 })
+
+                if (transactionRecord._sum.credit && transactionRecord._sum.debit) {
+                    await e.transactionRecords.updateMany({
+                        where: {
+                            idStore: storeId,
+                            reference: id
+                        },
+                        data: {
+                            credit: 0,
+                            debit: sumSale,
+                            description: `Melakukan penjualan\n${form.notes}`,
+                            idSavingAccount: form.savingAccount,
+                            saldo: (transactionRecord._sum.debit - transactionRecord._sum.credit) + sumSale
+                        }
+                    })
+                }
             }
         })
 

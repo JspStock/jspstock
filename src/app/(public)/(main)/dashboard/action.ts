@@ -17,7 +17,8 @@ export type GetDataPayload = Prisma.StoreGetPayload<{
                         qty: true,
                         product: {
                             select: {
-                                price: true
+                                price: true,
+                                cost: true
                             }
                         }
                     }
@@ -85,7 +86,8 @@ export const getData = async (searchParams: SearchParams) => await prisma.store.
                         qty: true,
                         product: {
                             select: {
-                                price: true
+                                price: true,
+                                cost: true
                             }
                         }
                     }

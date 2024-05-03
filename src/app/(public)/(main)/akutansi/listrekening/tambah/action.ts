@@ -37,6 +37,7 @@ export const addData = async (form: Form) => {
                     credit: 0,
                     description: 'Mutasi awal',
                     reference: "-",
+                    saldo: form.startingBalance,
                     idSavingAccount: createSavingAccount.id
                 }
             })

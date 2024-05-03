@@ -18,7 +18,7 @@ const TambahCostomer = async () => {
     const customerGroup: Array<CustomerGroup> = await getCustomerGroup()
 
     return (
-        <main className="bg-white p-14">
+        <main className="bg-white p-14 max-md:p-5">
             <BackButton />
 
             <div className="mt-5">

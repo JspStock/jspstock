@@ -108,7 +108,7 @@ export const deleteData = async (id: Array<string>) => {
                 await e.transactionRecords.deleteMany({
                     where: {
                         idStore: storeId,
-                        id: i
+                        reference: i
                     }
                 })
             }

@@ -23,13 +23,13 @@ const page = async ({ searchParams }: { searchParams: SearchParams }) => {
     const savingAccounts: Array<GetSavingAccountsPayLoad> = await getSavingAccounts()
 
     return (
-        <main className="bg-white p-14 w-full">
+        <main className="bg-white p-14 max-md:p-5 w-full">
             <h1 className="text-gray-900 font-semibold text-xl">Rekening Nasabah</h1>
             <h1 className="text-gray-400 text-sm">Label pada kotak yang ditandai dengan * adalah Wajib di input.</h1>
             <Form
                 savingAccounts={savingAccounts} />
 
-            <div className="flex justify-between items-center mb-10">
+            <div className="flex lg:justify-between max-lg:grid max-lg:space-y-5 items-center mb-10">
                 <SearchForm />
                 <PrintButton />
             </div>

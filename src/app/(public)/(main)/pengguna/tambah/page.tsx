@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 const TambahPengguna = async () => {
     return <AllowedRoleWrapper>
-        <main className="bg-white p-14">
+        <main className="bg-white p-14 max-md:p-5">
             <BackButon />
             <div className="mt-5">
                 <h1 className="text-gray-900 font-semibold text-xl">Tambah Pengguna</h1>

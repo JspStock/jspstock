@@ -49,20 +49,36 @@ export const addData = async (form: FormState) => {
                     notes: form.note,
                 },
                 select: {
-                    id: true
+                    id: true,
                 }
             })
 
-            await e.transactionRecords.create({
-                data: {
+            const transactionRecords = await e.transactionRecords.aggregate({
+                where: {
                     idStore: storeId,
-                    idSavingAccount: form.account!,
-                    credit: form.totalExpenditure,
-                    debit: 0,
-                    reference: id,
-                    description: `Penambahan pengeluaran untuk ${form.expenditureCategory}`
+                    idSavingAccount: form.account
+                },
+                _sum: {
+                    credit: true,
+                    debit: true
                 }
             })
+
+            if(transactionRecords._sum.credit && transactionRecords._sum.debit){
+                await e.transactionRecords.create({
+                    data: {
+                        idStore: storeId,
+                        idSavingAccount: form.account!,
+                        credit: form.totalExpenditure,
+                        debit: 0,
+                        reference: id,
+                        description: `Penambahan pengeluaran`,
+                        saldo: (transactionRecords._sum.debit - transactionRecords._sum.credit) - form.totalExpenditure
+                    }
+                })
+            }else{
+                throw new Error('Kesalahan pada server!')
+            }
         })
 
         revalidatePath("/", "layout")

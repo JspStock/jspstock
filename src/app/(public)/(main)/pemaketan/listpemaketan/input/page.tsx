@@ -27,7 +27,7 @@ const page = async () => {
     const sales = await getSales()
 
     return (
-        <main className="bg-white p-14">
+        <main className="bg-white p-14 max-md:p-5">
             <BackButton />
             <div className="mt-5">
                 <h1 className="text-gray-900 font-semibold text-xl">Tambah Pemaketan</h1>

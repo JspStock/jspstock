@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 const Beralihtoko = async () => {
     return <AllowedRoleWrapper allowed={['owner']}>
-        <div className="bg-white p-14">
+        <div className="bg-white p-14 max-md:p-5">
             <BackButton />
 
             <div className="mt-5">

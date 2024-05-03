@@ -11,7 +11,7 @@ const SearchInput = dynamic(() => import('@/app/components/pengguna/supplier/sea
 const DeleteButton = dynamic(() => import('@/app/components/pengguna/supplier/deleteButton'))
 const PrintButton = dynamic(() => import('@/app/components/pengguna/supplier/printButton'))
 
-export interface SearchParams{
+export interface SearchParams {
     search?: string,
     show?: string,
     page?: string
@@ -24,10 +24,12 @@ export const metadata: Metadata = {
 export default function ListSupplier({ searchParams }: { searchParams: SearchParams }) {
     return (
         <>
-            <div className="flex space-x-2">
+            <div className="flex max-md:grid md:space-x-2">
                 <Link href="/pengguna/supplier/tambah" className="text-white w-62 border-0 bg-green-500 btn">+ Tambah List Supplier</Link>
-                <PrintButton />
-                <DeleteButton />
+                <div className="space-x-2 max-md:mt-5">
+                    <PrintButton />
+                    <DeleteButton />
+                </div>
             </div>
             <Perpage />
             <SearchInput />

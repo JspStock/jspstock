@@ -12,32 +12,35 @@ const Table = async ({ searchParams }: {
 }) => {
     const mutation = await getMutation(searchParams)
 
-    return <table className="table w-full">
-        <thead>
-            <tr>
-                <th><CheckAll data={mutation} /></th>
-                <th>Tanggal</th>
-                <th>Nomor Transaksi</th>
-                <th>Kredit</th>
-                <th>Debit</th>
-                <th>Deskripsi</th>
-                <th>Saldo</th>
-            </tr>
-        </thead>
-        <tbody>
-            {
-                mutation.map((e, index) => <tr key={index}>
-                    <td><Check data={e} /></td>
-                    <td>{moment(e.createdAt).format('DD-MM-YYYY')}</td>
-                    <td>{e.reference}</td>
-                    <td>{currencyFormat(e.credit)}</td>
-                    <td>{currencyFormat(e.debit)}</td>
-                    <td>{ e.description }</td>
-                    <td>{ currencyFormat(e.debit + mutation.filter((_, i) => i < index).map(a => a.debit).reduce((a, b) => a + b, 0) - (e.credit + mutation.filter((_, i) => i < index).map(a => a.credit).reduce((a, b) => a + b, 0))) }</td>
-                </tr>)
-            }
-        </tbody>
-    </table>
+    return <div className="overflow-x-auto bg-white p-10 my-5 text-gray-900">
+
+        <table className="table w-full">
+            <thead>
+                <tr>
+                    <th><CheckAll data={mutation} /></th>
+                    <th>Tanggal</th>
+                    <th>Nomor Transaksi</th>
+                    <th>Kredit</th>
+                    <th>Debit</th>
+                    <th>Deskripsi</th>
+                    <th>Saldo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {
+                    mutation.map((e, index) => <tr key={index}>
+                        <td><Check data={e} /></td>
+                        <td>{moment(e.createdAt).format('DD-MM-YYYY')}</td>
+                        <td>{e.reference}</td>
+                        <td>{currencyFormat(e.credit)}</td>
+                        <td>{currencyFormat(e.debit)}</td>
+                        <td>{e.description}</td>
+                        <td>{currencyFormat(e.saldo)}</td>
+                    </tr>)
+                }
+            </tbody>
+        </table>
+    </div>
 }
 
 export default Table

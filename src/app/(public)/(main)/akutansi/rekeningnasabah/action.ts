@@ -34,12 +34,5 @@ export const getMutation = async (searchParams: SearchParams) => {
                 gte: gte(searchParams)
             }
         },
-        include: {
-            savingAccounts: {
-                select: {
-                    startingBalance: true
-                }
-            }
-        }
     })
 }

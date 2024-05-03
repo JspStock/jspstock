@@ -63,7 +63,7 @@ const Form = ({ customerUser, product, savingAccounts }: {
 
     return (
         <form className="mt-10" onSubmit={handleSubmit}>
-            <div className="grid lg:grid-cols-2 gap-5 mt-5">
+            <div className=" gap-5 mt-5">
                 <label className="form-control w-full">
                     <div className="label">
                         <span className="label-text">Costomer*(Wajib)</span>

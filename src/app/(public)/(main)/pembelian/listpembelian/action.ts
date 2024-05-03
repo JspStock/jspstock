@@ -73,9 +73,9 @@ export const getData = async ({ searchParams }: { searchParams: SearchParams }) 
                     }
                 },
                 {
-                    total: {
-                        lte: searchParams.search ? parseInt(searchParams.search) != null ? parseInt(searchParams.search) : undefined : undefined
-                    }
+                    total: searchParams.search ? !Number.isNaN(parseInt(searchParams.search)) ? {
+                        lte: parseInt(searchParams.search)
+                    } : undefined : undefined
                 }
             ],
             createdAt: {

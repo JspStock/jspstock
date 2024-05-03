@@ -22,7 +22,7 @@ const WrapContent = async ({ searchParams }: {
             content={[
                 {
                     key: 'Total',
-                    value: currencyFormat(sale.map(e => e.saleOrder.map(a => a.qty * (a.product.price - a.product.cost)).reduce((val, prev) => val + prev) - e.discount).reduce((val, prev) => val + prev, 0))
+                    value: currencyFormat(sale.map(e => e.saleOrder.map(a => a.qty * a.product.cost).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev))
                 },
                 {
                     key: 'Jumlah transaksi',
@@ -90,13 +90,13 @@ const WrapContent = async ({ searchParams }: {
                     },
                     {
                         key: 'Biaya Produk(-)',
-                        value: currencyFormat(sale.map(e => e.saleOrder.map(a => a.qty * (a.product.price - a.product.cost)).reduce((val, prev) => val + prev) - e.discount).reduce((val, prev) => val + prev, 0))
+                        value: currencyFormat(sale.map(e => e.saleOrder.map(a => a.qty * a.product.cost).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev))
                     },
                     {
                         key: 'Laba/Profit',
                         value: currencyFormat(
                             (sale.length > 0 ? sale.map(e => e.saleOrder.map(a => a.qty * a.product.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) -
-                            (sale.map(e => e.saleOrder.map(a => a.qty * (a.product.price - a.product.cost)).reduce((val, prev) => val + prev) - e.discount).reduce((val, prev) => val + prev, 0))
+                            (sale.map(e => e.saleOrder.map(a => a.qty * a.product.cost).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev))
                         )
                     }
                 ]}/>
@@ -110,7 +110,7 @@ const WrapContent = async ({ searchParams }: {
                     },
                     {
                         key: 'Biaya Produk(-)',
-                        value: currencyFormat(sale.map(e => e.saleOrder.map(a => a.qty * (a.product.price - a.product.cost)).reduce((val, prev) => val + prev) - e.discount).reduce((val, prev) => val + prev, 0))
+                        value: currencyFormat(sale.map(e => e.saleOrder.map(a => a.qty * a.product.cost).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev))
                     },
                     {
                         key: 'Pengembalian Penjualan(-)',
@@ -124,7 +124,7 @@ const WrapContent = async ({ searchParams }: {
                         key: 'Laba/Profit',
                         value: currencyFormat(
                             (sale.length > 0 ? sale.map(e => e.saleOrder.map(a => a.qty * a.product.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) -
-                            (sale.map(e => e.saleOrder.map(a => a.qty * (a.product.price - a.product.cost)).reduce((val, prev) => val + prev) - e.discount).reduce((val, prev) => val + prev, 0)) -
+                            (sale.map(e => e.saleOrder.map(a => a.qty * a.product.cost).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev)) -
                             (saleReturn.length > 0 ? saleReturn.map(e => e.saleReturnOrders.map(a => a.qty * a.product!.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) +
                             (purchaseReturn.map(e => e.purchase.total).reduce((val, prev) => val + prev, 0))
                         )
@@ -140,7 +140,7 @@ const WrapContent = async ({ searchParams }: {
                     },
                     {
                         key: "Biaya Produk(-)",
-                        value: currencyFormat(sale.map(e => e.saleOrder.map(a => a.qty * (a.product.price - a.product.cost)).reduce((val, prev) => val + prev) - e.discount).reduce((val, prev) => val + prev, 0))
+                        value: currencyFormat(sale.map(e => e.saleOrder.map(a => a.qty * a.product.cost).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev))
                     },
                     {
                         key: "Pengembalian Penjualan(-)",
@@ -158,7 +158,7 @@ const WrapContent = async ({ searchParams }: {
                         key: "Total",
                         value: currencyFormat(
                             (sale.length > 0 ? sale.map(e => e.saleOrder.map(a => a.qty * a.product.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) -
-                            (sale.map(e => e.saleOrder.map(a => a.qty * (a.product.price - a.product.cost)).reduce((val, prev) => val + prev) - e.discount).reduce((val, prev) => val + prev, 0)) - 
+                            (sale.map(e => e.saleOrder.map(a => a.qty * a.product.cost).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev)) - 
                             (saleReturn.length > 0 ? saleReturn.map(e => e.saleReturnOrders.map(a => a.qty * a.product!.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) +
                             (purchaseReturn.map(e => e.purchase.total).reduce((val, prev) => val + prev, 0)) -
                             (expenditures.length > 0 ? expenditures.map(e => e.total).reduce((val, prev) => val + prev) : 0)
@@ -188,7 +188,7 @@ const WrapContent = async ({ searchParams }: {
                     },
                     {
                         key: "Biaya produk(-)",
-                        value: currencyFormat(sale.map(e => e.saleOrder.map(a => a.qty * (a.product.price - a.product.cost)).reduce((val, prev) => val + prev) - e.discount).reduce((val, prev) => val + prev, 0))
+                        value: currencyFormat(sale.map(e => e.saleOrder.map(a => a.qty * a.product.cost).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev))
                     },
                     {
                         key: "Pengembalian Penjualan(-)",
@@ -202,7 +202,7 @@ const WrapContent = async ({ searchParams }: {
                         key: "Pendapatan",
                         value: currencyFormat(
                             (sale.length > 0 ? sale.map(e => e.saleOrder.map(a => a.qty * a.product.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) -
-                            (sale.map(e => e.saleOrder.map(a => a.qty * (a.product.price - a.product.cost)).reduce((val, prev) => val + prev) - e.discount).reduce((val, prev) => val + prev, 0)) -
+                            (sale.map(e => e.saleOrder.map(a => a.qty * a.product.cost).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev)) -
                             (saleReturn.length > 0 ? saleReturn.map(e => e.saleReturnOrders.map(a => a.qty * a.product!.price).reduce((val, prev) => val + prev)).reduce((val, prev) => val + prev) : 0) +
                             (purchaseReturn.map(e => e.purchase.total).reduce((val, prev) => val + prev, 0))
                         )

@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import useStore from "../../(public)/(main)/pengguna/store"
+import useStore from "../../(public)/(main)/pengguna/(users)/store"
 import Swal from "sweetalert2"
-import { removeData } from "@/app/(public)/(main)/pengguna/action"
+import { removeData } from "@/app/(public)/(main)/pengguna/(users)/action"
 
 const DeleteButton = () => {
     const select = useStore(state => state.select)

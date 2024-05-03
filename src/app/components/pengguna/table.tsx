@@ -1,5 +1,5 @@
-import { getUser } from "@/app/(public)/(main)/pengguna/action"
-import { SearchParams } from "@/app/(public)/(main)/pengguna/page"
+import { getUser } from "@/app/(public)/(main)/pengguna/(users)/action"
+import { SearchParams } from "@/app/(public)/(main)/pengguna/(users)/page"
 import { $Enums } from "@prisma/client"
 import dynamic from "next/dynamic"
 import Link from "next/link"

@@ -17,7 +17,7 @@ import MoneyTransferStore from '@/app/(public)/(main)/akutansi/transferuang/stor
 import FinancialBalanceStore from '@/app/(public)/(main)/akutansi/neraca/store'
 import SavingAccountStore from '@/app/(public)/(main)/akutansi/rekeningnasabah/store'
 import ReportProductStore from '@/app/(public)/(main)/reports/repproduk/store'
-import UserStore from '@/app/(public)/(main)/pengguna/store'
+import UserStore from '@/app/(public)/(main)/pengguna/(users)/store'
 import Store from '@/app/(public)/(main)/toko/store'
 import { create } from "zustand"
 

@@ -13,7 +13,8 @@ export const linkNav = ({ role }: { role: string }) => {
         {
             icon: "https://res.cloudinary.com/dblroye9s/image/upload/v1710781627/jspstock/sidebar/dashboard_uva3er.svg",
             text: "Dashboard",
-            link: "/dashboard"
+            link: "/dashboard",
+            isShow: validateRole(['owner'])
         },
         {
             icon: "https://res.cloudinary.com/dblroye9s/image/upload/v1710781632/jspstock/sidebar/produk_pztagq.svg",
@@ -34,6 +35,7 @@ export const linkNav = ({ role }: { role: string }) => {
             icon: "https://res.cloudinary.com/dblroye9s/image/upload/v1710782625/pembelian_uk3kyv.svg",
             text: "Pembelian",
             link: "/pembelian",
+            isShow: validateRole(['owner', 'admin']),
             subMenu: [
                 {
                     text: "Daftar Pembelian",
@@ -64,6 +66,7 @@ export const linkNav = ({ role }: { role: string }) => {
             icon: "https://res.cloudinary.com/dblroye9s/image/upload/v1710781629/jspstock/sidebar/pengeluaran_l9oyl9.svg",
             text: "Pengeluaran",
             link: "/pengeluaran",
+            isShow: validateRole(['owner', 'admin']),
             subMenu: [
                 {
                     text: "Kategori Pengeluaran",
@@ -109,6 +112,7 @@ export const linkNav = ({ role }: { role: string }) => {
             icon: "https://res.cloudinary.com/dblroye9s/image/upload/v1710781627/jspstock/sidebar/akutan_qiach6.svg",
             link: "/akutansi",
             text: "Akutansi",
+            isShow: validateRole(['owner', 'admin']),
             subMenu: [
                 {
                     text: 'Daftar Rekening',
@@ -136,6 +140,7 @@ export const linkNav = ({ role }: { role: string }) => {
             icon: 'https://res.cloudinary.com/dblroye9s/image/upload/v1710781633/jspstock/sidebar/reports_tfy1tk.svg',
             text: 'Laporan',
             link: '/reports',
+            isShow: validateRole(['owner']),
             subMenu: [
                 {
                     text: 'Laporan Ringkasan',
@@ -187,7 +192,7 @@ export const linkNav = ({ role }: { role: string }) => {
                 {
                     text: 'Daftar Pengguna',
                     link: '',
-                    isShow: validateRole(['admin', 'owner']),
+                    isShow: validateRole(['owner']),
                 },
                 {
                     text: 'Daftar Kustomer',

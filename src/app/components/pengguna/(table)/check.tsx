@@ -1,7 +1,7 @@
 "use client"
 
-import { GetUserPayload } from "@/app/(public)/(main)/pengguna/action"
-import useStore from "@/app/(public)/(main)/pengguna/store"
+import { GetUserPayload } from "@/app/(public)/(main)/pengguna/(users)/action"
+import useStore from "@/app/(public)/(main)/pengguna/(users)/store"
 
 const Check = ({ data }: {
     data: GetUserPayload

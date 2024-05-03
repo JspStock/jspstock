@@ -246,21 +246,19 @@ export const updateData = async (id: string, form: FormWithoutDocument) => {
                     }
                 })
 
-                if (transactionRecord._sum.credit && transactionRecord._sum.debit) {
-                    await e.transactionRecords.updateMany({
-                        where: {
-                            idStore: storeId,
-                            reference: id
-                        },
-                        data: {
-                            credit: 0,
-                            debit: sumSale,
-                            description: `Melakukan penjualan\n${form.notes}`,
-                            idSavingAccount: form.savingAccount,
-                            saldo: (transactionRecord._sum.debit - transactionRecord._sum.credit) + sumSale
-                        }
-                    })
-                }
+                await e.transactionRecords.updateMany({
+                    where: {
+                        idStore: storeId,
+                        reference: id
+                    },
+                    data: {
+                        credit: 0,
+                        debit: sumSale,
+                        description: `Melakukan penjualan\n${form.notes}`,
+                        idSavingAccount: form.savingAccount,
+                        saldo: ((transactionRecord._sum.debit ?? 0) - (transactionRecord._sum.credit ?? 0)) + sumSale
+                    }
+                })
             }
         })
 

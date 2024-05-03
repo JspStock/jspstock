@@ -3,7 +3,7 @@
 import { $Enums } from "@prisma/client"
 import { genSalt, hash } from 'bcrypt-ts'
 import { cookies } from "next/headers"
-import prisma from "../../../../../../prisma/database"
+import prisma from "../../../../../../../prisma/database"
 import { revalidatePath } from "next/cache"
 
 export const checkUsername = async (username: string) => await prisma.user.count({

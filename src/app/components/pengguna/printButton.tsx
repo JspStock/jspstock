@@ -1,6 +1,6 @@
 "use client"
 
-import useStore from "@/app/(public)/(main)/pengguna/store"
+import useStore from "@/app/(public)/(main)/pengguna/(users)/store"
 import { $Enums } from "@prisma/client"
 import { useRef } from "react"
 import { useReactToPrint } from "react-to-print"

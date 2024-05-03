@@ -1,7 +1,7 @@
 "use server"
 
 import { extension } from "prisma-paginate"
-import prisma from "../../../../../prisma/database"
+import prisma from "../../../../../../prisma/database"
 import { SearchParams } from "./page"
 import { cookies } from "next/headers"
 import { Prisma } from "@prisma/client"

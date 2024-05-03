@@ -57,32 +57,28 @@ export const addData = async (form: Form) => {
                 })
             ])
 
-            if(transactionRecordsFrom._sum.debit != null && transactionRecordsFrom._sum.credit != null && transactionRecordsTo._sum.debit != null && transactionRecordsTo._sum.credit != null){
-                await e.transactionRecords.createMany({
-                    data: [
-                        {
-                            idSavingAccount: form.from,
-                            idStore: storeId,
-                            reference: id,
-                            credit: form.total,
-                            debit: 0,
-                            description: "Transfer uang",
-                            saldo: (transactionRecordsFrom._sum.debit - transactionRecordsFrom._sum.credit) - form.total
-                        },
-                        {
-                            idSavingAccount: form.to,
-                            idStore: storeId,
-                            reference: id,
-                            credit: 0,
-                            debit: form.total,
-                            description: "Menerima uang",
-                            saldo: (transactionRecordsTo._sum.debit - transactionRecordsTo._sum.credit) + form.total
-                        }
-                    ]
-                })
-            }else{
-                throw new Error('Kesalahan pada server!')
-            }
+            await e.transactionRecords.createMany({
+                data: [
+                    {
+                        idSavingAccount: form.from,
+                        idStore: storeId,
+                        reference: id,
+                        credit: form.total,
+                        debit: 0,
+                        description: "Transfer uang",
+                        saldo: ((transactionRecordsFrom._sum.debit ?? 0) - (transactionRecordsFrom._sum.credit ?? 0)) - form.total
+                    },
+                    {
+                        idSavingAccount: form.to,
+                        idStore: storeId,
+                        reference: id,
+                        credit: 0,
+                        debit: form.total,
+                        description: "Menerima uang",
+                        saldo: ((transactionRecordsTo._sum.debit ?? 0) - (transactionRecordsTo._sum.credit ?? 0)) + form.total
+                    }
+                ]
+            })
         })
 
         revalidatePath("/", "layout")

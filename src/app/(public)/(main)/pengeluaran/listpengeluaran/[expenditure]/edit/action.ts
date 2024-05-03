@@ -80,20 +80,16 @@ export const updateData = async (id: string, form: FormState) => {
                 }
             })
 
-            if(transactionRecords._sum.credit && transactionRecords._sum.debit){
-                await e.transactionRecords.updateMany({
-                    where: {
-                        reference: id,
-                        idStore: storeId
-                    },
-                    data: {
-                        credit: form.totalExpenditure,
-                        saldo: (transactionRecords._sum.debit - transactionRecords._sum.credit) - form.totalExpenditure
-                    }
-                })
-            }else{
-                throw new Error('Kesalahan pada server!')
-            }
+            await e.transactionRecords.updateMany({
+                where: {
+                    reference: id,
+                    idStore: storeId
+                },
+                data: {
+                    credit: form.totalExpenditure,
+                    saldo: ((transactionRecords._sum.debit ?? 0) - (transactionRecords._sum.credit ?? 0)) - form.totalExpenditure
+                }
+            })
         })
 
         revalidatePath("/", "layout")

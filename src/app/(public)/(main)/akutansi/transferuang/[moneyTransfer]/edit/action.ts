@@ -62,39 +62,35 @@ export const updateData = async (id: string, form: Form) => {
                 })
             ])
 
-            if(transactionRecordsFrom._sum.debit != null && transactionRecordsFrom._sum.credit != null && transactionRecordsTo._sum.debit != null && transactionRecordsTo._sum.credit != null){
-                await e.transactionRecords.updateMany({
-                    where: {
-                        reference: id,
-                        idSavingAccount: form.from,
-                        idStore: storeId
-                    },
-                    data: {
-                        idSavingAccount: form.from,
-                        credit: form.total,
-                        debit: 0,
-                        description: "Transfer uang",
-                        saldo: (transactionRecordsFrom._sum.debit - transactionRecordsFrom._sum.credit) - form.total
-                    },
-                })
+            await e.transactionRecords.updateMany({
+                where: {
+                    reference: id,
+                    idSavingAccount: form.from,
+                    idStore: storeId
+                },
+                data: {
+                    idSavingAccount: form.from,
+                    credit: form.total,
+                    debit: 0,
+                    description: "Transfer uang",
+                    saldo: ((transactionRecordsFrom._sum.debit ?? 0) - (transactionRecordsFrom._sum.credit ?? 0)) - form.total
+                },
+            })
 
-                await e.transactionRecords.updateMany({
-                    where: {
-                        reference: id,
-                        idSavingAccount: form.to,
-                        idStore: storeId
-                    },
-                    data: {
-                        idSavingAccount: form.to,
-                        credit: 0,
-                        debit: form.total,
-                        description: "Menerima uang",
-                        saldo: (transactionRecordsTo._sum.debit - transactionRecordsTo._sum.credit) + form.total
-                    }
-                })
-            }else{
-                throw new Error('Kesalahan pada server!')
-            }
+            await e.transactionRecords.updateMany({
+                where: {
+                    reference: id,
+                    idSavingAccount: form.to,
+                    idStore: storeId
+                },
+                data: {
+                    idSavingAccount: form.to,
+                    credit: 0,
+                    debit: form.total,
+                    description: "Menerima uang",
+                    saldo: ((transactionRecordsTo._sum.debit ?? 0) - (transactionRecordsTo._sum.credit ?? 0)) + form.total
+                }
+            })
         })
 
         revalidatePath("/", "layout")

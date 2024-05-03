@@ -54,7 +54,7 @@ const Tablelist = async ({ searchParams }: {
                         <th>Total</th>
                         <th></th>
                         <th></th>
-                        <th>{currencyFormat(data.result.length > 0 ? data.result.map(e => e.saleOrder.map(val => val.qty * val.product.price).reduce((val, prev) => val + prev, 0) + e.shippingCost - e.discount).reduce((val, prev) => val + prev) : 0)}</th>
+                        <th>{currencyFormat(data.result.map(e => e.saleOrder.map(val => val.qty * val.product.price).reduce((val, prev) => val + prev, 0) + e.shippingCost - e.discount).reduce((val, prev) => val + prev, 0))}</th>
                     </tr>
                 </tfoot>
             </table>

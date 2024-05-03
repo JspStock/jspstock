@@ -36,7 +36,8 @@ export const getSale = async (searchParams: SearchParams) => await prisma.sales.
                 qty: true,
                 product: {
                     select: {
-                        price: true
+                        price: true,
+                        cost: true
                     }
                 }
             }

@@ -1,7 +1,7 @@
 "use client"
 
-import { GetUserPayload, removeData } from "@/app/(public)/(main)/pengguna/action"
-import useStore from "@/app/(public)/(main)/pengguna/store"
+import { GetUserPayload, removeData } from "@/app/(public)/(main)/pengguna/(users)/action"
+import useStore from "@/app/(public)/(main)/pengguna/(users)/store"
 import { useState } from "react"
 import Swal from "sweetalert2"
 

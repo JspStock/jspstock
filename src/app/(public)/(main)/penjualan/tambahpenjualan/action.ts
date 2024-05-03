@@ -154,19 +154,17 @@ export const addData = async (form: FormWithoutDocument) => {
                     }
                 })
 
-                if(transactionRecord._sum.debit && transactionRecord._sum.credit){
-                    await e.transactionRecords.create({
-                        data: {
-                            idStore: storeId,
-                            reference: createSale.id,
-                            credit: 0,
-                            debit: sumSale,
-                            description: `Melakukan penjualan\n${form.notes}`,
-                            idSavingAccount: form.savingAccount,
-                            saldo: (transactionRecord._sum.debit - transactionRecord._sum.credit) + sumSale
-                        }
-                    })
-                }
+                await e.transactionRecords.create({
+                    data: {
+                        idStore: storeId,
+                        reference: createSale.id,
+                        credit: 0,
+                        debit: sumSale,
+                        description: `Melakukan penjualan\n${form.notes}`,
+                        idSavingAccount: form.savingAccount,
+                        saldo: ((transactionRecord._sum.debit ?? 0) - (transactionRecord._sum.credit ?? 0)) + sumSale
+                    }
+                })
             }
         })
 

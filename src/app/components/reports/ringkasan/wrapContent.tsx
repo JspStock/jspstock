@@ -136,7 +136,7 @@ const WrapContent = async ({ searchParams }: {
                 content={[
                     {
                         key: "Penjualan",
-                        value: currencyFormat(sale.length > 0 ? sale.map(e =>  e.saleOrder.map(a => a.qty * a.product.price).reduce((val, prev) => val + prev, 0)).reduce((val, prev) => val + prev, 0) : 0)
+                        value: currencyFormat(sale.map(e => e.saleOrder.map(a => a.qty * a.product.price).reduce((val, prev) => val + prev, 0) - e.discount).reduce((val, prev) => val + prev, 0))
                     },
                     {
                         key: "Biaya Produk(-)",

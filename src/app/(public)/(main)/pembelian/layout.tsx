@@ -8,7 +8,7 @@ const layout = ({
 }: {
     children: ReactNode
 }) => {
-    return <AllowedRoleWrapper allowed={['owner', 'staff']}>
+    return <AllowedRoleWrapper allowed={['owner', 'admin']}>
         { children }
     </AllowedRoleWrapper>
 }

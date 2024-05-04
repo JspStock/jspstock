@@ -13,6 +13,7 @@ export type GetProductPayload = Prisma.ProductGetPayload<{
         name: true,
         price: true,
         qty: true,
+        cost: true,
         saleOrder: {
             select: {
                 qty: true
@@ -63,6 +64,7 @@ export const getProduct = async (searchParams: SearchParams) => {
             name: true,
             price: true,
             qty: true,
+            cost: true,
             saleOrder: {
                 select: {
                     qty: true

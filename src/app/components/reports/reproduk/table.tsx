@@ -42,7 +42,7 @@ const Tablelist = async ({ searchParams }: {
                             <td>{saleReturnQty(e)}</td>
                             <td>{currencyFormat(saleReturnTotal(e))}</td>
                             <td>{currencyFormat(e.saleOrder.map(a => a.qty).reduce((val, prev) => val + prev, 0) * (e.price - e.cost))}</td>
-                            <td>{e.qty + saleQty(e) - saleReturnQty(e)}</td>
+                            <td>{e.qty}</td>
                         </tr>)
                     }
                 </tbody>
@@ -55,7 +55,7 @@ const Tablelist = async ({ searchParams }: {
                         <th>{product.result.length > 0 ? product.result.map(e => saleReturnQty(e)).reduce((val, prev) => val + prev) : 0}</th>
                         <th>{product.result.length > 0 ? currencyFormat(product.result.map(e => saleReturnTotal(e)).reduce((val, prev) => val + prev)) : 0}</th>
                         <th>{product.result.length > 0 ? currencyFormat(product.result.map(e => e.saleOrder.map(a => a.qty).reduce((val, prev) => val + prev, 0) * (e.price - e.cost)).reduce((val, prev) => val + prev)) : 0}</th>
-                        <th>{product.result.length > 0 ? product.result.map(e => e.qty + saleQty(e) - saleReturnQty(e) ).reduce((val, prev) => val + prev) : 0}</th>
+                        <th>{product.result.length > 0 ? product.result.map(e => e.qty).reduce((val, prev) => val + prev) : 0}</th>
                     </tr>
                 </tfoot>
             </table>

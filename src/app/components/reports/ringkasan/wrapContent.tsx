@@ -22,7 +22,7 @@ const WrapContent = async ({ searchParams }: {
             content={[
                 {
                     key: 'Total',
-                    value: currencyFormat(sale.map(e => e.saleOrder.map(a => a.qty * a.product.cost).reduce((val, prev) => val + prev, 0)).reduce((val, prev) => val + prev, 0))
+                    value: currencyFormat(purchase.map(e => e.total).reduce((a, b) => a + b, 0))
                 },
                 {
                     key: 'Jumlah transaksi',

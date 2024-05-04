@@ -3,7 +3,7 @@
 import { $Enums } from "@prisma/client"
 import { useFormik } from "formik"
 import { object, string } from "yup"
-import { GetUserDataPayload, checkEmail, checkNoWa, checkUsername, updateUser } from "@/app/(public)/(main)/pengguna/(users)/edit/action"
+import { GetUserDataPayload, checkEmail, checkNoWa, checkUsername, updateUser } from "@/app/(public)/(main)/pengguna/(users)/[user]/edit/action"
 import Swal from 'sweetalert2'
 import { useRouter } from "next/navigation"
 

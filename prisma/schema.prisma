@@ -127,6 +127,7 @@ model Supplier{
 
   store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
   purchase Purchase[]
+  product Product[]
 }
 
 model SavingAccounts{
@@ -164,6 +165,7 @@ model ProductCategories{
 
 model Product{
   id String @id @default(uuid())
+  idSupplier String?
   code String
   idStore String
   idProductCategories String?
@@ -179,6 +181,7 @@ model Product{
   productCategories ProductCategories? @relation(fields: [idProductCategories], references: [id], onDelete: SetNull, onUpdate: Cascade)
   saleOrder SaleOrder[]
   saleReturnOrders SaleReturnOrders[]
+  supplier Supplier? @relation(fields: [idSupplier], references: [id], onDelete: SetNull, onUpdate: SetNull)
 }
 
 model Purchase{

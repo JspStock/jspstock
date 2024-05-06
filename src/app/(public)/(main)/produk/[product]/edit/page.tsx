@@ -1,6 +1,6 @@
 import { Metadata } from "next"
 import dynamic from "next/dynamic"
-import { getProductCategories, getProductData, getProductName } from "./action"
+import { getProductCategories, getProductData, getProductName, getSupplier } from "./action"
 import { redirect } from "next/navigation"
 
 const Form = dynamic(() => import("@/app/components/product/[product]/edit/form"))
@@ -18,8 +18,11 @@ export const generateMetadata = async ({ params }: { params: Params }): Promise<
 }
 
 const TambahProduk = async ({ params }: { params: Params }) => {
-    const productCategories = await getProductCategories()
-    const productData = await getProductData(params.product)
+    const [productCategories, productData, supplier] = await Promise.all([
+        getProductCategories(),
+        getProductData(params.product),
+        getSupplier()
+    ])
 
     if(productData){
         return (
@@ -31,7 +34,8 @@ const TambahProduk = async ({ params }: { params: Params }) => {
                     <h1 className="text-gray-400 text-sm">Label pada kotak yang ditandai dengan * adalah Wajib di input.</h1>
                     <Form 
                         productCategories={productCategories}
-                        productData={productData} />
+                        productData={productData}
+                        supplier={supplier} />
                 </div>
             </main>
         )

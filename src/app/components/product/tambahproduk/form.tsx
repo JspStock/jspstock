@@ -1,8 +1,9 @@
 "use client"
 
-import { addProduct, checkProductCode } from "@/app/(public)/(main)/produk/tambahproduk/action";
+import { GetSupplierPayload, addProduct, checkProductCode } from "@/app/(public)/(main)/produk/tambahproduk/action";
 import { errorAlert } from "@/utils/alert/swal";
 import { useFormik } from "formik";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { mixed, number, object, string } from "yup";
@@ -15,6 +16,7 @@ export interface ProductCategories {
 
 export interface Form {
     code: string,
+    idSupplier: string,
     image: File | null,
     name: string,
     category: string,
@@ -25,6 +27,7 @@ export interface Form {
 
 export interface FormWithoutImage{
     image?: File | null,
+    idSupplier: string,
     code: string,
     name: string,
     category: string,
@@ -33,15 +36,21 @@ export interface FormWithoutImage{
     qty: number
 }
 
+const Combobox = dynamic(() => import('@/app/components/comboBoxInput'))
+
 const Form = ({
     productCategories,
+    supplier
 }: {
-    productCategories: Array<ProductCategories>
+    productCategories: Array<ProductCategories>,
+    supplier: Array<GetSupplierPayload>
 }) => {
     const router = useRouter()
     const validImageExtension = ['jpg', 'png', 'jpeg']
     const [category, setCategory] = useState<Array<ProductCategories>>([])
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const formSchema = object().shape({
+        idSupplier: string().required('Supplier tidak boleh kosong!'),
         code: string().required('Kode produk tidak boleh kosong!'),
         image: mixed().required('Foto produk harus diisi!')
             .test({
@@ -61,6 +70,7 @@ const Form = ({
 
     const form = useFormik<Form>({
         initialValues: {
+            idSupplier: '',
             code: '',
             image: null,
             name: '',
@@ -72,6 +82,7 @@ const Form = ({
         validationSchema: formSchema,
         onSubmit: async (e, {setFieldError}) => {
             try{
+                setIsLoading(true)
                 if(e.image != null){
                     const countProductCode = await checkProductCode(e.code)
 
@@ -92,6 +103,7 @@ const Form = ({
                 }
             }catch{
                 errorAlert()
+                setIsLoading(false)
             }
         }
     })
@@ -131,6 +143,20 @@ const Form = ({
                         <span className="label-text-alt text-error">{errors.code}</span>
                     </label> : null}
                 </div>
+
+                <div className="form-control w-full">
+                    <div className="label">
+                        <span className="label-text">Supplier*(Wajib)</span>
+                    </div>
+                    <Combobox
+                        selected={supplier.find(e => e.id == values.idSupplier)}
+                        data={supplier}
+                        setSelected={(e: GetSupplierPayload) => setFieldValue("idSupplier", e.id)} />
+                    {errors.code && touched.code ? <label htmlFor="" className="label">
+                        <span className="label-text-alt text-error">{errors.code}</span>
+                    </label> : null}
+                </div>
+
                 <div className="form-control w-full">
                     <div className="label">
                         <span className="label-text">Nama Produk*(Wajib)</span>
@@ -183,8 +209,8 @@ const Form = ({
                     </label> : null}
                 </label>
             </div>
-            <button type="submit" className="btn bg-blue-900 my-5 text-white" disabled={isSubmitting}>
-                { isSubmitting ? <div className="loading"></div> : null }
+            <button type="submit" className="btn bg-blue-900 my-5 text-white" disabled={isLoading}>
+                { isLoading ? <div className="loading"></div> : null }
                 <span>Simpan</span>
             </button>
         </form>

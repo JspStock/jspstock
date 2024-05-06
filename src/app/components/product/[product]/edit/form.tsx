@@ -1,12 +1,13 @@
 "use client"
 
-import { GetProductDataPayload, updateProduct, checkProductCode } from "@/app/(public)/(main)/produk/[product]/edit/action";
+import { GetProductDataPayload, updateProduct, checkProductCode, GetSupplierPayload } from "@/app/(public)/(main)/produk/[product]/edit/action";
 import { passwordInputAlert } from "@/utils/alert/swal";
 import { useFormik } from "formik";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { mixed, number, object, string } from "yup";
+import { number, object, string } from "yup";
 
 export interface ProductCategories {
     id: string;
@@ -16,6 +17,7 @@ export interface ProductCategories {
 
 export interface Form {
     code: string,
+    idSupplier: string,
     image: File | null,
     name: string,
     category: string,
@@ -26,6 +28,7 @@ export interface Form {
 
 export interface FormWithoutImage {
     image?: File | null,
+    idSupplier: string,
     code: string,
     name: string,
     category: string,
@@ -34,17 +37,21 @@ export interface FormWithoutImage {
     qty: number
 }
 
+const Combobox = dynamic(() => import('@/app/components/comboBoxInput'))
 const Form = ({
     productCategories,
-    productData
+    productData,
+    supplier
 }: {
     productCategories: Array<ProductCategories>,
-    productData: GetProductDataPayload
+    productData: GetProductDataPayload,
+    supplier: Array<GetSupplierPayload>
 }) => {
     const router = useRouter()
     const validImageExtension = ['jpg', 'png', 'jpeg']
     const [category, setCategory] = useState<Array<ProductCategories>>([])
     const formSchema = object().shape({
+        idSupplier: string().required('Supplier tidak boleh kosong!'),
         code: string().required('Kode produk tidak boleh kosong!'),
         name: string().required('Nama produk tidak boleh kosong!'),
         category: string().required('Kategori tidak boleh kosong!'),
@@ -55,6 +62,7 @@ const Form = ({
 
     const form = useFormik<Form>({
         initialValues: {
+            idSupplier: productData.idSupplier ?? '',
             code: productData.code,
             image: null,
             name: productData.name,
@@ -68,7 +76,7 @@ const Form = ({
             try {
                 const validatePassword = await passwordInputAlert()
 
-                if(validatePassword){
+                if (validatePassword) {
                     if (e.code != productData.code) {
                         const countProductCode = await checkProductCode(e.code)
                         if (countProductCode > 0) {
@@ -76,16 +84,16 @@ const Form = ({
                             return
                         }
                     }
-    
+
                     if (e.image) {
                         if (!validImageExtension.includes(e.image.type.split('/')[1])) {
                             setFieldError('image', 'Format gambar tidak benar!')
                             return
                         }
                     }
-    
+
                     let image = null
-                    if(e.image){
+                    if (e.image) {
                         const buffer = Buffer.from(await e.image.arrayBuffer()).toString("base64")
                         image = `data:${e.image.type};base64,${buffer}`
                     }
@@ -139,6 +147,20 @@ const Form = ({
                         <span className="label-text-alt text-error">{errors.code}</span>
                     </label> : null}
                 </div>
+
+                <div className="form-control w-full">
+                    <div className="label">
+                        <span className="label-text">Supplier*(Wajib)</span>
+                    </div>
+                    <Combobox
+                        selected={supplier.find(e => e.id == values.idSupplier)}
+                        data={supplier}
+                        setSelected={(e: GetSupplierPayload) => setFieldValue("idSupplier", e.id)} />
+                    {errors.code && touched.code ? <label htmlFor="" className="label">
+                        <span className="label-text-alt text-error">{errors.code}</span>
+                    </label> : null}
+                </div>
+
                 <div className="form-control w-full">
                     <div className="label">
                         <span className="label-text">Nama Produk*(Wajib)</span>

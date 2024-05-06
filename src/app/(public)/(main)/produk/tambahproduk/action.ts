@@ -5,6 +5,7 @@ import prisma from "../../../../../../prisma/database"
 import Cloudinary from "@/utils/cloudinary"
 import { revalidatePath } from "next/cache"
 import { FormWithoutImage } from "@/app/components/product/tambahproduk/form"
+import { Prisma } from "@prisma/client"
 
 export const getProductCategories = async() => await prisma.productCategories.findMany({
     where: {
@@ -25,6 +26,23 @@ export const checkProductCode = async (code: string) => await prisma.product.cou
     }
 })
 
+export type GetSupplierPayload = Prisma.SupplierGetPayload<{
+    select: {
+        id: true,
+        name: true
+    }
+}>
+
+export const getSupplier = async () => await prisma.supplier.findMany({
+    where: {
+        idStore: cookies().get('store')?.value
+    },
+    select: {
+        id: true,
+        name: true
+    }
+})
+
 export const addProduct = async (form: FormWithoutImage, image: string) => {
     try{
         await prisma.$transaction(async e => {
@@ -32,6 +50,7 @@ export const addProduct = async (form: FormWithoutImage, image: string) => {
             const resultProduct = await e.product.create({
                 data: {
                     code: form.code,
+                    idSupplier: form.idSupplier,
                     idStore: storeId,
                     name: form.name,
                     idProductCategories: form.category,
@@ -46,7 +65,7 @@ export const addProduct = async (form: FormWithoutImage, image: string) => {
             })
             
             const { url } = await Cloudinary.uploader.upload(image, {
-                public_id: `${storeId}/product/${resultProduct.id}`
+                public_id: `${storeId}/product/${resultProduct.id}`,
             })
 
             await e.product.update({
@@ -57,6 +76,8 @@ export const addProduct = async (form: FormWithoutImage, image: string) => {
                     imagePath: url
                 }
             })
+        }, {
+            timeout: 100000
         })
 
         revalidatePath('/', 'layout')

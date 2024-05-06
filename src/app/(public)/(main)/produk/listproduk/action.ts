@@ -23,6 +23,11 @@ export type GetProductPayload = Prisma.ProductGetPayload<{
         id: true,
         code: true,
         name: true,
+        supplier: {
+            select: {
+                name: true
+            }
+        },
         productCategories: {
             select: {
                 name: true,
@@ -65,6 +70,14 @@ export const getAllProduct = async (searchParams: SearchParams) => {
                         contains: searchParams.search ?? '',
                         mode: 'insensitive'
                     }
+                },
+                {
+                    supplier: {
+                        name: {
+                            contains: searchParams.search ?? '',
+                            mode: 'insensitive'
+                        }
+                    }
                 }
             ],
         },
@@ -72,6 +85,11 @@ export const getAllProduct = async (searchParams: SearchParams) => {
             id: true,
             name: true,
             code: true,
+            supplier: {
+                select: {
+                    name: true
+                }
+            },
             productCategories: {
                 select: {
                     name: true,
@@ -98,7 +116,7 @@ export const deleteProducts = async (idProduct: Array<string>) => {
                         id: row
                     },
                     data: {
-                        id: `DEL_${idProduct}`,
+                        id: `DEL_${row}`,
                         deletedAt: new Date()
                     }
                 })

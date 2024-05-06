@@ -22,6 +22,7 @@ export type GetProductDataPayload = Prisma.ProductGetPayload<{
         id: true,
         code: true,
         name: true,
+        idSupplier: true,
         idProductCategories: true,
         cost: true,
         price: true,
@@ -37,10 +38,28 @@ export const getProductData = async (id: string) => prisma.product.findUnique({
         id: true,
         code: true,
         name: true,
+        idSupplier: true,
         idProductCategories: true,
         cost: true,
         price: true,
         qty: true
+    }
+})
+
+export type GetSupplierPayload = Prisma.SupplierGetPayload<{
+    select: {
+        id: true,
+        name: true
+    }
+}>
+
+export const getSupplier = async () => await prisma.supplier.findMany({
+    where: {
+        idStore: cookies().get('store')?.value
+    },
+    select: {
+        id: true,
+        name: true
     }
 })
 
@@ -76,6 +95,7 @@ export const updateProduct = async (id: string, form: FormWithoutImage, image: s
                     code: form.code,
                     idStore: storeId,
                     name: form.name,
+                    idSupplier: form.idSupplier,
                     idProductCategories: form.category,
                     cost: form.cost,
                     price: form.price,
@@ -100,11 +120,12 @@ export const updateProduct = async (id: string, form: FormWithoutImage, image: s
                     }
                 })
             }
+        }, {
+            timeout: 100000
         })
 
         revalidatePath('/', 'layout')
-    } catch (e) {
-        console.log(e)
+    } catch {
         throw new Error("Kesalahan saat menambahkan produk!")
     }
 }

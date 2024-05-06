@@ -4,7 +4,7 @@ import withPWA from 'next-pwa'
 export const nextConfig = {
   experimental: {
     serverActions: {
-      bodySizeLimit: '100mb'
+      bodySizeLimit: '1000mb'
     }
   },
   reactStrictMode: true,

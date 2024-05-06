@@ -67,6 +67,7 @@ export const addData = async (form: FormWithoutDocument) => {
                     id: form.customer
                 },
                 select: {
+                    name: true,
                     address: true
                 }
             })
@@ -95,7 +96,7 @@ export const addData = async (form: FormWithoutDocument) => {
                                 id: `PKG_${Date.now()}`,
                                 idStore: storeId,
                                 idCustomerUser: form.customer,
-                                address: customer.address ?? '',
+                                address: `Pelanggan: ${customer.name}\n${customer.address}`,
                                 status: $Enums.PackagingStatus.MENUNGGU_KURIR,
                             }
                         }

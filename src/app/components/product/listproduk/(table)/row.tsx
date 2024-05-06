@@ -52,9 +52,9 @@ const Row = ({ data, }: {
             </thead>
             <tbody>
                 {
-                    data.map(e => <tr key={e.id} className="cursor-pointer hover:bg-gray-100" onClick={() => handleClickRow(e.id)}>
+                    data.map(e => <tr key={e.id} className="cursor-pointer hover:bg-gray-100">
                         <td><Check data={e} /></td>
-                        <td>
+                        <td onClick={() => handleClickRow(e.id)}>
                             <div className="avatar">
                                 <div className="w-20 rounded">
                                     <Image
@@ -68,16 +68,16 @@ const Row = ({ data, }: {
                                 </div>
                             </div>
                         </td>
-                        <td>{e.name}</td>
-                        <td>{e.code}</td>
-                        <td>{e.productCategories ? e.productCategories.name : 'N/A'}</td>
-                        <td>{e.supplier ? e.supplier.name : 'N/A'}</td>
-                        <td>{e.qty}</td>
-                        <td>{currencyFormat(e.price)}</td>
-                        <td>{currencyFormat(e.cost)}</td>
-                        <td>{currencyFormat(e.price - e.cost)}</td>
+                        <td onClick={() => handleClickRow(e.id)}>{e.name}</td>
+                        <td onClick={() => handleClickRow(e.id)}>{e.code}</td>
+                        <td onClick={() => handleClickRow(e.id)}>{e.productCategories ? e.productCategories.name : 'N/A'}</td>
+                        <td onClick={() => handleClickRow(e.id)}>{e.supplier ? e.supplier.name : 'N/A'}</td>
+                        <td onClick={() => handleClickRow(e.id)}>{e.qty}</td>
+                        <td onClick={() => handleClickRow(e.id)}>{currencyFormat(e.price)}</td>
+                        <td onClick={() => handleClickRow(e.id)}>{currencyFormat(e.cost)}</td>
+                        <td onClick={() => handleClickRow(e.id)}>{currencyFormat(e.price - e.cost)}</td>
                         <td>
-                            <div className="dropdown dropdown-left">
+                            <div className="dropdown dropdown-left z-20">
                                 <div tabIndex={0} role="button" className="btn btn-ghost">Lainnya</div>
                                 <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                                     <li><Link href={`/produk/${e.id}/edit`}>Ubah</Link></li>

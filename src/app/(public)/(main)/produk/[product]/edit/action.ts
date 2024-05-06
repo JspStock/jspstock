@@ -121,7 +121,8 @@ export const updateProduct = async (id: string, form: FormWithoutImage, image: s
                 })
             }
         }, {
-            timeout: 100000
+            timeout: 100000,
+            maxWait: 100000
         })
 
         revalidatePath('/', 'layout')

@@ -167,6 +167,9 @@ export const addData = async (form: FormWithoutDocument) => {
                     }
                 })
             }
+        }, {
+            timeout: 180000,
+            maxWait: 180000
         })
 
         revalidatePath("/", "layout")

@@ -23,12 +23,8 @@ const Form = ({ customerGroup, customerData }: {
     const formSchema = object().shape({
         customerGroup: string().required("Grub kustomer harus diisi!"),
         name: string().required("Nama harus diisi!"),
-        email: string().required("Email harus diisi!").email('Format email tidak benar!'),
         noWa: string().required('Nomor WhatsApp harus diisi!'),
         address: string().required('Alamat harus diisi!'),
-        city: string().required('Kota harus diisi!'),
-        zipCode: string().required('Kode pos harus diisi!'),
-        region: string().required('Wilayah harus diisi!')
     })
 
     const form = useFormik<Form>({

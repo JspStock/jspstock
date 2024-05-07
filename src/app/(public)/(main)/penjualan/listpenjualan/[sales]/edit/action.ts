@@ -260,6 +260,9 @@ export const updateData = async (id: string, form: FormWithoutDocument) => {
                     }
                 })
             }
+        }, {
+            timeout: 180000,
+            maxWait: 180000
         })
 
         revalidatePath("/", "layout")

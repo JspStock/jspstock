@@ -86,6 +86,9 @@ export const deleteData = async(id: Array<string>) => {
                     throw new Error('Kesalahan pada server!')
                 }
             }
+        }, {
+            timeout: 180000,
+            maxWait: 180000
         })
 
         revalidatePath('/', 'layout')

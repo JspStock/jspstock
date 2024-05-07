@@ -1,13 +1,14 @@
 "use client"
 
 import { GetProductDataPayload, updateProduct, checkProductCode, GetSupplierPayload } from "@/app/(public)/(main)/produk/[product]/edit/action";
-import { passwordInputAlert } from "@/utils/alert/swal";
+import { errorAlert, passwordInputAlert } from "@/utils/alert/swal";
 import { useFormik } from "formik";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { number, object, string } from "yup";
+import Compressor from "compressorjs";
 
 export interface ProductCategories {
     id: string;
@@ -94,8 +95,25 @@ const Form = ({
 
                     let image = null
                     if (e.image) {
-                        const buffer = Buffer.from(await e.image.arrayBuffer()).toString("base64")
-                        image = `data:${e.image.type};base64,${buffer}`
+                        console.log(e.image)
+                        new Compressor(e.image, {
+                            quality: .3,
+                            success: file => {
+                                console.log(file.size)
+                                const reader = new FileReader()
+                                reader.readAsDataURL(file)
+                                reader.onload = async () => {
+                                    if (reader.result) {
+                                        const buffer = Buffer.from(await file.arrayBuffer()).toString("base64")
+                                        image = `data:${file.type};base64,${buffer}`
+                                    }
+                                }
+                            },
+                            error: () => {
+                                errorAlert(() => { }, "Gagal mengkompres Berkas!")
+                            }
+                        })
+
                     }
                     const formWithoutImage: FormWithoutImage = { ...e }
                     delete formWithoutImage.image
@@ -103,11 +121,7 @@ const Form = ({
                     router.push("/produk/listproduk")
                 }
             } catch {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Terjadi kesalahan!',
-                    text: 'Kesalahan saat menambahkan produk, coba kembali beberapa saat dan pastikan koneksi jaringan stabil',
-                })
+                errorAlert()
             }
         }
     })

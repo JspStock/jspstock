@@ -92,7 +92,7 @@ const Row = ({ data, }: {
         </table>
 
         <dialog className="modal modal-scroll" ref={modalRef}>
-            <div className="modal-box !max-w-[40%] w-full">
+            <div className="modal-box !max-w-[95%] w-full md:!max-w-[80%] lg:!max-w-[40%">
                 <form method="dialog">
                     <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                 </form>
@@ -107,8 +107,8 @@ const Row = ({ data, }: {
                 </div>
 
                 {
-                    data.find(e => e.id == productDetail) ? <div className="flex gap-x-6">
-                        <div className="w-6/12">
+                    data.find(e => e.id == productDetail) ? <div className="flex gap-x-6 flex-col lg:flex-row">
+                        <div className="w-full lg:w-6/12">
                             <Image
                                 src={data.find(e => e.id == productDetail)!.imagePath}
                                 width={0}
@@ -119,7 +119,7 @@ const Row = ({ data, }: {
                                 alt={data.find(e => e.id == productDetail)!.name} />
                         </div>
 
-                        <div className="w-6/12 space-y-4 text-lg">
+                        <div className="w-full lg:w-6/12 space-y-4 text-lg">
                             <p><b>Nama Produk:</b> {data.find(e => e.id == productDetail)!.name}</p>
                             <p><b>Kode Produk:</b> {data.find(e => e.id == productDetail)!.code}</p>
                             <p><b>Supplier:</b> {data.find(e => e.id == productDetail)!.supplier?.name}</p>

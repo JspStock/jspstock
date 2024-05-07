@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { mixed, number, object, string } from "yup";
+import Compress from 'compressorjs'
 
 export interface ProductCategories {
     id: string;
@@ -87,16 +88,26 @@ const Form = ({
                     const countProductCode = await checkProductCode(e.code)
 
                     if(countProductCode == 0){
-                        const reader = new FileReader()
-                        reader.readAsDataURL(e.image)
-                        reader.onload = async () => {
-                            if(reader.result){
-                                const formWithoutImage: FormWithoutImage = {...e}
-                                delete formWithoutImage.image
-                                await addProduct(formWithoutImage, reader.result as string)
-                                router.push("listproduk")
+                        new Compress(e.image, {
+                            quality: .3,
+                            success: file => {
+                                const reader = new FileReader()
+                                reader.readAsDataURL(file)
+                                reader.onload = async () => {
+                                    if(reader.result){
+                                        const formWithoutImage: FormWithoutImage = {...e}
+                                        delete formWithoutImage.image
+                                        await addProduct(formWithoutImage, reader.result as string)
+                                        router.push("listproduk")
+                                    }
+                                }
+                            },
+                            error: () => {
+                                errorAlert(() => {}, "Gagal mengkompres Berkas!")
                             }
-                        }
+                        })
+
+                        
                     }else{
                         setFieldError("code", "Kode produk sudah tersedia!")
                     }

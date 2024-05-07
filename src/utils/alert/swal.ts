@@ -37,9 +37,9 @@ export const passwordInputAlert = async (): Promise<boolean> => {
     }
 }
 
-export const errorAlert = (preConfirm?: () => void) => Swal.fire({
+export const errorAlert = (preConfirm?: () => void, text?: string) => Swal.fire({
     icon: 'error',
     title: 'Terjadi kesalahan!',
-    text: 'Kesalahan pada server, silahkan coba kembali beberapa saat',
+    text: `${text ?? 'Kesalahan pada server, silahkan coba kembali beberapa saat'}`,
     preConfirm: preConfirm
 })

@@ -175,7 +175,7 @@ const Form = ({ product, customer, savingAccounts, customerGroup }: {
                     <div className="label">
                         <span className="label-text">Catatan Penjualan</span>
                     </div>
-                    <textarea className="textarea textarea-bordered" placeholder="Catatan" name="saleNotes" value={values.notes} onChange={handleChange}></textarea>
+                    <textarea className="textarea textarea-bordered" placeholder="Catatan" name="notes" value={values.notes} onChange={handleChange}></textarea>
                     {errors.notes && touched.notes ? <label htmlFor="" className="label"><span className="label-text-alt text-error">{errors.notes}</span></label> : null}
                 </label>
             </div>

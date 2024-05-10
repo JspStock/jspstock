@@ -6,36 +6,9 @@ import { cookies } from "next/headers"
 import { SearchParams } from "./page"
 import Cloudinary from "@/utils/cloudinary"
 import { revalidatePath } from "next/cache"
+import { gte, lte } from "@/utils/utils"
 
 export const getPackaging = async (searchParams: SearchParams) => {
-    const gte = () => {
-        if (searchParams.date) {
-            const from = searchParams.date.split("to")[0]
-            const to = searchParams.date.split("to")[1]
-
-            if (from != to) {
-                const date = new Date(from)
-                date.setDate(date.getDate() - 1)
-                return date
-            } else {
-                return undefined
-            }
-        }
-
-        return undefined
-    }
-
-    const lte = () => {
-        if (searchParams.date) {
-            const to = searchParams.date.split("to")[1]
-
-            const date = new Date(to)
-            return date
-        }
-
-        return undefined
-    }
-
     const extend = prisma.$extends(extension)
     const getCountData = await extend.packaging.count({
         where: {
@@ -47,8 +20,8 @@ export const getPackaging = async (searchParams: SearchParams) => {
         where: {
             idStore: cookies().get('store')?.value,
             createdAt: {
-                lte: lte(),
-                gte: gte()
+                lte: lte(searchParams),
+                gte: gte(searchParams)
             },
             OR: [
                 {
@@ -70,7 +43,7 @@ export const getPackaging = async (searchParams: SearchParams) => {
                         contains: searchParams.search ?? '',
                         mode: 'insensitive'
                     }
-                }
+                },
             ]
         },
         orderBy: {

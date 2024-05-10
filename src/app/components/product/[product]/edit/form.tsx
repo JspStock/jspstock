@@ -73,8 +73,9 @@ const Form = ({
             qty: productData.qty
         },
         validationSchema: formSchema,
-        onSubmit: async (e, { setFieldError }) => {
+        onSubmit: async (e, { setFieldError, setSubmitting }) => {
             try {
+                setSubmitting(true)
                 const validatePassword = await passwordInputAlert()
 
                 if (validatePassword) {
@@ -93,35 +94,40 @@ const Form = ({
                         }
                     }
 
-                    let image = null
                     if (e.image) {
-                        console.log(e.image)
                         new Compressor(e.image, {
                             quality: .3,
                             success: file => {
-                                console.log(file.size)
                                 const reader = new FileReader()
                                 reader.readAsDataURL(file)
                                 reader.onload = async () => {
+                                    setSubmitting(true)
                                     if (reader.result) {
                                         const buffer = Buffer.from(await file.arrayBuffer()).toString("base64")
-                                        image = `data:${file.type};base64,${buffer}`
+                                        const formWithoutImage: FormWithoutImage = { ...e }
+                                        delete formWithoutImage.image
+                                        await updateProduct(productData.id, formWithoutImage, `data:${file.type};base64,${buffer}`)
+                                        router.push("/produk/listproduk")
                                     }
+                                    setSubmitting(false)
                                 }
                             },
                             error: () => {
                                 errorAlert(() => { }, "Gagal mengkompres Berkas!")
+                                setSubmitting(false)
                             }
                         })
-
+                    } else {
+                        const formWithoutImage: FormWithoutImage = { ...e }
+                        delete formWithoutImage.image
+                        await updateProduct(productData.id, formWithoutImage, null)
+                        router.push("/produk/listproduk")
                     }
-                    const formWithoutImage: FormWithoutImage = { ...e }
-                    delete formWithoutImage.image
-                    await updateProduct(productData.id, formWithoutImage, image)
-                    router.push("/produk/listproduk")
                 }
+                setSubmitting(false)
             } catch {
                 errorAlert()
+                setSubmitting(false)
             }
         }
     })

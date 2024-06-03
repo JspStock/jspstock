@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["tracing"]
 }
 
 datasource db {
@@ -7,332 +8,312 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role{
+model Store {
+  id                  String                @id
+  name                String
+  email               String
+  noWa                String
+  address             String
+  createdAt           DateTime              @default(now())
+  customerGroup       CustomerGroup[]
+  customerUser        CustomerUser[]
+  expenditureCategory ExpenditureCategory[]
+  expenditures        Expenditures[]
+  packaging           Packaging[]
+  permissionPassword  PermissionPassword[]
+  product             Product[]
+  productCategories   ProductCategories[]
+  purchase            Purchase[]
+  purchaseReturns     PurchaseReturns[]
+  saleOrder           SaleOrder[]
+  saleReturnOrders    SaleReturnOrders[]
+  saleReturns         SaleReturns[]
+  sales               Sales[]
+  savingAccounts      SavingAccounts[]
+  supplier            Supplier[]
+  user                User[]
+}
+
+model User {
+  id        String     @id
+  idStore   String?
+  username  String     @unique
+  name      String
+  email     String
+  password  String
+  noWa      String
+  role      Role
+  status    UserStatus
+  createdAt DateTime   @default(now())
+  store     Store?     @relation(fields: [idStore], references: [id], onDelete: Cascade)
+}
+
+model PermissionPassword {
+  id       String @id @default(uuid())
+  idStore  String
+  password String
+  store    Store  @relation(fields: [idStore], references: [id], onDelete: Cascade)
+}
+
+model CustomerGroup {
+  id            String         @id
+  idStore       String
+  name          String
+  createdAt     DateTime       @default(now())
+  store         Store          @relation(fields: [idStore], references: [id], onDelete: Cascade)
+  customerGroup CustomerUser[]
+}
+
+model CustomerUser {
+  id              String         @id
+  idStore         String
+  idCustomerGroup String?
+  name            String
+  noWa            String
+  address         String?
+  createdAt       DateTime       @default(now())
+  customerGroup   CustomerGroup? @relation(fields: [idCustomerGroup], references: [id])
+  store           Store          @relation(fields: [idStore], references: [id], onDelete: Cascade)
+  packaging       Packaging[]
+  saleReturns     SaleReturns[]
+  sales           Sales[]
+}
+
+model Supplier {
+  id        String     @id
+  idStore   String
+  name      String
+  email     String
+  noWa      String
+  address   String?
+  city      String
+  zipCode   String
+  region    String
+  createdAt DateTime   @default(now())
+  product   Product[]
+  purchase  Purchase[]
+  store     Store      @relation(fields: [idStore], references: [id], onDelete: Cascade)
+}
+
+model SavingAccounts {
+  id                 String               @id
+  idStore            String
+  name               String
+  startingBalance    Int
+  notes              String?
+  createdAt          DateTime             @default(now())
+  expenditures       Expenditures[]
+  sender             MoneyTransfer[]      @relation("FromSavingAccounts")
+  recipient          MoneyTransfer[]      @relation("ToSavingAccounts")
+  purchase           Purchase[]
+  purchaseReturns    PurchaseReturns[]
+  saleReturns        SaleReturns[]
+  sales              Sales[]
+  store              Store                @relation(fields: [idStore], references: [id], onDelete: Cascade)
+  transactionRecords TransactionRecords[]
+}
+
+model ProductCategories {
+  id                  String              @id
+  idStore             String
+  idProductCategories String?
+  imagePath           String
+  name                String
+  createdAt           DateTime            @default(now())
+  product             Product[]
+  parent              ProductCategories?  @relation("ProductCategories", fields: [idProductCategories], references: [id])
+  productCategories   ProductCategories[] @relation("ProductCategories")
+  store               Store               @relation(fields: [idStore], references: [id], onDelete: Cascade)
+}
+
+model Product {
+  id                  String             @id @default(uuid())
+  idStore             String
+  idProductCategories String?
+  imagePath           String
+  name                String
+  price               Int
+  cost                Int
+  createdAt           DateTime           @default(now())
+  deletedAt           DateTime?
+  qty                 Int
+  code                String
+  idSupplier          String?
+  productCategories   ProductCategories? @relation(fields: [idProductCategories], references: [id])
+  store               Store              @relation(fields: [idStore], references: [id], onDelete: Cascade)
+  supplier            Supplier?          @relation(fields: [idSupplier], references: [id], onUpdate: SetNull)
+  saleOrder           SaleOrder[]
+  saleReturnOrders    SaleReturnOrders[]
+}
+
+model Purchase {
+  id              String            @id
+  idStore         String
+  idSupplier      String?
+  notes           String?
+  createdAt       DateTime          @default(now())
+  documentPath    String?
+  purchaseStatus  PurchaseStatus
+  idSavingAccount String?
+  total           Int
+  savingAccount   SavingAccounts?   @relation(fields: [idSavingAccount], references: [id])
+  store           Store             @relation(fields: [idStore], references: [id], onDelete: Cascade)
+  supplier        Supplier?         @relation(fields: [idSupplier], references: [id])
+  purchaseReturns PurchaseReturns[]
+}
+
+model Sales {
+  id              String          @id
+  idStore         String
+  idCustomerUser  String?
+  discount        Int             @default(0)
+  shippingCost    Int             @default(0)
+  createdAt       DateTime        @default(now())
+  idSavingAccount String?
+  notes           String?
+  packaging       Packaging[]
+  saleOrder       SaleOrder[]
+  customerUser    CustomerUser?   @relation(fields: [idCustomerUser], references: [id])
+  savingAccount   SavingAccounts? @relation(fields: [idSavingAccount], references: [id])
+  store           Store           @relation(fields: [idStore], references: [id], onDelete: Cascade)
+}
+
+model SaleOrder {
+  id        String   @id @default(uuid())
+  idStore   String
+  idSale    String
+  idProduct String
+  qty       Int
+  createdAt DateTime @default(now())
+  product   Product  @relation(fields: [idProduct], references: [id], onDelete: Cascade)
+  sale      Sales    @relation(fields: [idSale], references: [id], onDelete: Cascade)
+  store     Store    @relation(fields: [idStore], references: [id], onDelete: Cascade)
+}
+
+model ExpenditureCategory {
+  id           String         @id
+  idStore      String
+  name         String
+  createdAt    DateTime       @default(now())
+  store        Store          @relation(fields: [idStore], references: [id], onDelete: Cascade)
+  expenditures Expenditures[]
+}
+
+model Expenditures {
+  id                    String               @id
+  idStore               String
+  idSavingAccount       String?
+  idExpenditureCategory String?
+  total                 Int
+  notes                 String?
+  createdAt             DateTime             @default(now())
+  expenditureCategory   ExpenditureCategory? @relation(fields: [idExpenditureCategory], references: [id])
+  savingAccount         SavingAccounts?      @relation(fields: [idSavingAccount], references: [id])
+  store                 Store                @relation(fields: [idStore], references: [id], onDelete: Cascade)
+}
+
+model SaleReturns {
+  id               String             @id
+  idStore          String
+  idCustomerUser   String?
+  notes            String?
+  createdAt        DateTime           @default(now())
+  idSavingAccount  String?
+  saleReturnOrders SaleReturnOrders[]
+  customerUser     CustomerUser?      @relation(fields: [idCustomerUser], references: [id])
+  savingAccount    SavingAccounts?    @relation(fields: [idSavingAccount], references: [id])
+  store            Store              @relation(fields: [idStore], references: [id], onDelete: Cascade)
+}
+
+model SaleReturnOrders {
+  id           String      @id @default(uuid())
+  idStore      String
+  idProduct    String?
+  idSaleReturn String
+  qty          Int
+  createdAt    DateTime    @default(now())
+  product      Product?    @relation(fields: [idProduct], references: [id])
+  saleReturn   SaleReturns @relation(fields: [idSaleReturn], references: [id], onDelete: Cascade)
+  store        Store       @relation(fields: [idStore], references: [id], onDelete: Cascade)
+}
+
+model PurchaseReturns {
+  id              String          @id
+  idStore         String
+  notes           String?
+  createdAt       DateTime        @default(now())
+  idSavingAccount String?
+  idPurchase      String
+  purchase        Purchase        @relation(fields: [idPurchase], references: [id], onDelete: Cascade)
+  savingAccount   SavingAccounts? @relation(fields: [idSavingAccount], references: [id])
+  store           Store           @relation(fields: [idStore], references: [id], onDelete: Cascade)
+}
+
+model Packaging {
+  id             String          @id
+  idStore        String
+  idCustomerUser String?
+  createdAt      DateTime        @default(now())
+  address        String
+  filePath       String?
+  idSales        String?
+  notes          String?
+  status         PackagingStatus
+  customerUser   CustomerUser?   @relation(fields: [idCustomerUser], references: [id])
+  sales          Sales?          @relation(fields: [idSales], references: [id])
+  store          Store           @relation(fields: [idStore], references: [id], onDelete: Cascade)
+}
+
+model MoneyTransfer {
+  id                        String          @id
+  idStore                   String
+  fromSavingAccount         String?
+  toSavingAccount           String?
+  total                     Int
+  createdAt                 DateTime        @default(now())
+  fromSavingAccountRelation SavingAccounts? @relation("FromSavingAccounts", fields: [fromSavingAccount], references: [id])
+  toSavingAccountRelation   SavingAccounts? @relation("ToSavingAccounts", fields: [toSavingAccount], references: [id])
+}
+
+model TransactionRecords {
+  id              String         @id @default(uuid())
+  idStore         String
+  reference       String
+  description     String
+  debit           Int
+  credit          Int
+  createdAt       DateTime       @default(now())
+  idSavingAccount String
+  saldo           Int
+  savingAccounts  SavingAccounts @relation(fields: [idSavingAccount], references: [id], onDelete: Cascade)
+}
+
+enum Role {
   OWNER
   ADMIN
   STAFF
 }
 
-enum UserStatus{
+enum UserStatus {
   AKTIF
   NONAKTIF
 }
 
-enum PurchaseStatus{
+enum PurchaseStatus {
   DITERIMA
   SEBAGIAN
   TERTUNDA
   DIORDER
 }
 
-enum PaymentMethods{
+enum PaymentMethods {
   TUNAI
   TRANSFER
   LAINNYA
 }
 
-enum PackagingStatus{
+enum PackagingStatus {
   MENUNGGU_KURIR
   PICKUP
   TERKIRIM
-}
-
-model Store{
-  id String @id
-  name String
-  email String
-  noWa String
-  address String
-  createdAt DateTime @default(now())
-
-  user User[]
-  customerGroup CustomerGroup[]
-  customerUser CustomerUser[]
-  supplier Supplier[]
-  productCategories ProductCategories[]
-  product Product[]
-  purchase Purchase[]
-  savingAccounts SavingAccounts[]
-  sales Sales[]
-  saleOrder SaleOrder[]
-  expenditureCategory ExpenditureCategory[]
-  expenditures Expenditures[]
-  saleReturns SaleReturns[]
-  purchaseReturns PurchaseReturns[]
-  packaging Packaging[]
-  saleReturnOrders SaleReturnOrders[]
-  permissionPassword PermissionPassword[]
-}
-
-model User{
-  id String @id
-  idStore String?
-  username String @unique
-  name String
-  email String
-  password String
-  noWa String
-  role Role
-  status UserStatus
-  createdAt DateTime @default(now())
-
-  store Store? @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-}
-
-model PermissionPassword{
-  id String @id @default(uuid())
-  idStore String
-  password String
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-}
-
-model CustomerGroup{
-  id String @id
-  idStore String
-  name String
-  createdAt DateTime @default(now())
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  customerGroup CustomerUser[]
-}
-
-model CustomerUser{
-  id String @id
-  idStore String
-  idCustomerGroup String?
-  name String
-  noWa String
-  address String?
-  createdAt DateTime @default(now())
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  customerGroup CustomerGroup? @relation(fields: [idCustomerGroup], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  sales Sales[]
-  saleReturns SaleReturns[]
-  packaging Packaging[]
-}
-
-model Supplier{
-  id String @id
-  idStore String
-  name String
-  email String
-  noWa String
-  address String?
-  city String
-  zipCode String
-  region String
-  createdAt DateTime @default(now())
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  purchase Purchase[]
-  product Product[]
-}
-
-model SavingAccounts{
-  id String @id
-  idStore String
-  name String
-  startingBalance Int
-  notes String?
-  createdAt DateTime @default(now())
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  expenditures Expenditures[]
-  sender MoneyTransfer[] @relation("FromSavingAccounts")
-  recipient MoneyTransfer[] @relation("ToSavingAccounts")
-  purchase Purchase[]
-  sales Sales[]
-  saleReturns SaleReturns[]
-  purchaseReturns PurchaseReturns[]
-  transactionRecords TransactionRecords[]
-}
-
-model ProductCategories{
-  id String @id
-  idStore String
-  idProductCategories String?
-  imagePath String
-  name String
-  createdAt DateTime @default(now())
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  parent ProductCategories? @relation("ProductCategories", fields: [idProductCategories], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  productCategories ProductCategories[] @relation("ProductCategories")
-  product Product[]
-}
-
-model Product{
-  id String @id @default(uuid())
-  idSupplier String?
-  code String
-  idStore String
-  idProductCategories String?
-  imagePath String
-  name String
-  price Int
-  cost Int
-  qty Int
-  createdAt DateTime @default(now())
-  deletedAt DateTime?
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  productCategories ProductCategories? @relation(fields: [idProductCategories], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  saleOrder SaleOrder[]
-  saleReturnOrders SaleReturnOrders[]
-  supplier Supplier? @relation(fields: [idSupplier], references: [id], onDelete: SetNull, onUpdate: SetNull)
-}
-
-model Purchase{
-  id String @id
-  idStore String
-  idSavingAccount String?
-  idSupplier String?
-  documentPath String?
-  total Int
-  notes String?
-  purchaseStatus PurchaseStatus
-  createdAt DateTime @default(now())
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  supplier Supplier? @relation(fields: [idSupplier], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  savingAccount SavingAccounts? @relation(fields: [idSavingAccount], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  purchaseReturns PurchaseReturns[]
-}
-
-model Sales{
-  id String @id
-  idStore String
-  idCustomerUser String?
-  idSavingAccount String?
-  discount Int @default(0)
-  shippingCost Int @default(0)
-  notes String?
-  createdAt DateTime @default(now())
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  customerUser CustomerUser? @relation(fields: [idCustomerUser], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  savingAccount SavingAccounts? @relation(fields: [idSavingAccount], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  saleOrder SaleOrder[]
-  packaging Packaging[]
-}
-
-model SaleOrder{
-  id String @id @default(uuid())
-  idStore String
-  idSale String
-  idProduct String
-  qty Int
-  createdAt DateTime @default(now())
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  sale Sales @relation(fields: [idSale], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  product Product @relation(fields: [idProduct], references: [id], onDelete: Cascade, onUpdate: Cascade)
-}
-
-model ExpenditureCategory{
-  id String @id
-  idStore String
-  name String
-  createdAt DateTime @default(now())
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  expenditures Expenditures[]
-}
-
-model Expenditures{
-  id String @id
-  idStore String
-  idSavingAccount String?
-  idExpenditureCategory String?
-  total Int
-  notes String?
-  createdAt DateTime @default(now())
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  savingAccount SavingAccounts? @relation(fields: [idSavingAccount], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  expenditureCategory ExpenditureCategory? @relation(fields: [idExpenditureCategory], references: [id], onDelete: SetNull, onUpdate: Cascade)
-}
-
-model SaleReturns{
-  id String @id
-  idStore String
-  idCustomerUser String?
-  idSavingAccount String?
-  notes String?
-  createdAt DateTime @default(now())
-
-  savingAccount SavingAccounts? @relation(fields: [idSavingAccount], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  customerUser CustomerUser? @relation(fields: [idCustomerUser], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  saleReturnOrders SaleReturnOrders[]
-}
-
-model SaleReturnOrders{
-  id String @id @default(uuid())
-  idStore String
-  idProduct String?
-  idSaleReturn String
-  qty Int
-  createdAt DateTime @default(now())
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  product Product? @relation(fields: [idProduct], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  saleReturn SaleReturns @relation(fields: [idSaleReturn], references: [id], onDelete: Cascade, onUpdate: Cascade)
-}
-
-model PurchaseReturns{
-  id String @id
-  idStore String
-  idSavingAccount String?
-  idPurchase String
-  notes String?
-  createdAt DateTime @default(now())
-
-  purchase Purchase @relation(fields: [idPurchase], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  savingAccount SavingAccounts? @relation(fields: [idSavingAccount], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-}
-
-model Packaging{
-  id String @id
-  idStore String
-  idCustomerUser String?
-  idSales String?
-  filePath String?
-  notes String?
-  status PackagingStatus
-  address String
-  createdAt DateTime @default(now())
-
-  store Store @relation(fields: [idStore], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  customerUser CustomerUser? @relation(fields: [idCustomerUser], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  sales Sales? @relation(fields: [idSales], references: [id], onDelete: SetNull, onUpdate: Cascade)
-}
-
-model MoneyTransfer{
-  id String @id
-  idStore String
-  fromSavingAccount String?
-  toSavingAccount String?
-  total Int
-  createdAt DateTime @default(now())
-
-  fromSavingAccountRelation SavingAccounts? @relation("FromSavingAccounts", fields: [fromSavingAccount], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  toSavingAccountRelation SavingAccounts? @relation("ToSavingAccounts", fields: [toSavingAccount], references: [id], onDelete: SetNull,onUpdate: Cascade)
-}
-
-model TransactionRecords{
-  id String @id @default(uuid())
-  idSavingAccount String
-  idStore String
-  reference String
-  description String
-  debit Int
-  saldo Int
-  credit Int
-  createdAt DateTime @default(now())
-
-  savingAccounts SavingAccounts @relation(fields: [idSavingAccount], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

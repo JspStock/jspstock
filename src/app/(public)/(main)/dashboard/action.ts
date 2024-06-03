@@ -66,95 +66,101 @@ export type GetDataPayload = Prisma.StoreGetPayload<{
     }
 }>
 
-export const getData = async (searchParams: SearchParams) => await prisma.store.findUnique({
-    where: {
-        id: cookies().get('store')?.value,
-    },
-    select: {
-        sales: {
+export const getData = async (searchParams: SearchParams) => {
+    try{
+        return await prisma.store.findUnique({
             where: {
-                createdAt: {
-                    lte: lte(searchParams),
-                    gte: gte(searchParams)
-                }
+                id: cookies().get('store')?.value,
             },
             select: {
-                discount: true,
-                shippingCost: true,
-                saleOrder: {
-                    select: {
-                        qty: true,
-                        product: {
-                            select: {
-                                price: true,
-                                cost: true
-                            }
+                sales: {
+                    where: {
+                        createdAt: {
+                            lte: lte(searchParams),
+                            gte: gte(searchParams)
                         }
+                    },
+                    select: {
+                        discount: true,
+                        shippingCost: true,
+                        saleOrder: {
+                            select: {
+                                qty: true,
+                                product: {
+                                    select: {
+                                        price: true,
+                                        cost: true
+                                    }
+                                }
+                            }
+                        },
+                        createdAt: true
                     }
                 },
-                createdAt: true
-            }
-        },
-        saleReturns: {
-            where: {
-                createdAt: {
-                    lte: lte(searchParams),
-                    gte: gte(searchParams)
-                }
-            },
-            select: {
-                saleReturnOrders: {
-                    select: {
-                        qty: true,
-                        product: {
-                            select: {
-                                price: true
-                            }
+                saleReturns: {
+                    where: {
+                        createdAt: {
+                            lte: lte(searchParams),
+                            gte: gte(searchParams)
                         }
+                    },
+                    select: {
+                        saleReturnOrders: {
+                            select: {
+                                qty: true,
+                                product: {
+                                    select: {
+                                        price: true
+                                    }
+                                }
+                            }
+                        },
+                        createdAt: true
                     }
                 },
-                createdAt: true
-            }
-        },
-        purchaseReturns: {
-            where: {
-                createdAt: {
-                    lte: lte(searchParams),
-                    gte: gte(searchParams)
-                }
-            },
-            select: {
+                purchaseReturns: {
+                    where: {
+                        createdAt: {
+                            lte: lte(searchParams),
+                            gte: gte(searchParams)
+                        }
+                    },
+                    select: {
+                        purchase: {
+                            select: {
+                                total: true
+                            }
+                        },
+                        createdAt: true
+                    }
+                },
                 purchase: {
+                    where: {
+                        createdAt: {
+                            lte: lte(searchParams),
+                            gte: gte(searchParams)
+                        }
+                    },
                     select: {
-                        total: true
+                        total: true,
+                        createdAt: true
                     }
                 },
-                createdAt: true
-            }
-        },
-        purchase: {
-            where: {
-                createdAt: {
-                    lte: lte(searchParams),
-                    gte: gte(searchParams)
+                expenditures: {
+                    where: {
+                        createdAt: {
+                            lte: lte(searchParams),
+                            gte: gte(searchParams)
+                        }
+                    },
+                    select: {
+                        total: true,
+                        createdAt: true
+                    }
                 }
-            },
-            select: {
-                total: true,
-                createdAt: true
             }
-        },
-        expenditures: {
-            where: {
-                createdAt: {
-                    lte: lte(searchParams),
-                    gte: gte(searchParams)
-                }
-            },
-            select: {
-                total: true,
-                createdAt: true
-            }
-        }
+        })
+    }catch{
+        throw Error("Kesalahan pada server!")
     }
-})
+}

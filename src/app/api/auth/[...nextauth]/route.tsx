@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt'
 import { cookies } from 'next/headers'
 import { $Enums } from '@prisma/client'
 
+export const maxDuration = 60;
 const authOptions = NextAuth({
     providers: [
         CredentialProviders({

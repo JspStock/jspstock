@@ -280,11 +280,11 @@ model TransactionRecords {
   idStore         String
   reference       String
   description     String
-  debit           Int
-  credit          Int
+  debit           BigInt
+  credit          BigInt
   createdAt       DateTime       @default(now())
   idSavingAccount String
-  saldo           Int
+  saldo           BigInt
   savingAccounts  SavingAccounts @relation(fields: [idSavingAccount], references: [id], onDelete: Cascade)
 }
 

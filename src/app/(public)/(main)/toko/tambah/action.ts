@@ -3,6 +3,7 @@
 import { Form } from "@/app/components/toko/form"
 import prisma from "../../../../../../prisma/database"
 import { revalidatePath } from "next/cache"
+import { genSaltSync, hashSync } from "bcrypt"
 
 export const checkCountDataByNoWa = async (value: string) => await prisma.store.count({
     where: {
@@ -24,7 +25,12 @@ export const addData = async(form: Form) => {
                 name: form.name,
                 email: form.email,
                 noWa: form.noWa,
-                address: form.address
+                address: form.address,
+                permissionPassword: {
+                    create: {
+                        password: hashSync('default', genSaltSync(5))
+                    }
+                }
             }
         })
 

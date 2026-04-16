@@ -87,7 +87,7 @@ export const updateData = async (id: string, form: FormState) => {
                 },
                 data: {
                     credit: form.totalExpenditure,
-                    saldo: ((transactionRecords._sum.debit ?? 0) - (transactionRecords._sum.credit ?? 0)) - form.totalExpenditure
+                    saldo: ((transactionRecords._sum.debit ?? BigInt(0)) - (transactionRecords._sum.credit ?? BigInt(0))) - BigInt(form.totalExpenditure)
                 }
             })
         })

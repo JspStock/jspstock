@@ -173,7 +173,7 @@ export const updateData = async (idSaleReturn: string, form: Form, olData: SaleR
                     debit: 0,
                     reference: id,
                     description: 'Pengembalian penjualan',
-                    saldo: ((transactionRecords._sum.debit ?? 0) - (transactionRecords._sum.credit ?? 0)) - sum
+                    saldo: ((transactionRecords._sum.debit ?? BigInt(0)) - (transactionRecords._sum.credit ?? BigInt(0))) - BigInt(sum)
                 }
             })
         })

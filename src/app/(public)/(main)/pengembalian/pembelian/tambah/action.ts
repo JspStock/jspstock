@@ -76,7 +76,7 @@ export const addData = async (form: Form) => {
                     description: 'Pengembalian pembelian',
                     reference: id,
                     idSavingAccount: form.savingAccounts,
-                    saldo: ((transactionRecords._sum.debit ?? 0) - (transactionRecords._sum.credit ?? 0)) + purchase.total
+                    saldo: ((transactionRecords._sum.debit ?? BigInt(0)) - (transactionRecords._sum.credit ?? BigInt(0))) + BigInt(purchase.total)
                 }
             })
         })

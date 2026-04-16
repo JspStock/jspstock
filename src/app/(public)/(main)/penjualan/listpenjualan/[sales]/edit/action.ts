@@ -256,7 +256,7 @@ export const updateData = async (id: string, form: FormWithoutDocument) => {
                         debit: sumSale,
                         description: `Melakukan penjualan\n${form.notes}`,
                         idSavingAccount: form.savingAccount,
-                        saldo: ((transactionRecord._sum.debit ?? 0) - (transactionRecord._sum.credit ?? 0)) + sumSale
+                        saldo: ((transactionRecord._sum.debit ?? BigInt(0)) - (transactionRecord._sum.credit ?? BigInt(0))) + BigInt(sumSale)
                     }
                 })
             }

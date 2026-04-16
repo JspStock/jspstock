@@ -117,7 +117,7 @@ export const updatePurchase = async (idPurchase: string, form: FormWithoutDocume
                     description: `Menambahkan pembelian\n${form.note}`,
                     debit: 0,
                     credit: total,
-                    saldo: ((transactionRecord._sum.debit ?? 0) - (transactionRecord._sum.credit ?? 0)) - total
+                    saldo: ((transactionRecord._sum.debit ?? BigInt(0)) - (transactionRecord._sum.credit ?? BigInt(0))) - BigInt(total)
                 }
             })
         }, {

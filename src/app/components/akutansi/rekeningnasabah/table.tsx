@@ -32,10 +32,10 @@ const Table = async ({ searchParams }: {
                         <td><Check data={e} /></td>
                         <td>{moment(e.createdAt).format('DD-MM-YYYY')}</td>
                         <td>{e.reference}</td>
-                        <td>{currencyFormat(e.credit)}</td>
-                        <td>{currencyFormat(e.debit)}</td>
+                        <td>{currencyFormat(Number(e.credit))}</td>
+                        <td>{currencyFormat(Number(e.debit))}</td>
                         <td>{e.description}</td>
-                        <td>{currencyFormat(e.saldo)}</td>
+                        <td>{currencyFormat(Number(e.saldo))}</td>
                     </tr>)
                 }
             </tbody>

@@ -16,8 +16,14 @@ const PrintButton = () => {
         onBeforeGetContent: () => setIsLoading(true),
         onBeforePrint: () => setIsLoading(false)
     })
-    const sumCredit = (data: GetTransactionRecordPayload['transactionRecords']) => data.map(e => e.credit).reduce((val, prev) => val + prev)
-    const sumDebit = (data: GetTransactionRecordPayload['transactionRecords']) => data.map(e => e.debit).reduce((val, prev) => val + prev)
+    const sumCredit = (data: GetTransactionRecordPayload['transactionRecords']) => {
+        const total = data.reduce((acc, row) => acc + row.credit, BigInt(0))
+        return Number(total)
+    }
+    const sumDebit = (data: GetTransactionRecordPayload['transactionRecords']) => {
+        const total = data.reduce((acc, row) => acc + row.debit, BigInt(0))
+        return Number(total)
+    }
 
     return <>
         <button

@@ -66,7 +66,7 @@ export const addData = async (form: Form) => {
                         credit: form.total,
                         debit: 0,
                         description: "Transfer uang",
-                        saldo: ((transactionRecordsFrom._sum.debit ?? 0) - (transactionRecordsFrom._sum.credit ?? 0)) - form.total
+                        saldo: ((transactionRecordsFrom._sum.debit ?? BigInt(0)) - (transactionRecordsFrom._sum.credit ?? BigInt(0))) - BigInt(form.total)
                     },
                     {
                         idSavingAccount: form.to,
@@ -75,7 +75,7 @@ export const addData = async (form: Form) => {
                         credit: 0,
                         debit: form.total,
                         description: "Menerima uang",
-                        saldo: ((transactionRecordsTo._sum.debit ?? 0) - (transactionRecordsTo._sum.credit ?? 0)) + form.total
+                        saldo: ((transactionRecordsTo._sum.debit ?? BigInt(0)) - (transactionRecordsTo._sum.credit ?? BigInt(0))) + BigInt(form.total)
                     }
                 ]
             })

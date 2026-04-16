@@ -72,7 +72,7 @@ export const addData = async (form: FormState) => {
                     debit: 0,
                     reference: id,
                     description: `Penambahan pengeluaran`,
-                    saldo: ((transactionRecords._sum.debit ?? 0) - (transactionRecords._sum.credit ?? 0)) - form.totalExpenditure
+                    saldo: ((transactionRecords._sum.debit ?? BigInt(0)) - (transactionRecords._sum.credit ?? BigInt(0))) - BigInt(form.totalExpenditure)
                 }
             })
         })
